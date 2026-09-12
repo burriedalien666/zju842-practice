@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.env
+.env.*
+!.env.example
+*.sqlite*
+*.log
+coverage/
+.test-artifacts/

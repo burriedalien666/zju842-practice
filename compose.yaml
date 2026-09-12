@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8843:8843"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://127.0.0.1:8843}
+      HOST: 0.0.0.0
+      PORT: 8843
+      DATA_DIR: /app/data
+    volumes:
+      - site-data:/app/data
+volumes:
+  site-data:
