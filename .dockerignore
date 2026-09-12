@@ -1,6 +1,8 @@
 **
 !package.json
 !package-lock.json
+!LICENSE
+!CONTENT-NOTICE.md
 !index.html
 !vite.config.js
 !src/
