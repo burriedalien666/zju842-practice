@@ -11,17 +11,23 @@ const fail = (code, message) =>
   Object.assign(new Error(message), { statusCode: code });
 export async function createApp({
   dataDir,
+  databaseUrl,
+  databaseToken,
   catalog,
   origin,
   staticDir,
   production = false,
   logger = false,
+  trustProxy = false,
 }) {
   if (production && !origin?.startsWith("https://"))
     throw new Error("线上站点必须配置HTTPS PUBLIC_ORIGIN");
   const allowedOrigin = new URL(origin).origin;
-  const app = Fastify({ logger, bodyLimit: 32 * 1024, trustProxy: false });
-  const db = openDatabase(dataDir);
+  const app = Fastify({ logger, bodyLimit: 32 * 1024, trustProxy });
+  const db = await openDatabase(dataDir, {
+    url: databaseUrl,
+    authToken: databaseToken,
+  });
   app.decorate("db", db);
   app.addHook("onClose", async () => db.close());
   const questions = new Set(catalog.questions.map((q) => q.id));
@@ -36,7 +42,12 @@ export async function createApp({
   });
   app.setErrorHandler((err, req, reply) => {
     const status = err.statusCode || 500;
-    if (status >= 500) req.log.error(err);
+    // 驱动错误可能携带连接信息，不向访客或日志输出数据库凭据。
+    if (status >= 500)
+      req.log.error(
+        { requestId: req.id, errorType: err.name },
+        "Request failed",
+      );
     reply
       .code(status)
       .send({ error: status >= 500 ? "服务器暂时无法完成操作" : err.message });
@@ -57,25 +68,27 @@ export async function createApp({
     )
       throw fail(403, "请求来源不匹配，请从网站页面操作");
   });
-  function isAdmin(req) {
+  async function isAdmin(req) {
     const token = req.cookies.session;
     return (
       typeof token === "string" &&
-      !!db
-        .prepare("SELECT token FROM sessions WHERE token=? AND expires>?")
-        .get(token, Date.now())
+      !!(await db.get(
+        "SELECT token FROM sessions WHERE token=? AND expires>?",
+        token,
+        Date.now(),
+      ))
     );
   }
   async function admin(req) {
-    if (!isAdmin(req)) throw fail(401, "请先登录管理员账号");
+    if (!(await isAdmin(req))) throw fail(401, "请先登录管理员账号");
   }
   function qid(req) {
     const id = req.params.qid;
     if (!questions.has(id)) throw fail(404, "题目不存在");
     return id;
   }
-  function answer(id) {
-    const row = db.prepare("SELECT * FROM answers WHERE qid=?").get(id);
+  async function answer(id, connection = db) {
+    const row = await connection.get("SELECT * FROM answers WHERE qid=?", id);
     return row
       ? {
           draft: JSON.parse(row.draft),
@@ -84,48 +97,49 @@ export async function createApp({
         }
       : { draft: [], published: [], updated: null };
   }
-  function save(id, draft, published) {
-    db.prepare(
-      "INSERT INTO answers VALUES(?,?,?,?) ON CONFLICT(qid) DO UPDATE SET draft=excluded.draft,published=excluded.published,updated=excluded.updated",
-    ).run(
+  async function save(tx, id, draft, published) {
+    await tx.run(
+      "INSERT INTO answers(qid,draft,published,updated) VALUES(?,?,?,?) ON CONFLICT(qid) DO UPDATE SET draft=excluded.draft,published=excluded.published,updated=excluded.updated",
       id,
       JSON.stringify(draft),
       JSON.stringify(published),
       new Date().toISOString(),
     );
-    const keep = new Set([...draft, ...published]);
-    for (const p of db.prepare("SELECT id FROM photos WHERE qid=?").all(id))
-      if (!keep.has(p.id))
-        db.prepare("DELETE FROM photos WHERE id=?").run(p.id);
+    const keep = [...new Set([...draft, ...published])];
+    if (keep.length)
+      await tx.run(
+        "DELETE FROM photos WHERE qid=? AND id NOT IN (" +
+          keep.map(() => "?").join(",") +
+          ")",
+        id,
+        ...keep,
+      );
+    else await tx.run("DELETE FROM photos WHERE qid=?", id);
+    return answer(id, tx);
   }
-  function transaction(fn) {
-    db.exec("BEGIN");
-    try {
-      const result = fn();
-      db.exec("COMMIT");
-      return result;
-    } catch (e) {
-      db.exec("ROLLBACK");
-      throw e;
-    }
-  }
-  app.get("/api/health", async () => ({ ok: true }));
+  app.get("/api/health", async () => {
+    await db.get("SELECT 1");
+    return { ok: true };
+  });
   app.get("/api/session", async (req) => ({
-    admin: isAdmin(req),
-    configured: !!db.prepare("SELECT id FROM admin").get(),
+    admin: await isAdmin(req),
+    configured: !!(await db.get("SELECT id FROM admin")),
   }));
   app.post(
     "/api/login",
     { config: { rateLimit: { max: 5, timeWindow: "15 minutes" } } },
     async (req, reply) => {
-      if (!(await checkPassword(db, req.body?.password)))
-        throw fail(401, "密码不正确或管理员尚未设置");
       const token = randomBytes(32).toString("hex");
-      db.prepare("DELETE FROM sessions WHERE expires<?").run(Date.now());
-      db.prepare("INSERT INTO sessions VALUES(?,?)").run(
-        token,
-        Date.now() + 7 * 86400_000,
-      );
+      await db.transaction(async (tx) => {
+        if (!(await checkPassword(tx, req.body?.password)))
+          throw fail(401, "密码不正确或管理员尚未设置");
+        await tx.run("DELETE FROM sessions WHERE expires<?", Date.now());
+        await tx.run(
+          "INSERT INTO sessions VALUES(?,?)",
+          token,
+          Date.now() + 7 * 86400_000,
+        );
+      });
       reply.setCookie("session", token, {
         path: "/",
         httpOnly: true,
@@ -137,12 +151,12 @@ export async function createApp({
     },
   );
   app.post("/api/logout", { onRequest: admin }, async (req, reply) => {
-    db.prepare("DELETE FROM sessions WHERE token=?").run(req.cookies.session);
+    await db.run("DELETE FROM sessions WHERE token=?", req.cookies.session);
     reply.clearCookie("session", { path: "/" });
     return { ok: true };
   });
   app.get("/api/answers/:qid", async (req) => ({
-    photos: answer(qid(req)).published,
+    photos: (await answer(qid(req))).published,
   }));
   app.get("/api/admin/answers/:qid", { onRequest: admin }, async (req) =>
     answer(qid(req)),
@@ -151,11 +165,12 @@ export async function createApp({
     "/api/admin/answers/:qid/photos",
     { onRequest: admin },
     async (req) => {
-      const id = qid(req);
-      const replacing = req.query.replace;
-      if (replacing && !answer(id).draft.includes(replacing))
+      const id = qid(req),
+        replacing = req.query.replace,
+        before = await answer(id);
+      if (replacing && !before.draft.includes(replacing))
         throw fail(400, "被替换图片不在草稿中");
-      if (!replacing && answer(id).draft.length >= 12)
+      if (!replacing && before.draft.length >= 12)
         throw fail(400, "每题最多12张答案图片");
       const part = await req.file();
       if (!part) throw fail(400, "请选择一张照片");
@@ -183,22 +198,22 @@ export async function createApp({
       } catch {
         throw fail(400, "图片无法读取，请使用普通JPG、PNG或WebP照片");
       }
-      return transaction(() => {
-        const a = answer(id);
+      return db.transaction(async (tx) => {
+        const a = await answer(id, tx);
         if (replacing && !a.draft.includes(replacing))
           throw fail(409, "草稿已经变化，请刷新");
         if (!replacing && a.draft.length >= 12)
           throw fail(400, "每题最多12张答案图片");
         const photo = randomBytes(20).toString("hex");
-        db.prepare("INSERT INTO photos VALUES(?,?,?)").run(photo, id, bytes);
-        save(
+        await tx.run("INSERT INTO photos VALUES(?,?,?)", photo, id, bytes);
+        return save(
+          tx,
           id,
           replacing
             ? a.draft.map((p) => (p === replacing ? photo : p))
             : [...a.draft, photo],
           a.published,
         );
-        return answer(id);
       });
     },
   );
@@ -207,20 +222,22 @@ export async function createApp({
     { onRequest: admin },
     async (req) => {
       const id = qid(req),
-        photos = req.body?.photos,
-        a = answer(id);
-      if (
-        !Array.isArray(photos) ||
-        photos.length > 12 ||
-        new Set(photos).size !== photos.length ||
-        photos.some(
-          (p) =>
-            typeof p !== "string" || ![...a.draft, ...a.published].includes(p),
+        photos = req.body?.photos;
+      return db.transaction(async (tx) => {
+        const a = await answer(id, tx);
+        if (
+          !Array.isArray(photos) ||
+          photos.length > 12 ||
+          new Set(photos).size !== photos.length ||
+          photos.some(
+            (p) =>
+              typeof p !== "string" ||
+              ![...a.draft, ...a.published].includes(p),
+          )
         )
-      )
-        throw fail(400, "答案图片列表不合法");
-      transaction(() => save(id, photos, a.published));
-      return answer(id);
+          throw fail(400, "答案图片列表不合法");
+        return save(tx, id, photos, a.published);
+      });
     },
   );
   app.post(
@@ -229,25 +246,29 @@ export async function createApp({
     async (req) => {
       const id = qid(req),
         old = req.params.photo;
-      if (!answer(id).draft.includes(old)) throw fail(404, "草稿图片不存在");
-      const row = db
-        .prepare("SELECT bytes FROM photos WHERE id=? AND qid=?")
-        .get(old, id);
-      const bytes = await sharp(row.bytes)
+      if (!(await answer(id)).draft.includes(old))
+        throw fail(404, "草稿图片不存在");
+      const row = await db.get(
+        "SELECT bytes FROM photos WHERE id=? AND qid=?",
+        old,
+        id,
+      );
+      if (!row) throw fail(409, "草稿已经变化，请刷新");
+      const bytes = await sharp(Buffer.from(row.bytes))
         .rotate(90)
         .webp({ quality: 88 })
         .toBuffer();
-      return transaction(() => {
-        const a = answer(id);
+      return db.transaction(async (tx) => {
+        const a = await answer(id, tx);
         if (!a.draft.includes(old)) throw fail(409, "草稿已经变化，请刷新");
         const photo = randomBytes(20).toString("hex");
-        db.prepare("INSERT INTO photos VALUES(?,?,?)").run(photo, id, bytes);
-        save(
+        await tx.run("INSERT INTO photos VALUES(?,?,?)", photo, id, bytes);
+        return save(
+          tx,
           id,
           a.draft.map((p) => (p === old ? photo : p)),
           a.published,
         );
-        return answer(id);
       });
     },
   );
@@ -255,32 +276,35 @@ export async function createApp({
     "/api/admin/answers/:qid/publish",
     { onRequest: admin },
     async (req) => {
-      const id = qid(req),
-        a = answer(id);
-      if (!a.draft.length) throw fail(400, "请先上传答案照片");
-      transaction(() => save(id, a.draft, a.draft));
-      return answer(id);
+      const id = qid(req);
+      return db.transaction(async (tx) => {
+        const a = await answer(id, tx);
+        if (!a.draft.length) throw fail(400, "请先上传答案照片");
+        return save(tx, id, a.draft, a.draft);
+      });
     },
   );
   app.post(
     "/api/admin/answers/:qid/withdraw",
     { onRequest: admin },
     async (req) => {
-      const id = qid(req),
-        a = answer(id);
-      transaction(() => save(id, a.draft, []));
-      return answer(id);
+      const id = qid(req);
+      return db.transaction(async (tx) => {
+        const a = await answer(id, tx);
+        return save(tx, id, a.draft, []);
+      });
     },
   );
   app.get("/api/media/:photo", async (req, reply) => {
-    const photo = db
-      .prepare("SELECT * FROM photos WHERE id=?")
-      .get(req.params.photo);
-    if (
-      !photo ||
-      (!answer(photo.qid).published.includes(photo.id) && !isAdmin(req))
-    )
-      throw fail(404, "图片不存在");
+    // 同一条查询同时校验公开状态，避免检查与读取跨事务发生变化。
+    const allowed = await isAdmin(req);
+    const photo = allowed
+      ? await db.get("SELECT bytes FROM photos WHERE id=?", req.params.photo)
+      : await db.get(
+          "SELECT p.bytes FROM photos p JOIN answers a ON a.qid=p.qid WHERE p.id=? AND EXISTS (SELECT 1 FROM json_each(a.published) WHERE value=p.id)",
+          req.params.photo,
+        );
+    if (!photo) throw fail(404, "图片不存在");
     return reply.type("image/webp").send(Buffer.from(photo.bytes));
   });
   app.post(
@@ -295,9 +319,12 @@ export async function createApp({
         message.length > 2000
       )
         throw fail(400, "请填写5—2000字的纠错内容");
-      db.prepare(
+      await db.run(
         "INSERT INTO corrections(qid,message,created) VALUES(?,?,?)",
-      ).run(questionId, message.trim(), new Date().toISOString());
+        questionId,
+        message.trim(),
+        new Date().toISOString(),
+      );
       return reply.code(201).send({ ok: true });
     },
   );
@@ -306,21 +333,22 @@ export async function createApp({
     if (!Number.isInteger(page) || page < 0 || page > 100000)
       throw fail(400, "页码不合法");
     return {
-      items: db
-        .prepare(
-          "SELECT * FROM corrections ORDER BY resolved ASC,id DESC LIMIT 50 OFFSET ?",
-        )
-        .all(page * 50),
-      total: db.prepare("SELECT COUNT(*) AS n FROM corrections").get().n,
+      items: await db.all(
+        "SELECT * FROM corrections ORDER BY resolved ASC,id DESC LIMIT 50 OFFSET ?",
+        page * 50,
+      ),
+      total: (await db.get("SELECT COUNT(*) AS n FROM corrections")).n,
     };
   });
   app.patch("/api/admin/corrections/:id", { onRequest: admin }, async (req) => {
     if (typeof req.body?.resolved !== "boolean")
       throw fail(400, "处理状态不合法");
-    const result = db
-      .prepare("UPDATE corrections SET resolved=? WHERE id=?")
-      .run(Number(req.body.resolved), req.params.id);
-    if (!result.changes) throw fail(404, "纠错记录不存在");
+    const result = await db.run(
+      "UPDATE corrections SET resolved=? WHERE id=?",
+      Number(req.body.resolved),
+      req.params.id,
+    );
+    if (!result.rowsAffected) throw fail(404, "纠错记录不存在");
     return { ok: true };
   });
   if (staticDir)

@@ -13,7 +13,7 @@ const q = encodeURIComponent(catalog.questions[0].id);
 async function fixture(t, extra = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "zju842-test-"));
   const app = await createApp({ dataDir: dir, catalog, origin, ...extra });
-  setPassword(app.db, "Test-only-password-842!");
+  await setPassword(app.db, "Test-only-password-842!");
   t.after(async () => {
     await app.close();
     fs.rmSync(dir, { recursive: true, force: true });
@@ -266,7 +266,7 @@ test("anonymous corrections are validated, private, rate limited and resolvable"
 });
 test("password reset invalidates sessions; production cookie uses Secure", async (t) => {
   const { app, request } = await fixture(t);
-  setPassword(app.db, "Different-test-password!");
+  await setPassword(app.db, "Different-test-password!");
   assert.equal((await request("GET", "/api/session")).json().admin, false);
   const p = await fixture(t, {
     origin: "https://study.example",

@@ -62,6 +62,6 @@ npm audit
 
 ## 部署与开源
 
-见 [部署说明](docs/deployment.md)。照片答案、登录和纠错依赖后端，不能只把页面放到 GitHub Pages。只发布本 `web` 目录中的源码与已确认可公开的裁切题图，不发布上级试卷目录。
+见 [部署说明](docs/deployment.md) 和 [Render Free + Turso 配置](docs/render-turso.md)。照片答案、登录和纠错依赖后端，不能只把页面放到 GitHub Pages。只发布本 `web` 目录中的源码与已确认可公开的裁切题图，不发布上级试卷目录。
 
 程序代码和技术文档采用 [MIT 许可证](LICENSE)。题目内容、题图、题库资料和手写答案照片不纳入 MIT 授权，详见 [素材授权范围](CONTENT-NOTICE.md)。

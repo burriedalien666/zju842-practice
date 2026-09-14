@@ -16,7 +16,7 @@ test("upload count and byte limits; full draft can replace a photo; data survive
   };
   let app = await createApp(options);
   try {
-    setPassword(app.db, "Isolated-password-842");
+    await setPassword(app.db, "Isolated-password-842");
     const login = await app.inject({
       method: "POST",
       url: "/api/login",
@@ -80,7 +80,7 @@ test("login attempts are rate limited", async () => {
     origin: "http://localhost",
   });
   try {
-    setPassword(app.db, "Isolated-password-842");
+    await setPassword(app.db, "Isolated-password-842");
     for (let i = 0; i < 5; i++)
       assert.equal(
         (

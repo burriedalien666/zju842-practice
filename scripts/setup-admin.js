@@ -34,10 +34,16 @@ const password = await hiddenPassword(
 const confirm = await hiddenPassword("再次输入：");
 if (password !== confirm) throw new Error("两次密码不一致");
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const db = openDatabase(path.resolve(root, process.env.DATA_DIR || "data"));
+const db = await openDatabase(
+  path.resolve(root, process.env.DATA_DIR || "data"),
+  {
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  },
+);
 try {
-  setPassword(db, password);
+  await setPassword(db, password);
   console.log("管理员密码已设置，旧登录已退出。");
 } finally {
-  db.close();
+  await db.close();
 }

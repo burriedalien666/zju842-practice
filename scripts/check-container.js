@@ -44,13 +44,13 @@ try {
     "const r=await fetch('http://127.0.0.1:8843/catalog.json'); const c=await r.json(); if(c.questions.length<469)process.exit(1)",
   );
   node(
-    "import {openDatabase} from './server/db.js'; const db=openDatabase('/app/data'); db.prepare('INSERT INTO corrections(qid,message,created) VALUES(?,?,?)').run('2009|一|1','container persistence test',new Date().toISOString()); db.close()",
+    "import {openDatabase} from './server/db.js'; const db=await openDatabase('/app/data'); await db.run('INSERT INTO corrections(qid,message,created) VALUES(?,?,?)','2009|一|1','container persistence test',new Date().toISOString()); await db.close()",
   );
   docker("restart", name);
   await ready();
   assert.equal(
     node(
-      "import {openDatabase} from './server/db.js'; const db=openDatabase('/app/data'); console.log(db.prepare('SELECT COUNT(*) AS n FROM corrections').get().n); db.close()",
+      "import {openDatabase} from './server/db.js'; const db=await openDatabase('/app/data'); console.log((await db.get('SELECT COUNT(*) AS n FROM corrections')).n); await db.close()",
     ),
     "1",
   );
