@@ -901,17 +901,17 @@ try {
     const session = await api("/session");
     admin = session.admin;
     localMode = !!session.local;
-    if (localMode) {
-      const saved = await api("/local/study");
-      if (saved.study)
-        study = validateStudy(
-          saved.study,
-          new Set(catalog.questions.map((q) => q.id)),
-        );
-      else persist();
-    }
   } catch {
     /* 离线时仍可读取已加载题目。 */
+  }
+  if (localMode) {
+    const saved = await api("/local/study");
+    if (saved.study)
+      study = validateStudy(
+        saved.study,
+        new Set(catalog.questions.map((q) => q.id)),
+      );
+    else persist();
   }
   layout();
   const id = new URL(location.href).searchParams.get("q");

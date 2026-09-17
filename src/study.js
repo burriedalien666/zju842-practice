@@ -1,3 +1,4 @@
+import { reviewSettings, validateReview } from "./review.js";
 export const STORAGE_KEY = "zju842-study-v3";
 export function emptyStudy() {
   return { version: 1, records: {}, lists: [] };
@@ -43,13 +44,19 @@ export function validateStudy(input, ids) {
       list.name.length > 40 ||
       names.has(list.name) ||
       !Array.isArray(list.ids) ||
-      list.ids.some((id) => typeof id !== "string")
+      list.ids.some(
+        (id) =>
+          typeof id !== "string" ||
+          !id ||
+          id.length > 160 ||
+          ["__proto__", "constructor", "prototype"].includes(id),
+      )
     )
       throw new Error("题单格式不正确");
     names.add(list.name);
     clean.lists.push({
       name: list.name,
-      ids: [...new Set(list.ids.filter((id) => ids.has(id)))],
+      ids: [...new Set(list.ids)],
     });
   }
   return clean;
@@ -76,4 +83,3 @@ export function shuffled(ids, random = Math.random) {
   }
   return result;
 }
-import { reviewSettings, validateReview } from "./review.js";

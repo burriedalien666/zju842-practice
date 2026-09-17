@@ -38,7 +38,7 @@ test("backup round trip and import validation", () => {
       { ...data, lists: [{ name: "x", ids: ["gone", "a", "a"] }] },
       ids,
     ).lists[0].ids,
-    ["a"],
+    ["gone", "a"],
   );
 });
 test("old favorites and mastery migrate without changing question IDs", () => {
