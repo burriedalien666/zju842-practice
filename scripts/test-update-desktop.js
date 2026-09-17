@@ -14,12 +14,13 @@ if (!process.argv[2])
     "请指定已打包的程序目录；测试会复制到临时目录，不修改传入目录",
   );
 const original = path.resolve(process.argv[2]);
+const candidateSource = process.argv[3] ? path.resolve(process.argv[3]) : null;
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "842-upgrade-smoke-"));
 const root = path.join(temp, "portable"),
   dataDir = path.join(temp, "personal");
 const manifestFile = path.join(temp, "manifest.json");
-const fixtureVersion = "0.4.91",
-  brokenVersion = "0.4.92";
+const fixtureVersion = "0.5.91",
+  brokenVersion = "0.5.92";
 let child,
   output = "",
   base,
@@ -64,7 +65,10 @@ globalThis.fetch=async (url)=>{
       else if (entry.isFile()) entries.push({ name, file });
     }
   }
-  walk(root);
+  walk(candidateSource || root);
+  const candidatePackage = JSON.parse(
+    fs.readFileSync(path.join(candidateSource || root, "package.json")),
+  );
   async function release(version, broken = false) {
     const name = `zju842-${version}-${platformKey()}.zip`,
       file = path.join(temp, name);
@@ -75,7 +79,9 @@ globalThis.fetch=async (url)=>{
         if (e.name === "package.json")
           return {
             name: target,
-            bytes: Buffer.from(JSON.stringify({ ...pkg, version })),
+            bytes: Buffer.from(
+              JSON.stringify({ ...candidatePackage, version }),
+            ),
           };
         if (broken && e.name === "server/desktop-app.js")
           return {
@@ -251,7 +257,10 @@ globalThis.fetch=async (url)=>{
     (await fetch(base + "/api/media/" + photo, { headers: { cookie } })).status,
     200,
   );
-  assert.equal((await api("/local/updates")).entries.library.current, 1);
+  assert.equal(
+    (await api("/local/updates")).entries.library.current,
+    catalog.libraryRevision,
+  );
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(root, "package.json"))).version,
     pkg.version,

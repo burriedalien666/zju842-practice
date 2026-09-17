@@ -3,6 +3,8 @@ import "./navigation.css";
 import "./papers.css";
 import { StudySaver } from "./persistence.js";
 import { createUpdateCenter } from "./updates.js";
+import { paintAnalysis } from "./analysis-view.js";
+import { questionConcepts, videosMarkup } from "./learning-content.js";
 import {
   buildChapters,
   chapterForType,
@@ -52,6 +54,19 @@ let localMode = false,
 let page = "modules",
   chapters = [];
 let focusMode = false;
+let chapterMode = "training";
+let analysisState = {
+  subject: "signals",
+  from: "2009",
+  to: "2025",
+  level: "chapter",
+  metric: "count",
+  chapter: "",
+  search: "",
+  selected: "",
+  year: "",
+};
+let fromAnalysis = false;
 let paperYear = "";
 let catalog,
   study,
@@ -170,6 +185,10 @@ function layout() {
     "afterend",
     button("papers", "▤ 历年真题卷"),
   );
+  $('[data-action="papers"]').insertAdjacentHTML(
+    "afterend",
+    button("analysis", "▥ 历年考点分析"),
+  );
   $(".topbar").insertAdjacentHTML(
     "afterbegin",
     '<div id="exam-countdown-slot"></div>',
@@ -287,6 +306,60 @@ function reconcileLearningView(previousIds) {
   else renderEmptyReader();
 }
 function renderList() {
+  document
+    .querySelectorAll('[data-action="analysis"]')
+    .forEach((b) => b.classList.toggle("active", page === "analysis"));
+  if (page === "analysis") {
+    paintAnalysis({
+      catalog,
+      state: analysisState,
+      change: (next) => {
+        analysisState = next;
+        if (filters.subject !== next.subject) {
+          filters.subject = next.subject;
+          filters.chapter = "";
+          filters.type = "";
+          layout();
+        } else renderList();
+        rememberNavigation();
+      },
+      openQuestion: (id, ids) => {
+        rememberNavigation();
+        history.pushState({}, "", location.href);
+        const q = catalog.questions.find((q) => q.id === id);
+        filters = {
+          subject: q.subject,
+          source: "entrance",
+          year: "",
+          type: "",
+          chapter: "",
+          status: "",
+          list: "",
+          search: "",
+          questionIds: ids,
+        };
+        fromAnalysis = true;
+        page = "reader";
+        openQuestion(id, true);
+        rememberNavigation();
+      },
+    });
+    app.classList.remove("focus-mode");
+    $("#progress").textContent = "公开真题统计 · 不含个人作答记录";
+    document
+      .querySelectorAll(
+        '[data-action="papers"],[data-action="modules"],[data-action="status"]',
+      )
+      .forEach((b) => b.classList.remove("active"));
+    document
+      .querySelectorAll('[data-action="analysis"]')
+      .forEach((b) => b.classList.add("active"));
+    return;
+  }
+  $(".course-toolbar").hidden = false;
+  $("#source").value = filters.source;
+  $("#year").value = filters.year;
+  $("#search").value = filters.search;
   $("#exam-countdown-slot").innerHTML = countdownMarkup(study.examDate);
   $(".course-toolbar").hidden = page === "papers" || page === "paper";
   if (page === "papers" || page === "paper") {
@@ -335,6 +408,7 @@ function renderList() {
     current,
     lastQuestion: study.lastQuestion,
     focusMode,
+    chapterMode,
   });
   app.classList.toggle("focus-mode", page === "reader" && focusMode);
   $("#reading-tools").hidden = page !== "reader";
@@ -346,6 +420,16 @@ function renderList() {
       index = questions.indexOf(current);
     $("#reading-tools").innerHTML =
       `<div class="reading-location">${button("chapter-picker", "☷ 切换章节", "text-button")}<span>${esc(chapter?.title || subjects[filters.subject])}</span></div><div class="reading-steps"><span>${index >= 0 ? index + 1 : 0} / ${questions.length}</span>${button("previous", "← 上一题", "", index <= 0 ? "disabled" : "")}${button("next", "下一题 →", "primary", index < 0 || index >= questions.length - 1 ? "disabled" : "")}${button("focus", focusMode ? "退出专注" : "专注做题", "", `aria-pressed="${focusMode}"`)}</div>`;
+    if (fromAnalysis)
+      $("#reading-tools").insertAdjacentHTML(
+        "afterbegin",
+        button("analysis-return", "← 返回考点分析", "text-button"),
+      );
+    if (fromAnalysis)
+      $("#breadcrumb").insertAdjacentHTML(
+        "beforeend",
+        "<span> / 考点分析选中题目</span>",
+      );
   }
 }
 function openQuestion(id, replace = false) {
@@ -393,6 +477,27 @@ async function renderReader() {
     "beforebegin",
     `<section class="review-panel"><h3>本次作答</h3><div class="review-ratings">${button("grade-wrong", "做错了")}${button("grade-hard", "答对但吃力")}${button("grade-good", "独立答对", "primary")}</div><p class="muted small">${r.review ? "下次复习：" + new Date(r.review.due).toLocaleString() + " · 累计错误 " + r.review.lapses + " 次" : "作答后自评，开始安排复习"}</p></section>`,
   );
+  $(".reader-type").textContent =
+    (q.trainingIds || [])
+      .map(
+        (id) =>
+          catalog.curriculum?.trainingTypes.find((t) => t.id === id)?.title,
+      )
+      .filter(Boolean)
+      .join(" · ") || type.title;
+  $(".question-images").insertAdjacentHTML(
+    "beforebegin",
+    questionConcepts(catalog, q),
+  );
+  $(".answer-section").insertAdjacentHTML(
+    "beforebegin",
+    videosMarkup(catalog, "question", q.id),
+  );
+  if (q.score)
+    $(".reader-heading").insertAdjacentHTML(
+      "afterend",
+      `<p class="muted small">原卷 ${q.score.points} 分 · 分值依据：PDF第${q.score.sourcePage}页</p>`,
+    );
   if (localMode) {
     $('[data-action="share"]').textContent = "复制题号";
     if (admin) $('[data-action="edit-answer"]').textContent = "编辑我的答案";
@@ -629,6 +734,69 @@ document.addEventListener("click", async (e) => {
     return;
   }
   try {
+    if (
+      [
+        "modules",
+        "chapter",
+        "type",
+        "subject",
+        "status",
+        "list",
+        "browse-all",
+        "papers",
+        "resume",
+        "chapter-choice",
+        "scope-back",
+        "scope-clear",
+        "clear",
+      ].includes(action)
+    ) {
+      delete filters.questionIds;
+      fromAnalysis = false;
+    }
+    if (action === "analysis" || action === "analysis-return") {
+      if (action === "analysis") analysisState.subject = filters.subject;
+      page = "analysis";
+      current = null;
+      queue = [];
+      delete filters.questionIds;
+      fromAnalysis = false;
+      syncNavigation();
+      renderList();
+      rememberNavigation();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "chapter-mode") {
+      chapterMode = b.dataset.mode;
+      renderList();
+      rememberNavigation();
+      return;
+    }
+    if (action === "knowledge") {
+      const topic = catalog.curriculum?.topics.find(
+        (t) => t.id === b.dataset.id,
+      );
+      if (!topic) return;
+      fromAnalysis = false;
+      delete filters.questionIds;
+      filters.chapter = topic.chapter;
+      filters.type = "knowledge:" + topic.id;
+      filters.subject = catalog.curriculum.chapters.find(
+        (c) => c.id === topic.chapter,
+      ).subject;
+      current = null;
+      queue = [];
+      page = "reader";
+      renderList();
+      if (visible.length) openQuestion(visible[0].id);
+      else {
+        syncNavigation();
+        renderEmptyReader();
+      }
+      rememberNavigation();
+      return;
+    }
     if (action === "retry-save") {
       saveQueue = saver.retry();
       await saveQueue;
@@ -973,7 +1141,7 @@ document.addEventListener("click", async (e) => {
     if (action === "classification-source") {
       dialog(
         "分类依据",
-        '<p>信号与系统按基础、时域、连续频域、离散频域、采样调制、拉普拉斯变换、Z变换七章组织。</p><p>数字电路按编码、逻辑代数、门电路、组合逻辑、组合模块、触发器、时序逻辑组织，并保留脉冲电路、存储器等842真题专题。</p><p class="muted small">章节顺序参考你提供的《信号系统与数字电路》大纲。文件注明2020年905单考，本分类仅用于导航，不据此删减842题目或认定当前考试范围。</p>',
+        `<p>以所提供的2024年842统考大纲为主，结合于慧敏《信号与系统学习指导》和阎石《数字电子技术基础》第六版细化。不是最新年度官方考纲。</p><p>知识点表示“考什么”，训练题型表示“怎么考”。综合题标多个知识点，主章节只归属一次，题号和个人记录不变。</p><p>同题可进入多个知识点统计，各行题量和涉及分值不可相加。未标分值不按0处理，不用历史频次预测未来命题。</p><p class="muted small">${esc(catalog.curriculum?.mappingNote || "旧题库请先更新以获得新分类。")}</p><p>${esc(catalog.curriculum?.scoreNote || "")}</p>`,
       );
       return;
     }
@@ -1004,6 +1172,11 @@ document.addEventListener("click", async (e) => {
       queue = [];
       renderList();
       if (visible.length) openQuestion(visible[0].id);
+      else {
+        current = null;
+        syncNavigation();
+        renderEmptyReader();
+      }
       return;
     }
     if (action === "back-chapter") {
@@ -1399,6 +1572,9 @@ function rememberNavigation() {
         queue: [...queue],
         paperYear,
         focusMode,
+        chapterMode,
+        analysisState: { ...analysisState },
+        fromAnalysis,
       },
     },
     "",
@@ -1409,7 +1585,9 @@ function restoreNavigation() {
   const saved = history.state?.practiceView;
   if (
     !saved ||
-    !["modules", "chapter", "reader", "papers", "paper"].includes(saved.page) ||
+    !["modules", "chapter", "reader", "papers", "paper", "analysis"].includes(
+      saved.page,
+    ) ||
     !saved.filters ||
     !["signals", "digital"].includes(saved.filters.subject)
   )
@@ -1431,6 +1609,12 @@ function restoreNavigation() {
   )
     return false;
   filters = { ...saved.filters };
+  if (filters.questionIds && !Array.isArray(filters.questionIds))
+    delete filters.questionIds;
+  if (saved.analysisState && typeof saved.analysisState === "object")
+    analysisState = { ...analysisState, ...saved.analysisState };
+  chapterMode = saved.chapterMode === "knowledge" ? "knowledge" : "training";
+  fromAnalysis = !!saved.fromAnalysis;
   page = saved.page;
   paperYear = saved.paperYear || "";
   focusMode = !!saved.focusMode;
@@ -1465,6 +1649,8 @@ function syncNavigation() {
   history.replaceState(history.state, "", url);
 }
 function goModules() {
+  delete filters.questionIds;
+  fromAnalysis = false;
   page = "modules";
   filters.chapter = "";
   filters.type = "";
@@ -1652,6 +1838,13 @@ try {
   const res = await fetch("/catalog.json");
   if (!res.ok) throw new Error("题库加载失败");
   catalog = await res.json();
+  const examYears = catalog.questions
+    .filter((q) => q.sourceKind === "entrance")
+    .map((q) => q.year);
+  if (examYears.length) {
+    analysisState.from = String(Math.min(...examYears));
+    analysisState.to = String(Math.max(...examYears));
+  }
   chapters = buildChapters(catalog);
   let storageError;
   try {

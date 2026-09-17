@@ -51,7 +51,9 @@ const manifest = validateManifest({
   libraryId: "zju842",
   program: {
     version: packageInfo.version,
-    notes: fs.readFileSync(`docs/releases/v${packageInfo.version}.md`, "utf8").slice(0, 12000),
+    notes: fs
+      .readFileSync(`docs/releases/v${packageInfo.version}.md`, "utf8")
+      .slice(0, 12000),
     protocol: 1,
     assets: Object.fromEntries(
       ["windows-x64", "macos-x64", "macos-arm64"].map((p) => [
@@ -63,7 +65,7 @@ const manifest = validateManifest({
   library: {
     revision: catalog.libraryRevision,
     edition: catalog.edition,
-    requiresProgram: "0.4.0",
+    requiresProgram: catalog.requiresProgram || "0.4.0",
     asset: asset(libraryName),
   },
   answers: {

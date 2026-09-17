@@ -10,11 +10,11 @@
 
 不要下载GitHub自动生成的Source code压缩包当作免安装成品。发布包包含运行环境，无需自行安装Node.js或Docker。
 
-v0.4.0 下载包新增程序、题库、公共答案三个独立更新入口，保留章节选题、整卷练习、倒计时与间隔复习，无需从源码运行：
+v0.5.0 新增历年考点分析、知识点/解题任务双路径训练与作者视频讲解入口，保留三类独立更新、整卷与间隔复习，无需从源码运行：
 
-- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-windows-x64.zip)
-- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-macos-arm64.zip)
-- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-macos-x64.zip)
+- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.0/zju842-0.5.0-windows-x64.zip)
+- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.0/zju842-0.5.0-macos-arm64.zip)
+- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.0/zju842-0.5.0-macos-x64.zip)
 
 v0.3.0及更早版本需要最后手动升级一次：先备份个人资料，再按[升级步骤](docs/local-guide.md#升级程序)迁移。之后支持在程序内确认下载、安装和重启。仅导入题库包不会升级程序功能。
 
@@ -33,7 +33,9 @@ v0.3.0及更早版本需要最后手动升级一次：先备份个人资料，�
 
 现有题库含2009—2025年469条题目、287张裁切图。后续期末题可使用同一题库结构，见[题库维护](docs/questions.md)。不分发原PDF、整页扫描或历史AI答案草稿。
 
-后续设想见[更新计划](docs/roadmap.md)：历年章节热力图与B站讲解入口仅列入计划，尚未实现。
+考点分析采用2024年842统考大纲与教材目录，共18章、97知识点、52类训练任务。综合题涉及多个知识点，原题号不变；分值目前仅录入2025年，其余未标注，不可据此比较完整历年分值。视频链接尚待作者提供。[统计口径](docs/analysis-design.md) · [作者视频维护](docs/video-guide.md) · [更新日志](CHANGELOG.md) · [后续计划](docs/roadmap.md)
+
+v0.4.0用户请先在更新中心升级程序，再安装题库r2；只更新程序不会自动替换原题库。
 
 ## 从源码运行
 

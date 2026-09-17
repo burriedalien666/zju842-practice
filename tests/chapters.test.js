@@ -14,7 +14,7 @@ const catalog = JSON.parse(
 test("all existing questions have exactly one chapter without renumbering", () => {
   const chapters = buildChapters(catalog);
   assert.equal(chapters.filter((c) => c.subject === "signals").length, 7);
-  assert.equal(chapters.filter((c) => c.subject === "digital").length, 9);
+  assert.equal(chapters.filter((c) => c.subject === "digital").length, 11);
   const mapped = chapters.flatMap((c) =>
     chapterQuestions(c, catalog.questions).map((q) => q.id),
   );
@@ -26,7 +26,7 @@ test("all existing questions have exactly one chapter without renumbering", () =
         c.sections.flatMap((s) => s.types.map((t) => t.id)),
       ),
     ).size,
-    catalog.types.length,
+    catalog.curriculum.trainingTypes.length,
   );
 });
 test("mixed legacy types are split by question and scoped filters stay consistent", () => {
@@ -76,12 +76,12 @@ test("frequency applications and hazards follow their chapters; 842 supplements 
     ["A7.1", "s5"],
     ["A5.1", "s6"],
     ["B3.2", "d4"],
-    ["B10.5", "d7"],
+    ["B10.5", "d12"],
     ["B11.1", "d8"],
     ["B12.1", "d9"],
   ])
     assert.equal(chapterForType(chapters, type).id, chapter);
-  assert.equal(chapterForType(chapters, "B11.1").supplement, true);
+  assert.notEqual(chapterForType(chapters, "B11.1").supplement, true);
 });
 test("new imported types remain available instead of disappearing", () => {
   const chapters = buildChapters({

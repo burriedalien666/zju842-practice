@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { validateCurriculum } from "../src/curriculum.js";
 
 export function validateCatalog(catalog) {
   if (
@@ -63,6 +64,7 @@ export function validateCatalog(catalog) {
     }
     ids.add(q.id);
   }
+  validateCurriculum(catalog);
   return catalog;
 }
 

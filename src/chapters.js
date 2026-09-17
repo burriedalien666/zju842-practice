@@ -1,5 +1,10 @@
-// 章节顺序参考用户提供的2020年905单考大纲；842已有真题全部保留。
+// 新题库采用其内置2024统考考点目录；以下旧目录仅兼容未更新的题库。
 import { isDue } from "./review.js";
+import {
+  curriculumChapters,
+  matchesTraining,
+  filterLabel,
+} from "./curriculum.js";
 export const CHAPTERS = [
   {
     id: "s1",
@@ -207,6 +212,7 @@ const QUESTION_CHAPTERS = {
   "2024|四|(3)": "s4",
 };
 export function buildChapters(catalog) {
+  if (catalog.curriculum) return curriculumChapters(catalog);
   const assigned = new Set();
   const chapters = CHAPTERS.map((chapter) => {
     const types = catalog.types.filter(
@@ -326,10 +332,17 @@ export function filterQuestions(
       type = typeMap.get(q.typeId);
     return (
       q.subject === filters.subject &&
+      (!scope ||
+        !filters.questionIds?.length ||
+        filters.questionIds.includes(q.id)) &&
       (!filters.source || q.sourceKind === filters.source) &&
       (!filters.year || q.year === Number(filters.year)) &&
-      (!scope || !filters.chapter || chapter?.id === filters.chapter) &&
-      (!scope || !filters.type || q.typeId === filters.type) &&
+      (!scope ||
+        !filters.chapter ||
+        chapter?.id === filters.chapter ||
+        (filters.type?.startsWith("knowledge:") &&
+          filterLabel(catalog, filters.type)?.chapter === filters.chapter)) &&
+      (!scope || matchesTraining(q, filters.type)) &&
       (!filters.status ||
         (filters.status === "star"
           ? r.star
@@ -340,7 +353,7 @@ export function filterQuestions(
               : r.state === filters.status)) &&
       (!filters.list || list?.ids.includes(q.id)) &&
       (!search ||
-        `${q.id} ${q.title} ${q.number} ${q.year} ${q.tags.join(" ")} ${type?.title || ""} ${chapter?.title || ""}`
+        `${q.id} ${q.title} ${q.number} ${q.year} ${q.tags.join(" ")} ${type?.title || ""} ${chapter?.title || ""} ${(q.knowledgeIds || []).map((id) => filterLabel(catalog, "knowledge:" + id)?.title || "").join(" ")} ${(q.trainingIds || []).map((id) => filterLabel(catalog, "training:" + id)?.title || "").join(" ")}`
           .toLowerCase()
           .includes(search))
     );

@@ -6,7 +6,7 @@ import {writeZip} from '../server/packs.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const target=path.resolve(process.argv[2]||path.join(root,'releases','zju842-source-review.zip'));
 const allowedDirs=['src','server','scripts','tests','docs','public','.github'];
-const allowedFiles=['package.json','package-lock.json','index.html','vite.config.js','README.md','LICENSE','CONTENT-NOTICE.md','.gitignore','.gitattributes','.dockerignore','.env.example','Dockerfile','compose.yaml','render.yaml'];
+const allowedFiles=['package.json','package-lock.json','index.html','vite.config.js','README.md','CHANGELOG.md','LICENSE','CONTENT-NOTICE.md','.gitignore','.gitattributes','.dockerignore','.env.example','Dockerfile','compose.yaml','render.yaml'];
 const entries=[];
 function add(relative){
   const file=path.join(root,relative),stat=fs.lstatSync(file);

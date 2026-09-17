@@ -1,8 +1,8 @@
 {
   "version": 1,
   "libraryId": "zju842",
-  "libraryRevision": 1,
-  "edition": "2026-09-17",
+  "libraryRevision": 2,
+  "edition": "2026-09-18 · 考点与训练分类",
   "types": [
     {
       "id": "A1.1",
@@ -713,6 +713,13 @@
           "height": 103,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -736,6 +743,13 @@
           "height": 113,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -760,6 +774,14 @@
           "height": 144,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -784,6 +806,14 @@
           "height": 88,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.inverse",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -808,6 +838,13 @@
           "height": 161,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -832,6 +869,14 @@
           "height": 309,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.series",
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-series"
       ]
     },
     {
@@ -862,6 +907,14 @@
           "height": 302,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -893,6 +946,15 @@
           "height": 302,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -923,6 +985,14 @@
           "height": 302,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -946,6 +1016,15 @@
           "height": 308,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s6.limits"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -970,6 +1049,14 @@
           "height": 308,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -994,6 +1081,14 @@
           "height": 379,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -1018,6 +1113,13 @@
           "height": 379,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -1041,6 +1143,13 @@
           "height": 161,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -1064,6 +1173,13 @@
           "height": 161,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -1095,6 +1211,13 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -1126,6 +1249,16 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.interface",
+        "d3.output",
+        "d3.ttl",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-interface"
       ]
     },
     {
@@ -1150,6 +1283,13 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -1174,6 +1314,14 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder",
+        "d4.encoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -1197,6 +1345,13 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.arithmetic"
+      ],
+      "trainingIds": [
+        "d-arithmetic"
       ]
     },
     {
@@ -1223,6 +1378,18 @@
           "height": 631,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d6.excitation",
+        "d7.design",
+        "d1.code",
+        "d7.startup",
+        "d7.state"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -1254,6 +1421,14 @@
           "height": 1445,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.shift",
+        "d10.sequence"
+      ],
+      "trainingIds": [
+        "d-sequence"
       ]
     },
     {
@@ -1280,6 +1455,13 @@
           "height": 113,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -1305,6 +1487,13 @@
           "height": 326,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -1336,6 +1525,13 @@
           "height": 230,
           "caption": "本小题对应的原图（图2）"
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -1360,6 +1556,13 @@
           "height": 171,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -1383,6 +1586,14 @@
           "height": 100,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.transform",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-transform"
       ]
     },
     {
@@ -1408,6 +1619,14 @@
           "height": 65,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.inverse",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -1437,6 +1656,16 @@
           "height": 82,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s2.equation",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -1466,6 +1695,14 @@
           "height": 82,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -1495,6 +1732,14 @@
           "height": 82,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -1518,6 +1763,14 @@
           "height": 288,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -1541,6 +1794,15 @@
           "height": 288,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s6.function",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -1565,6 +1827,15 @@
           "height": 288,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.response",
+        "s3.eigen",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -1589,6 +1860,14 @@
           "height": 565,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.simulation",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-digital"
       ]
     },
     {
@@ -1615,6 +1894,14 @@
           "height": 565,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.inverseSystem",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-inverse-system"
       ]
     },
     {
@@ -1638,6 +1925,14 @@
           "height": 267,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -1662,6 +1957,14 @@
           "height": 267,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -1685,6 +1988,14 @@
           "height": 267,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -1716,6 +2027,14 @@
           "height": 334,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos",
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -1741,6 +2060,13 @@
           "height": 385,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -1765,6 +2091,15 @@
           "height": 672,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -1789,6 +2124,14 @@
           "height": 672,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -1821,6 +2164,15 @@
           "height": 482,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state",
+        "d4.arithmetic",
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -1847,6 +2199,15 @@
           "height": 963,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d10.sequence",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-sequence"
       ]
     },
     {
@@ -1870,6 +2231,13 @@
           "height": 107,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -1895,6 +2263,13 @@
           "height": 321,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.identification"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -1919,6 +2294,13 @@
           "height": 177,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -1942,6 +2324,13 @@
           "height": 177,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -1965,6 +2354,16 @@
           "height": 244,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s6.limits",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -1989,6 +2388,15 @@
           "height": 190,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.transform",
+        "s7.roc",
+        "s5.multirate"
+      ],
+      "trainingIds": [
+        "s-transform"
       ]
     },
     {
@@ -2018,6 +2426,14 @@
           "height": 182,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -2047,6 +2463,14 @@
           "height": 182,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -2076,6 +2500,14 @@
           "height": 182,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -2100,6 +2532,17 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s6.function",
+        "s6.roc",
+        "s2.equation",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -2123,6 +2566,13 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -2147,6 +2597,14 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -2171,6 +2629,14 @@
           "height": 531,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -2195,6 +2661,15 @@
           "height": 531,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -2219,6 +2694,14 @@
           "height": 531,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -2242,6 +2725,13 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2265,6 +2755,13 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -2288,6 +2785,13 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -2311,6 +2815,13 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2342,6 +2853,14 @@
           "height": 105,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -2367,6 +2886,16 @@
           "height": 584,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d6.excitation",
+        "d7.design",
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -2393,6 +2922,14 @@
           "height": 510,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.shift",
+        "d10.sequence"
+      ],
+      "trainingIds": [
+        "d-sequence"
       ]
     },
     {
@@ -2418,6 +2955,13 @@
           "height": 246,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -2442,6 +2986,13 @@
           "height": 246,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -2465,6 +3016,13 @@
           "height": 273,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -2488,6 +3046,14 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.transform",
+        "s6.unilateral"
+      ],
+      "trainingIds": [
+        "s-transform"
       ]
     },
     {
@@ -2511,6 +3077,13 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -2534,6 +3107,14 @@
           "height": 120,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -2558,6 +3139,16 @@
           "height": 217,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.parseval",
+        "s4.symmetry",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -2588,6 +3179,13 @@
           "height": 110,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -2618,6 +3216,13 @@
           "height": 110,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -2641,6 +3246,15 @@
           "height": 255,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.roc",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -2664,6 +3278,17 @@
           "height": 255,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.roc",
+        "s2.equation",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -2688,6 +3313,15 @@
           "height": 255,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.stability",
+        "s7.roc",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -2711,6 +3345,14 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -2734,6 +3376,14 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -2758,6 +3408,15 @@
           "height": 336,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.simulation",
+        "s5.alias",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-digital"
       ]
     },
     {
@@ -2781,6 +3440,13 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2805,6 +3471,13 @@
           "height": 47,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -2829,6 +3502,13 @@
           "height": 110,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -2853,6 +3533,13 @@
           "height": 50,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2876,6 +3563,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2899,6 +3593,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2922,6 +3623,13 @@
           "height": 47,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d1",
+      "knowledgeIds": [
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-code"
       ]
     },
     {
@@ -2945,6 +3653,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -2969,6 +3684,13 @@
           "height": 76,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -2993,6 +3715,13 @@
           "height": 53,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -3016,6 +3745,13 @@
           "height": 271,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -3039,6 +3775,14 @@
           "height": 271,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -3062,6 +3806,13 @@
           "height": 271,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -3086,6 +3837,15 @@
           "height": 191,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d6.excitation",
+        "d7.design"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -3109,6 +3869,14 @@
           "height": 191,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.startup",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -3134,6 +3902,14 @@
           "height": 810,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -3171,6 +3947,15 @@
           "height": 810,
           "caption": "本题引用的74LS161功能表及其所在原题"
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d10.counter",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -3207,6 +3992,14 @@
           "height": 810,
           "caption": "本题引用的74LS161功能表及其所在原题"
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.preset",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -3245,6 +4038,16 @@
           "height": 810,
           "caption": "本题引用的74LS161功能表及其所在原题"
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d10.counter",
+        "d8.schmitt",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -3270,6 +4073,15 @@
           "height": 859,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.latch",
+        "d6.clock",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -3293,6 +4105,13 @@
           "height": 243,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -3316,6 +4135,14 @@
           "height": 243,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -3339,6 +4166,13 @@
           "height": 178,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -3362,6 +4196,13 @@
           "height": 178,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -3386,6 +4227,15 @@
           "height": 238,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.response",
+        "s3.eigen",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -3410,6 +4260,14 @@
           "height": 238,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.modulation",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-modulate"
       ]
     },
     {
@@ -3433,6 +4291,16 @@
           "height": 226,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s2.equation",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -3456,6 +4324,15 @@
           "height": 226,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s6.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -3480,6 +4357,15 @@
           "height": 226,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.inverseSystem",
+        "s6.function",
+        "s6.inverse"
+      ],
+      "trainingIds": [
+        "s-inverse-system"
       ]
     },
     {
@@ -3509,6 +4395,14 @@
           "height": 408,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -3539,6 +4433,13 @@
           "height": 408,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-step"
       ]
     },
     {
@@ -3569,6 +4470,15 @@
           "height": 408,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen",
+        "s4.series"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -3593,6 +4503,13 @@
           "height": 579,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -3617,6 +4534,13 @@
           "height": 579,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.simulation"
+      ],
+      "trainingIds": [
+        "s-digital"
       ]
     },
     {
@@ -3641,6 +4565,13 @@
           "height": 579,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -3664,6 +4595,13 @@
           "height": 372,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -3687,6 +4625,14 @@
           "height": 372,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -3710,6 +4656,14 @@
           "height": 372,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.dontcare",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-constraint"
       ]
     },
     {
@@ -3741,6 +4695,15 @@
           "height": 674,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.interface",
+        "d3.ttl",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-interface"
       ]
     },
     {
@@ -3772,6 +4735,13 @@
           "height": 674,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.interface"
+      ],
+      "trainingIds": [
+        "d-interface"
       ]
     },
     {
@@ -3797,6 +4767,14 @@
           "height": 380,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d11",
+      "knowledgeIds": [
+        "d11.waveform",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-waveform"
       ]
     },
     {
@@ -3821,6 +4799,16 @@
           "height": 146,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d10.sequence",
+        "d4.mux",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-sequence"
       ]
     },
     {
@@ -3852,6 +4840,15 @@
           "height": 687,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d4.decoder",
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -3883,6 +4880,16 @@
           "height": 683,
           "caption": "本题引用的前题器件图与功能表"
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d10.shift",
+        "d8.timer",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -3907,6 +4914,13 @@
           "height": 108,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -3930,6 +4944,14 @@
           "height": 95,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.impulse",
+        "s1.time"
+      ],
+      "trainingIds": [
+        "s-signal"
       ]
     },
     {
@@ -3954,6 +4976,14 @@
           "height": 303,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.signal",
+        "s3.series"
+      ],
+      "trainingIds": [
+        "s-signal"
       ]
     },
     {
@@ -3977,6 +5007,13 @@
           "height": 113,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.identification"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -4001,6 +5038,13 @@
           "height": 161,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-spectrum"
       ]
     },
     {
@@ -4024,6 +5068,13 @@
           "height": 66,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -4047,6 +5098,14 @@
           "height": 65,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.inverse",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -4071,6 +5130,16 @@
           "height": 58,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.roc",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -4100,6 +5169,14 @@
           "height": 152,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -4129,6 +5206,14 @@
           "height": 152,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -4153,6 +5238,13 @@
           "height": 521,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-spectrum"
       ]
     },
     {
@@ -4177,6 +5269,14 @@
           "height": 521,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.parseval"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -4201,6 +5301,14 @@
           "height": 521,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -4225,6 +5333,13 @@
           "height": 521,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -4248,6 +5363,15 @@
           "height": 435,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -4272,6 +5396,16 @@
           "height": 435,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen",
+        "s4.series",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -4297,6 +5431,14 @@
           "height": 337,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -4320,6 +5462,15 @@
           "height": 337,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -4343,6 +5494,14 @@
           "height": 337,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -4368,6 +5527,13 @@
           "height": 358,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.multirate"
+      ],
+      "trainingIds": [
+        "s-digital"
       ]
     },
     {
@@ -4392,6 +5558,14 @@
           "height": 358,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.multirate",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-digital"
       ]
     },
     {
@@ -4415,6 +5589,13 @@
           "height": 284,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.standard"
+      ],
+      "trainingIds": [
+        "d-standard"
       ]
     },
     {
@@ -4438,6 +5619,13 @@
           "height": 284,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -4461,6 +5649,13 @@
           "height": 284,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.standard"
+      ],
+      "trainingIds": [
+        "d-standard"
       ]
     },
     {
@@ -4484,6 +5679,13 @@
           "height": 284,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -4507,6 +5709,13 @@
           "height": 142,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -4530,6 +5739,13 @@
           "height": 142,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -4560,6 +5776,15 @@
           "height": 159,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -4590,6 +5815,14 @@
           "height": 159,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -4620,6 +5853,13 @@
           "height": 159,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.startup"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -4644,6 +5884,16 @@
           "height": 555,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.convert",
+        "d6.clock",
+        "d6.excitation",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -4668,6 +5918,16 @@
           "height": 555,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.convert",
+        "d6.clock",
+        "d6.excitation",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -4700,6 +5960,16 @@
           "height": 354,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state",
+        "d4.mux",
+        "d4.arithmetic",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -4731,6 +6001,13 @@
           "height": 354,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -4755,6 +6032,14 @@
           "height": 1091,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-oscillator"
       ]
     },
     {
@@ -4779,6 +6064,14 @@
           "height": 1091,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.waveform",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-waveform"
       ]
     },
     {
@@ -4804,6 +6097,14 @@
           "height": 1091,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -4827,6 +6128,13 @@
           "height": 97,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -4851,6 +6159,13 @@
           "height": 65,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -4875,6 +6190,13 @@
           "height": 289,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -4898,6 +6220,15 @@
           "height": 47,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.symmetry",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -4922,6 +6253,15 @@
           "height": 64,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.inverse",
+        "s7.roc",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -4946,6 +6286,15 @@
           "height": 225,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.filter",
+        "s4.response",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-filter"
       ]
     },
     {
@@ -4970,6 +6319,15 @@
           "height": 225,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.parseval",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -5000,6 +6358,17 @@
           "height": 278,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.roc",
+        "s7.realization",
+        "s7.limits"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -5030,6 +6399,13 @@
           "height": 278,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -5060,6 +6436,14 @@
           "height": 278,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -5084,6 +6468,13 @@
           "height": 424,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -5109,6 +6500,14 @@
           "height": 424,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -5133,6 +6532,14 @@
           "height": 581,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -5157,6 +6564,13 @@
           "height": 581,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -5181,6 +6595,15 @@
           "height": 581,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -5204,6 +6627,13 @@
           "height": 51,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -5227,6 +6657,14 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output",
+        "d3.ttl"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -5250,6 +6688,13 @@
           "height": 62,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -5273,6 +6718,13 @@
           "height": 50,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -5297,6 +6749,14 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d9",
+      "knowledgeIds": [
+        "d9.expand",
+        "d9.memory"
+      ],
+      "trainingIds": [
+        "d-memory"
       ]
     },
     {
@@ -5320,6 +6780,13 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -5343,6 +6810,13 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.arithmetic"
+      ],
+      "trainingIds": [
+        "d-arithmetic"
       ]
     },
     {
@@ -5366,6 +6840,13 @@
           "height": 49,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -5389,6 +6870,13 @@
           "height": 50,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -5412,6 +6900,13 @@
           "height": 41,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d1",
+      "knowledgeIds": [
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-code"
       ]
     },
     {
@@ -5436,6 +6931,13 @@
           "height": 675,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -5460,6 +6962,13 @@
           "height": 675,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -5483,6 +6992,13 @@
           "height": 675,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.standard"
+      ],
+      "trainingIds": [
+        "d-standard"
       ]
     },
     {
@@ -5507,6 +7023,13 @@
           "height": 675,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -5537,6 +7060,15 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d11",
+      "knowledgeIds": [
+        "d11.analysis",
+        "d6.excitation",
+        "d10.preset"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -5567,6 +7099,14 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d11",
+      "knowledgeIds": [
+        "d11.analysis",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -5597,6 +7137,14 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d11",
+      "knowledgeIds": [
+        "d11.waveform",
+        "d10.preset"
+      ],
+      "trainingIds": [
+        "d-waveform"
       ]
     },
     {
@@ -5622,6 +7170,16 @@
           "height": 1333,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d10.counter",
+        "d10.shift",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -5646,6 +7204,14 @@
           "height": 1333,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-oscillator"
       ]
     },
     {
@@ -5670,6 +7236,14 @@
           "height": 1333,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.preset",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -5694,6 +7268,13 @@
           "height": 1333,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -5718,6 +7299,13 @@
           "height": 1333,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -5742,6 +7330,13 @@
           "height": 61,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -5765,6 +7360,13 @@
           "height": 143,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -5789,6 +7391,14 @@
           "height": 272,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.series",
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-series"
       ]
     },
     {
@@ -5812,6 +7422,16 @@
           "height": 70,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.roc",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -5836,6 +7456,14 @@
           "height": 105,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.transform",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-transform"
       ]
     },
     {
@@ -5859,6 +7487,14 @@
           "height": 175,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.roc",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -5882,6 +7518,14 @@
           "height": 175,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -5911,6 +7555,13 @@
           "height": 81,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -5941,6 +7592,15 @@
           "height": 81,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s5.alias",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -5971,6 +7631,14 @@
           "height": 81,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -5995,6 +7663,14 @@
           "height": 491,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -6018,6 +7694,13 @@
           "height": 491,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-step"
       ]
     },
     {
@@ -6042,6 +7725,14 @@
           "height": 491,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -6065,6 +7756,13 @@
           "height": 489,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -6088,6 +7786,13 @@
           "height": 489,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -6112,6 +7817,13 @@
           "height": 489,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -6136,6 +7848,15 @@
           "height": 236,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.design",
+        "d2.dontcare",
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-combinational"
       ]
     },
     {
@@ -6160,6 +7881,14 @@
           "height": 236,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux",
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -6183,6 +7912,14 @@
           "height": 236,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder",
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -6207,6 +7944,14 @@
           "height": 148,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-shaping"
       ]
     },
     {
@@ -6230,6 +7975,13 @@
           "height": 213,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -6253,6 +8005,13 @@
           "height": 213,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -6277,6 +8036,13 @@
           "height": 651,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -6301,6 +8067,14 @@
           "height": 651,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -6330,6 +8104,15 @@
           "height": 63,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -6359,6 +8142,15 @@
           "height": 63,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s6.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -6389,6 +8181,15 @@
           "height": 63,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -6418,6 +8219,13 @@
           "height": 63,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -6441,6 +8249,13 @@
           "height": 543,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -6464,6 +8279,14 @@
           "height": 543,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.stability",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -6488,6 +8311,13 @@
           "height": 543,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -6511,6 +8341,14 @@
           "height": 543,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.stability",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -6535,6 +8373,13 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -6559,6 +8404,14 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.response"
+      ],
+      "trainingIds": [
+        "s-modulate"
       ]
     },
     {
@@ -6589,6 +8442,14 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap",
+        "d1.code"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -6618,6 +8479,13 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -6648,6 +8516,13 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -6672,6 +8547,13 @@
           "height": 964,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.encoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -6696,6 +8578,13 @@
           "height": 964,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.encoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -6720,6 +8609,13 @@
           "height": 964,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.encoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -6745,6 +8641,16 @@
           "height": 369,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation",
+        "d2.dontcare",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -6769,6 +8675,15 @@
           "height": 369,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -6793,6 +8708,13 @@
           "height": 789,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -6817,6 +8739,15 @@
           "height": 789,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm",
+        "d6.excitation",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -6841,6 +8772,14 @@
           "height": 789,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -6865,6 +8804,15 @@
           "height": 642,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d10.counter",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -6889,6 +8837,14 @@
           "height": 642,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d4.decoder"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -6913,6 +8869,14 @@
           "height": 642,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-oscillator"
       ]
     },
     {
@@ -6936,6 +8900,13 @@
           "height": 145,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -6959,6 +8930,13 @@
           "height": 145,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -6983,6 +8961,13 @@
           "height": 65,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -7007,6 +8992,13 @@
           "height": 309,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -7031,6 +9023,14 @@
           "height": 53,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.inverse",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -7055,6 +9055,14 @@
           "height": 528,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -7079,6 +9087,13 @@
           "height": 528,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -7103,6 +9118,14 @@
           "height": 528,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.parseval"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -7126,6 +9149,17 @@
           "height": 275,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s6.function",
+        "s6.roc",
+        "s2.equation",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -7149,6 +9183,13 @@
           "height": 275,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -7172,6 +9213,14 @@
           "height": 275,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -7196,6 +9245,15 @@
           "height": 275,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.response",
+        "s3.eigen",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -7220,6 +9278,14 @@
           "height": 687,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -7244,6 +9310,14 @@
           "height": 687,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -7268,6 +9342,13 @@
           "height": 687,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -7292,6 +9373,15 @@
           "height": 468,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -7316,6 +9406,14 @@
           "height": 468,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.modulation",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-modulate"
       ]
     },
     {
@@ -7339,6 +9437,14 @@
           "height": 354,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -7363,6 +9469,14 @@
           "height": 354,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -7386,6 +9500,14 @@
           "height": 239,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.design",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-combinational"
       ]
     },
     {
@@ -7409,6 +9531,13 @@
           "height": 239,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -7433,6 +9562,15 @@
           "height": 245,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d6.excitation",
+        "d7.design"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -7457,6 +9595,15 @@
           "height": 245,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm",
+        "d10.counter"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -7480,6 +9627,14 @@
           "height": 256,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -7503,6 +9658,14 @@
           "height": 256,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -7526,6 +9689,13 @@
           "height": 256,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -7549,6 +9719,13 @@
           "height": 341,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -7572,6 +9749,13 @@
           "height": 341,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -7595,6 +9779,14 @@
           "height": 109,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties",
+        "s5.multirate"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -7618,6 +9810,13 @@
           "height": 63,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -7642,6 +9841,14 @@
           "height": 109,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.series",
+        "s4.parseval"
+      ],
+      "trainingIds": [
+        "s-series"
       ]
     },
     {
@@ -7666,6 +9873,13 @@
           "height": 468,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -7690,6 +9904,14 @@
           "height": 468,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.parseval"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -7714,6 +9936,14 @@
           "height": 468,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -7743,6 +9973,14 @@
           "height": 185,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -7773,6 +10011,14 @@
           "height": 185,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -7803,6 +10049,15 @@
           "height": 185,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -7827,6 +10082,15 @@
           "height": 517,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.roc",
+        "s7.limits"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -7851,6 +10115,14 @@
           "height": 517,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -7875,6 +10147,15 @@
           "height": 517,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -7899,6 +10180,14 @@
           "height": 517,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -7924,6 +10213,16 @@
           "height": 360,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.response",
+        "s3.eigen",
+        "s3.series",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -7947,6 +10246,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.complete"
+      ],
+      "trainingIds": [
+        "d-complete"
       ]
     },
     {
@@ -7970,6 +10276,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -7993,6 +10306,14 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-shaping"
       ]
     },
     {
@@ -8016,6 +10337,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -8039,6 +10367,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.decoder"
+      ],
+      "trainingIds": [
+        "d-decode"
       ]
     },
     {
@@ -8062,6 +10397,15 @@
           "height": 47,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.oscillator",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-shaping"
       ]
     },
     {
@@ -8085,6 +10429,13 @@
           "height": 48,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -8115,6 +10466,14 @@
           "height": 70,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux",
+        "d4.arithmetic"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -8139,6 +10498,14 @@
           "height": 559,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.fsm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -8163,6 +10530,14 @@
           "height": 559,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.minimize",
+        "d12.fsm"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -8194,6 +10569,14 @@
           "height": 559,
           "caption": "本题引用的前题状态图与条件"
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -8218,6 +10601,16 @@
           "height": 721,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d3.cmos",
+        "d8.timer",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -8242,6 +10635,14 @@
           "height": 721,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -8266,6 +10667,15 @@
           "height": 721,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d8.timer",
+        "d8.oscillator"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -8289,6 +10699,13 @@
           "height": 110,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -8313,6 +10730,13 @@
           "height": 68,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -8337,6 +10761,13 @@
           "height": 302,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -8362,6 +10793,16 @@
           "height": 65,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s6.roc",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -8386,6 +10827,15 @@
           "height": 181,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.parseval",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -8409,6 +10859,15 @@
           "height": 423,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s4.eigen",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -8432,6 +10891,16 @@
           "height": 423,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s2.equation",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -8455,6 +10924,15 @@
           "height": 423,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -8478,6 +10956,14 @@
           "height": 423,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -8501,6 +10987,15 @@
           "height": 272,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s3.eigen"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -8524,6 +11019,13 @@
           "height": 272,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -8548,6 +11050,13 @@
           "height": 272,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -8574,6 +11083,14 @@
           "height": 631,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.filter",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-filter"
       ]
     },
     {
@@ -8598,6 +11115,14 @@
           "height": 631,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.modulation",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-modulate"
       ]
     },
     {
@@ -8628,6 +11153,13 @@
           "height": 56,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -8658,6 +11190,14 @@
           "height": 56,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -8688,6 +11228,13 @@
           "height": 56,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -8718,6 +11265,14 @@
           "height": 56,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.standard",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-standard"
       ]
     },
     {
@@ -8743,6 +11298,14 @@
           "height": 623,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos",
+        "d3.output"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -8768,6 +11331,17 @@
           "height": 530,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state",
+        "d4.mux",
+        "d10.counter",
+        "d10.preset",
+        "d10.sequence"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -8799,6 +11373,14 @@
           "height": 239,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -8829,6 +11411,14 @@
           "height": 239,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -8859,6 +11449,14 @@
           "height": 239,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -8884,6 +11482,15 @@
           "height": 1206,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm",
+        "d6.excitation",
+        "d12.datapath"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -8908,6 +11515,15 @@
           "height": 1206,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm",
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -8931,6 +11547,13 @@
           "height": 207,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -8954,6 +11577,13 @@
           "height": 207,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -8977,6 +11607,14 @@
           "height": 113,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.series"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -9001,6 +11639,13 @@
           "height": 320,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -9024,6 +11669,15 @@
           "height": 66,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.inverse",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -9047,6 +11701,14 @@
           "height": 109,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.response",
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -9077,6 +11739,13 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-spectrum"
       ]
     },
     {
@@ -9107,6 +11776,13 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -9137,6 +11813,13 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -9167,6 +11850,14 @@
           "height": 283,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -9190,6 +11881,15 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s6.function",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -9213,6 +11913,15 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -9236,6 +11945,14 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -9260,6 +11977,16 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s6.roc",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -9284,6 +12011,16 @@
           "height": 499,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.roc",
+        "s7.limits",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -9308,6 +12045,13 @@
           "height": 499,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-step"
       ]
     },
     {
@@ -9332,6 +12076,14 @@
           "height": 499,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -9362,6 +12114,13 @@
           "height": 62,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -9392,6 +12151,14 @@
           "height": 62,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.reconstruct",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-reconstruct"
       ]
     },
     {
@@ -9415,6 +12182,13 @@
           "height": 252,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -9438,6 +12212,13 @@
           "height": 252,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -9461,6 +12242,13 @@
           "height": 252,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -9484,6 +12272,13 @@
           "height": 252,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -9508,6 +12303,13 @@
           "height": 656,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -9532,6 +12334,15 @@
           "height": 656,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.interface",
+        "d3.ttl",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-interface"
       ]
     },
     {
@@ -9556,6 +12367,15 @@
           "height": 475,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.latch",
+        "d6.clock",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -9580,6 +12400,15 @@
           "height": 475,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.convert",
+        "d6.clock",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -9604,6 +12433,14 @@
           "height": 475,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d6",
+      "knowledgeIds": [
+        "d6.convert",
+        "d6.clock"
+      ],
+      "trainingIds": [
+        "d-flipflop"
       ]
     },
     {
@@ -9628,6 +12465,14 @@
           "height": 737,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-oscillator"
       ]
     },
     {
@@ -9652,6 +12497,14 @@
           "height": 737,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.combined",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-combined"
       ]
     },
     {
@@ -9676,6 +12529,15 @@
           "height": 700,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm",
+        "d6.excitation",
+        "d4.decoder"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -9700,6 +12562,14 @@
           "height": 700,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -9724,6 +12594,13 @@
           "height": 68,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -9748,6 +12625,14 @@
           "height": 59,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.transform",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-transform"
       ]
     },
     {
@@ -9771,6 +12656,14 @@
           "height": 116,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -9794,6 +12687,15 @@
           "height": 111,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.symmetry",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -9817,6 +12719,14 @@
           "height": 109,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.roc",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -9841,6 +12751,14 @@
           "height": 515,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.stability",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-roc"
       ]
     },
     {
@@ -9865,6 +12783,14 @@
           "height": 515,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -9889,6 +12815,13 @@
           "height": 515,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse"
+      ],
+      "trainingIds": [
+        "s-step"
       ]
     },
     {
@@ -9913,6 +12846,15 @@
           "height": 515,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -9943,6 +12885,16 @@
           "height": 371,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s6.limits",
+        "s6.inverse"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -9973,6 +12925,14 @@
           "height": 371,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -10003,6 +12963,13 @@
           "height": 371,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
       ]
     },
     {
@@ -10027,6 +12994,14 @@
           "height": 375,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -10051,6 +13026,13 @@
           "height": 375,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -10074,6 +13056,13 @@
           "height": 195,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-proof"
       ]
     },
     {
@@ -10097,6 +13086,13 @@
           "height": 195,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -10120,6 +13116,14 @@
           "height": 195,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.design",
+        "d2.laws"
+      ],
+      "trainingIds": [
+        "d-combinational"
       ]
     },
     {
@@ -10143,6 +13147,13 @@
           "height": 402,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -10167,6 +13178,13 @@
           "height": 402,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-gate"
       ]
     },
     {
@@ -10197,6 +13215,14 @@
           "height": 353,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state",
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -10227,6 +13253,15 @@
           "height": 353,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.minimize",
+        "d12.fsm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-fsm"
       ]
     },
     {
@@ -10251,6 +13286,14 @@
           "height": 696,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d3.ttl"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -10276,6 +13319,13 @@
           "height": 696,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -10300,6 +13350,14 @@
           "height": 696,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -10323,6 +13381,14 @@
           "height": 396,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -10347,6 +13413,14 @@
           "height": 396,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -10370,6 +13444,14 @@
           "height": 153,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.impulse",
+        "s1.time"
+      ],
+      "trainingIds": [
+        "s-signal"
       ]
     },
     {
@@ -10394,6 +13476,13 @@
           "height": 153,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -10418,6 +13507,13 @@
           "height": 105,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -10441,6 +13537,14 @@
           "height": 109,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.filter"
+      ],
+      "trainingIds": [
+        "s-fourier"
       ]
     },
     {
@@ -10464,6 +13568,13 @@
           "height": 178,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -10487,6 +13598,13 @@
           "height": 178,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -10511,6 +13629,13 @@
           "height": 124,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.series"
+      ],
+      "trainingIds": [
+        "s-series"
       ]
     },
     {
@@ -10534,6 +13659,18 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s3.eigen",
+        "s2.equation",
+        "s6.realization",
+        "s6.limits"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -10557,6 +13694,13 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
       ]
     },
     {
@@ -10580,6 +13724,14 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -10604,6 +13756,14 @@
           "height": 307,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -10634,6 +13794,15 @@
           "height": 572,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.limits",
+        "s7.stability"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -10664,6 +13833,14 @@
           "height": 572,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -10694,6 +13871,15 @@
           "height": 572,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.response",
+        "s4.eigen",
+        "s4.series"
+      ],
+      "trainingIds": [
+        "s-response"
       ]
     },
     {
@@ -10718,6 +13904,13 @@
           "height": 415,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.alias"
+      ],
+      "trainingIds": [
+        "s-sampling-spectrum"
       ]
     },
     {
@@ -10743,6 +13936,15 @@
           "height": 415,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.sampling",
+        "s5.alias",
+        "s5.reconstruct"
+      ],
+      "trainingIds": [
+        "s-sampling"
       ]
     },
     {
@@ -10766,6 +13968,14 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -10789,6 +13999,14 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux",
+        "d2.dontcare"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -10812,6 +14030,13 @@
           "height": 296,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -10842,6 +14067,13 @@
           "height": 416,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -10872,6 +14104,13 @@
           "height": 416,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -10896,6 +14135,15 @@
           "height": 342,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d7",
+      "knowledgeIds": [
+        "d7.state",
+        "d6.excitation",
+        "d7.startup"
+      ],
+      "trainingIds": [
+        "d-state"
       ]
     },
     {
@@ -10920,6 +14168,13 @@
           "height": 450,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-shaping"
       ]
     },
     {
@@ -10944,6 +14199,13 @@
           "height": 450,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-shaping"
       ]
     },
     {
@@ -10968,6 +14230,14 @@
           "height": 450,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-oscillator"
       ]
     },
     {
@@ -10998,6 +14268,14 @@
           "height": 1445,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -11028,6 +14306,14 @@
           "height": 1445,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -11051,6 +14337,15 @@
           "height": 112,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s6.stability"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -11075,6 +14370,13 @@
           "height": 165,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.identification"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -11099,6 +14401,14 @@
           "height": 62,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.inverse",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-inverse"
       ]
     },
     {
@@ -11123,6 +14433,14 @@
           "height": 173,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.series",
+        "s3.parseval"
+      ],
+      "trainingIds": [
+        "s-series"
       ]
     },
     {
@@ -11147,6 +14465,13 @@
           "height": 466,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -11171,6 +14496,13 @@
           "height": 466,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
       ]
     },
     {
@@ -11195,6 +14527,14 @@
           "height": 466,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.transform",
+        "s4.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
       ]
     },
     {
@@ -11225,6 +14565,15 @@
           "height": 412,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.inverse",
+        "s3.eigen"
+      ],
+      "trainingIds": [
+        "s-impulse"
       ]
     },
     {
@@ -11255,6 +14604,14 @@
           "height": 412,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -11285,6 +14642,15 @@
           "height": 412,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctinitial",
+        "s2.equation",
+        "s6.roc"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -11309,6 +14675,14 @@
           "height": 446,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s4.eigen"
+      ],
+      "trainingIds": [
+        "s-function"
       ]
     },
     {
@@ -11332,6 +14706,14 @@
           "height": 446,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.realization",
+        "s2.equation"
+      ],
+      "trainingIds": [
+        "s-equation"
       ]
     },
     {
@@ -11355,6 +14737,14 @@
           "height": 446,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.filter",
+        "s4.response"
+      ],
+      "trainingIds": [
+        "s-filter"
       ]
     },
     {
@@ -11378,6 +14768,15 @@
           "height": 446,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
       ]
     },
     {
@@ -11402,6 +14801,14 @@
           "height": 373,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-identify"
       ]
     },
     {
@@ -11425,6 +14832,14 @@
           "height": 373,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-properties"
       ]
     },
     {
@@ -11450,6 +14865,14 @@
           "height": 373,
           "caption": ""
         }
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.modulation",
+        "s3.filter"
+      ],
+      "trainingIds": [
+        "s-modulate"
       ]
     },
     {
@@ -11479,6 +14902,13 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
       ]
     },
     {
@@ -11509,6 +14939,13 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
       ]
     },
     {
@@ -11538,6 +14975,13 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.hazard"
+      ],
+      "trainingIds": [
+        "d-hazard"
       ]
     },
     {
@@ -11567,6 +15011,14 @@
           "height": 221,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.dontcare",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-constraint"
       ]
     },
     {
@@ -11591,6 +15043,13 @@
           "height": 241,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.design"
+      ],
+      "trainingIds": [
+        "d-combinational"
       ]
     },
     {
@@ -11614,6 +15073,14 @@
           "height": 241,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.design",
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-combinational"
       ]
     },
     {
@@ -11639,6 +15106,18 @@
           "height": 191,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d6.excitation",
+        "d7.design",
+        "d7.startup",
+        "d10.preset",
+        "d7.state"
+      ],
+      "trainingIds": [
+        "d-counter"
       ]
     },
     {
@@ -11663,6 +15142,14 @@
           "height": 719,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -11687,6 +15174,14 @@
           "height": 719,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.mono",
+        "d8.timer"
+      ],
+      "trainingIds": [
+        "d-mono"
       ]
     },
     {
@@ -11717,6 +15212,14 @@
           "height": 1445,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.datapath",
+        "d10.shift"
+      ],
+      "trainingIds": [
+        "d-controller"
       ]
     },
     {
@@ -11747,6 +15250,14 @@
           "height": 1445,
           "caption": ""
         }
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
       ]
     },
     {
@@ -11770,7 +15281,19 @@
           "height": 96,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s1",
+      "knowledgeIds": [
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-properties"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|一|2",
@@ -11794,7 +15317,19 @@
           "height": 85,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-invfourier"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|一|3",
@@ -11819,7 +15354,20 @@
           "height": 227,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s4",
+      "knowledgeIds": [
+        "s4.series",
+        "s4.parseval"
+      ],
+      "trainingIds": [
+        "s-series"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|一|4",
@@ -11843,7 +15391,22 @@
           "height": 73,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv",
+        "s2.equation",
+        "s6.transform",
+        "s1.properties"
+      ],
+      "trainingIds": [
+        "s-convolution"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|二|(1)",
@@ -11867,7 +15430,19 @@
           "height": 204,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-fourier"
+      ],
+      "score": {
+        "points": 3,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|二|(2)",
@@ -11890,7 +15465,19 @@
           "height": 204,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform"
+      ],
+      "trainingIds": [
+        "s-integral"
+      ],
+      "score": {
+        "points": 3,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|二|(3)",
@@ -11914,7 +15501,20 @@
           "height": 204,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.transform",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-invfourier"
+      ],
+      "score": {
+        "points": 4,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|三|(1)",
@@ -11937,7 +15537,24 @@
           "height": 411,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.function",
+        "s6.roc",
+        "s6.realization",
+        "s6.inverse",
+        "s6.limits",
+        "s3.eigen"
+      ],
+      "trainingIds": [
+        "s-function"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|三|(2)",
@@ -11960,7 +15577,19 @@
           "height": 411,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s6",
+      "knowledgeIds": [
+        "s6.realization"
+      ],
+      "trainingIds": [
+        "s-realize"
+      ],
+      "score": {
+        "points": 4,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|三|(3)",
@@ -11984,7 +15613,20 @@
           "height": 411,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.impulse",
+        "s6.limits"
+      ],
+      "trainingIds": [
+        "s-step"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|三|(4)",
@@ -12008,7 +15650,19 @@
           "height": 411,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.ctconv"
+      ],
+      "trainingIds": [
+        "s-convolution"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 61,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|四|(1)",
@@ -12032,7 +15686,23 @@
           "height": 721,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s7",
+      "knowledgeIds": [
+        "s7.function",
+        "s7.roc",
+        "s4.eigen",
+        "s7.stability",
+        "s4.series"
+      ],
+      "trainingIds": [
+        "s-function"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 62,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|四|(2)",
@@ -12055,7 +15725,21 @@
           "height": 721,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.unilateral"
+      ],
+      "trainingIds": [
+        "s-initial"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 62,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|四|(3)",
@@ -12078,7 +15762,21 @@
           "height": 721,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s2",
+      "knowledgeIds": [
+        "s2.dtinitial",
+        "s2.equation",
+        "s7.roc"
+      ],
+      "trainingIds": [
+        "s-initial"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 62,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|五|(1)",
@@ -12102,7 +15800,21 @@
           "height": 726,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s3",
+      "knowledgeIds": [
+        "s3.filter",
+        "s3.transform",
+        "s3.response"
+      ],
+      "trainingIds": [
+        "s-filter"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 62,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|五|(2)",
@@ -12127,7 +15839,22 @@
           "height": 726,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "s5",
+      "knowledgeIds": [
+        "s5.modulation",
+        "s3.filter",
+        "s3.transform",
+        "s3.symmetry"
+      ],
+      "trainingIds": [
+        "s-modulate"
+      ],
+      "score": {
+        "points": 6,
+        "sourcePage": 62,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|六|(1)",
@@ -12150,7 +15877,19 @@
           "height": 416,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.standard"
+      ],
+      "trainingIds": [
+        "d-standard"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|六|(2)",
@@ -12173,7 +15912,19 @@
           "height": 416,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|六|(3)",
@@ -12197,7 +15948,19 @@
           "height": 416,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d2",
+      "knowledgeIds": [
+        "d2.kmap"
+      ],
+      "trainingIds": [
+        "d-simplify"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|六|(4)",
@@ -12220,7 +15983,19 @@
           "height": 416,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d4",
+      "knowledgeIds": [
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-mux"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|七|(1)",
@@ -12245,7 +16020,20 @@
           "height": 515,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.output",
+        "d3.ttl"
+      ],
+      "trainingIds": [
+        "d-gate"
+      ],
+      "score": {
+        "points": 6,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|七|(2)",
@@ -12269,7 +16057,20 @@
           "height": 515,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d3",
+      "knowledgeIds": [
+        "d3.cmos",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-gate"
+      ],
+      "score": {
+        "points": 6,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|八|—",
@@ -12295,7 +16096,21 @@
           "height": 567,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d10",
+      "knowledgeIds": [
+        "d10.counter",
+        "d10.sequence",
+        "d4.mux"
+      ],
+      "trainingIds": [
+        "d-sequence"
+      ],
+      "score": {
+        "points": 15,
+        "sourcePage": 63,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|九|(1)",
@@ -12320,7 +16135,20 @@
           "height": 835,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.oscillator",
+        "d8.schmitt"
+      ],
+      "trainingIds": [
+        "d-oscillator"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 64,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|九|(2)",
@@ -12345,7 +16173,20 @@
           "height": 835,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d8",
+      "knowledgeIds": [
+        "d8.schmitt",
+        "d3.cmos"
+      ],
+      "trainingIds": [
+        "d-shaping"
+      ],
+      "score": {
+        "points": 5,
+        "sourcePage": 64,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|十|(1)",
@@ -12370,7 +16211,20 @@
           "height": 674,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.asm",
+        "d6.excitation"
+      ],
+      "trainingIds": [
+        "d-controller"
+      ],
+      "score": {
+        "points": 10,
+        "sourcePage": 64,
+        "note": "原卷题头明确分值"
+      }
     },
     {
       "id": "2025|十|(2)",
@@ -12395,7 +16249,1125 @@
           "height": 674,
           "caption": ""
         }
-      ]
+      ],
+      "primaryChapter": "d12",
+      "knowledgeIds": [
+        "d12.micro",
+        "d12.asm"
+      ],
+      "trainingIds": [
+        "d-micro"
+      ],
+      "score": {
+        "points": 8,
+        "sourcePage": 64,
+        "note": "原卷题头明确分值"
+      }
     }
-  ]
+  ],
+  "curriculum": {
+    "version": 1,
+    "basis": "2024年842统考大纲；于慧敏学习指导；阎石第六版",
+    "chapters": [
+      {
+        "id": "s1",
+        "subject": "signals",
+        "title": "信号与系统基础",
+        "summary": "基本信号 · 信号运算 · 系统性质",
+        "number": "01",
+        "symbol": "∿"
+      },
+      {
+        "id": "s2",
+        "subject": "signals",
+        "title": "LTI系统时域分析",
+        "summary": "卷积 · 初始状态 · 响应分解",
+        "number": "02",
+        "symbol": "∿"
+      },
+      {
+        "id": "s3",
+        "subject": "signals",
+        "title": "连续时间频域分析",
+        "summary": "傅里叶级数与变换 · 连续频率响应",
+        "number": "03",
+        "symbol": "∿"
+      },
+      {
+        "id": "s4",
+        "subject": "signals",
+        "title": "离散时间频域分析",
+        "summary": "DTFS · DTFT · 离散频率响应",
+        "number": "04",
+        "symbol": "∿"
+      },
+      {
+        "id": "s5",
+        "subject": "signals",
+        "title": "采样、调制与通信",
+        "summary": "采样重建 · 多速率 · 调制解调",
+        "number": "05",
+        "symbol": "∿"
+      },
+      {
+        "id": "s6",
+        "subject": "signals",
+        "title": "拉普拉斯变换与连续系统",
+        "summary": "收敛域 · 系统函数 · 连续实现",
+        "number": "06",
+        "symbol": "∿"
+      },
+      {
+        "id": "s7",
+        "subject": "signals",
+        "title": "Z变换与离散系统",
+        "summary": "收敛域 · 系统函数 · 离散实现",
+        "number": "07",
+        "symbol": "∿"
+      },
+      {
+        "id": "d1",
+        "subject": "digital",
+        "title": "数制、编码与运算",
+        "summary": "进制 · BCD与格雷码 · 补码运算",
+        "number": "01",
+        "symbol": "▦"
+      },
+      {
+        "id": "d2",
+        "subject": "digital",
+        "title": "逻辑代数与函数化简",
+        "summary": "标准形式 · 逻辑规则 · 卡诺图",
+        "number": "02",
+        "symbol": "▦"
+      },
+      {
+        "id": "d3",
+        "subject": "digital",
+        "title": "TTL与CMOS门电路",
+        "summary": "器件原理 · 电平 · 接口与扇出",
+        "number": "03",
+        "symbol": "▦"
+      },
+      {
+        "id": "d4",
+        "subject": "digital",
+        "title": "组合逻辑与常用模块",
+        "summary": "分析设计 · 编码译码 · MUX · 竞争冒险",
+        "number": "04",
+        "symbol": "▦"
+      },
+      {
+        "id": "d6",
+        "subject": "digital",
+        "title": "锁存器与触发器",
+        "summary": "状态与激励 · 时钟结构 · 动态特性",
+        "number": "05",
+        "symbol": "▦"
+      },
+      {
+        "id": "d7",
+        "subject": "digital",
+        "title": "同步时序分析与设计",
+        "summary": "状态转移 · 同步时序 · 自启动",
+        "number": "06",
+        "symbol": "▦"
+      },
+      {
+        "id": "d10",
+        "subject": "digital",
+        "title": "寄存器、计数器与序列",
+        "summary": "移位与计数 · 模数扩展 · 序列发生",
+        "number": "07",
+        "symbol": "▦"
+      },
+      {
+        "id": "d11",
+        "subject": "digital",
+        "title": "异步时序分析与设计",
+        "summary": "异步计数 · 逐级触发 · 波形",
+        "number": "08",
+        "symbol": "▦"
+      },
+      {
+        "id": "d12",
+        "subject": "digital",
+        "title": "状态机与控制器",
+        "summary": "状态编码 · ASM · 硬布线与微程序",
+        "number": "09",
+        "symbol": "▦"
+      },
+      {
+        "id": "d9",
+        "subject": "digital",
+        "title": "存储器与可编程逻辑",
+        "summary": "RAM与ROM · 字位扩展 · PLD",
+        "number": "10",
+        "symbol": "▦"
+      },
+      {
+        "id": "d8",
+        "subject": "digital",
+        "title": "脉冲产生与波形变换",
+        "summary": "施密特 · 单稳态 · 振荡器 · 555",
+        "number": "11",
+        "symbol": "▦"
+      }
+    ],
+    "topics": [
+      {
+        "id": "s1.impulse",
+        "chapter": "s1",
+        "title": "冲激与阶跃信号"
+      },
+      {
+        "id": "s1.signal",
+        "chapter": "s1",
+        "title": "周期、奇偶与能量功率"
+      },
+      {
+        "id": "s1.time",
+        "chapter": "s1",
+        "title": "自变量变换与信号运算"
+      },
+      {
+        "id": "s1.properties",
+        "chapter": "s1",
+        "title": "线性、时不变、因果、稳定与记忆性"
+      },
+      {
+        "id": "s2.ctconv",
+        "chapter": "s2",
+        "title": "卷积积分"
+      },
+      {
+        "id": "s2.dtconv",
+        "chapter": "s2",
+        "title": "卷积和"
+      },
+      {
+        "id": "s2.impulse",
+        "chapter": "s2",
+        "title": "冲激响应与阶跃响应"
+      },
+      {
+        "id": "s2.ctinitial",
+        "chapter": "s2",
+        "title": "连续系统初始状态与响应分解"
+      },
+      {
+        "id": "s2.dtinitial",
+        "chapter": "s2",
+        "title": "离散系统初始状态与响应分解"
+      },
+      {
+        "id": "s2.identification",
+        "chapter": "s2",
+        "title": "由输入输出辨识系统"
+      },
+      {
+        "id": "s2.equation",
+        "chapter": "s2",
+        "title": "微分、差分与积分方程"
+      },
+      {
+        "id": "s3.eigen",
+        "chapter": "s3",
+        "title": "连续系统特征函数"
+      },
+      {
+        "id": "s3.series",
+        "chapter": "s3",
+        "title": "连续傅里叶级数与周期频谱"
+      },
+      {
+        "id": "s3.transform",
+        "chapter": "s3",
+        "title": "连续傅里叶变换及性质"
+      },
+      {
+        "id": "s3.symmetry",
+        "chapter": "s3",
+        "title": "频谱实虚、奇偶与幅相"
+      },
+      {
+        "id": "s3.parseval",
+        "chapter": "s3",
+        "title": "Parseval与能量功率"
+      },
+      {
+        "id": "s3.response",
+        "chapter": "s3",
+        "title": "连续频率响应与系统输出"
+      },
+      {
+        "id": "s3.filter",
+        "chapter": "s3",
+        "title": "理想滤波与无失真传输"
+      },
+      {
+        "id": "s4.eigen",
+        "chapter": "s4",
+        "title": "离散系统特征函数"
+      },
+      {
+        "id": "s4.series",
+        "chapter": "s4",
+        "title": "DTFS与周期序列"
+      },
+      {
+        "id": "s4.transform",
+        "chapter": "s4",
+        "title": "DTFT及性质"
+      },
+      {
+        "id": "s4.symmetry",
+        "chapter": "s4",
+        "title": "DTFT实虚、奇偶与周期性"
+      },
+      {
+        "id": "s4.parseval",
+        "chapter": "s4",
+        "title": "离散Parseval与能量功率"
+      },
+      {
+        "id": "s4.response",
+        "chapter": "s4",
+        "title": "离散频率响应与系统输出"
+      },
+      {
+        "id": "s4.filter",
+        "chapter": "s4",
+        "title": "数字滤波器的频响特性"
+      },
+      {
+        "id": "s5.sampling",
+        "chapter": "s5",
+        "title": "采样定理与采样率"
+      },
+      {
+        "id": "s5.alias",
+        "chapter": "s5",
+        "title": "频谱复制、混叠与带通采样"
+      },
+      {
+        "id": "s5.reconstruct",
+        "chapter": "s5",
+        "title": "重构、保持与补偿"
+      },
+      {
+        "id": "s5.multirate",
+        "chapter": "s5",
+        "title": "抽取与内插"
+      },
+      {
+        "id": "s5.simulation",
+        "chapter": "s5",
+        "title": "连续系统的离散实现"
+      },
+      {
+        "id": "s5.modulation",
+        "chapter": "s5",
+        "title": "幅度调制、解调与频分复用"
+      },
+      {
+        "id": "s5.pam",
+        "chapter": "s5",
+        "title": "脉冲幅度调制与时分复用"
+      },
+      {
+        "id": "s6.transform",
+        "chapter": "s6",
+        "title": "拉普拉斯变换对与性质"
+      },
+      {
+        "id": "s6.roc",
+        "chapter": "s6",
+        "title": "拉氏收敛域与零极点"
+      },
+      {
+        "id": "s6.inverse",
+        "chapter": "s6",
+        "title": "拉普拉斯反变换"
+      },
+      {
+        "id": "s6.unilateral",
+        "chapter": "s6",
+        "title": "单边拉氏变换与初始条件"
+      },
+      {
+        "id": "s6.function",
+        "chapter": "s6",
+        "title": "连续系统函数与参数辨识"
+      },
+      {
+        "id": "s6.stability",
+        "chapter": "s6",
+        "title": "连续系统因果性与稳定性"
+      },
+      {
+        "id": "s6.realization",
+        "chapter": "s6",
+        "title": "微分方程与积分器框图"
+      },
+      {
+        "id": "s6.limits",
+        "chapter": "s6",
+        "title": "连续初值与终值定理"
+      },
+      {
+        "id": "s6.inverseSystem",
+        "chapter": "s6",
+        "title": "连续逆系统"
+      },
+      {
+        "id": "s7.transform",
+        "chapter": "s7",
+        "title": "Z变换对与性质"
+      },
+      {
+        "id": "s7.roc",
+        "chapter": "s7",
+        "title": "Z域收敛域与零极点"
+      },
+      {
+        "id": "s7.inverse",
+        "chapter": "s7",
+        "title": "Z反变换"
+      },
+      {
+        "id": "s7.unilateral",
+        "chapter": "s7",
+        "title": "单边Z变换与初始条件"
+      },
+      {
+        "id": "s7.function",
+        "chapter": "s7",
+        "title": "离散系统函数与参数辨识"
+      },
+      {
+        "id": "s7.stability",
+        "chapter": "s7",
+        "title": "离散系统因果性与稳定性"
+      },
+      {
+        "id": "s7.realization",
+        "chapter": "s7",
+        "title": "差分方程与延时器框图"
+      },
+      {
+        "id": "s7.limits",
+        "chapter": "s7",
+        "title": "离散初值与终值定理"
+      },
+      {
+        "id": "s7.inverseSystem",
+        "chapter": "s7",
+        "title": "离散逆系统与回波消除"
+      },
+      {
+        "id": "d1.radix",
+        "chapter": "d1",
+        "title": "进制转换与二进制算术"
+      },
+      {
+        "id": "d1.complement",
+        "chapter": "d1",
+        "title": "原码、反码与补码"
+      },
+      {
+        "id": "d1.code",
+        "chapter": "d1",
+        "title": "BCD、余3码与格雷码"
+      },
+      {
+        "id": "d2.laws",
+        "chapter": "d2",
+        "title": "逻辑定律、异或与对偶"
+      },
+      {
+        "id": "d2.standard",
+        "chapter": "d2",
+        "title": "最小项、最大项与标准形式"
+      },
+      {
+        "id": "d2.kmap",
+        "chapter": "d2",
+        "title": "卡诺图与公式化简"
+      },
+      {
+        "id": "d2.dontcare",
+        "chapter": "d2",
+        "title": "无关项与约束"
+      },
+      {
+        "id": "d2.complete",
+        "chapter": "d2",
+        "title": "逻辑完备集与自定义运算"
+      },
+      {
+        "id": "d3.ttl",
+        "chapter": "d3",
+        "title": "TTL工作原理与输入输出特性"
+      },
+      {
+        "id": "d3.cmos",
+        "chapter": "d3",
+        "title": "CMOS与传输门"
+      },
+      {
+        "id": "d3.output",
+        "chapter": "d3",
+        "title": "OC、三态与高阻态"
+      },
+      {
+        "id": "d3.interface",
+        "chapter": "d3",
+        "title": "电平转换、拉灌电流与扇出"
+      },
+      {
+        "id": "d4.design",
+        "chapter": "d4",
+        "title": "组合逻辑分析与设计"
+      },
+      {
+        "id": "d4.encoder",
+        "chapter": "d4",
+        "title": "编码器与优先编码"
+      },
+      {
+        "id": "d4.decoder",
+        "chapter": "d4",
+        "title": "译码器与显示驱动"
+      },
+      {
+        "id": "d4.mux",
+        "chapter": "d4",
+        "title": "数据选择器与级联"
+      },
+      {
+        "id": "d4.arithmetic",
+        "chapter": "d4",
+        "title": "加法器与数值比较"
+      },
+      {
+        "id": "d4.hazard",
+        "chapter": "d4",
+        "title": "竞争冒险判别与消除"
+      },
+      {
+        "id": "d6.latch",
+        "chapter": "d6",
+        "title": "锁存器与SR约束"
+      },
+      {
+        "id": "d6.excitation",
+        "chapter": "d6",
+        "title": "RS/JK/D/T特性与激励方程"
+      },
+      {
+        "id": "d6.clock",
+        "chapter": "d6",
+        "title": "电平、边沿与主从结构"
+      },
+      {
+        "id": "d6.convert",
+        "chapter": "d6",
+        "title": "触发器功能转换"
+      },
+      {
+        "id": "d6.timing",
+        "chapter": "d6",
+        "title": "建立保持时间与动态特性"
+      },
+      {
+        "id": "d7.state",
+        "chapter": "d7",
+        "title": "驱动、状态、输出方程与状态图"
+      },
+      {
+        "id": "d7.waveform",
+        "chapter": "d7",
+        "title": "同步时序波形"
+      },
+      {
+        "id": "d7.design",
+        "chapter": "d7",
+        "title": "同步时序电路设计"
+      },
+      {
+        "id": "d7.startup",
+        "chapter": "d7",
+        "title": "无效状态与自启动"
+      },
+      {
+        "id": "d10.shift",
+        "chapter": "d10",
+        "title": "寄存器与移位状态循环"
+      },
+      {
+        "id": "d10.counter",
+        "chapter": "d10",
+        "title": "计数器设计与模数"
+      },
+      {
+        "id": "d10.preset",
+        "chapter": "d10",
+        "title": "计数器反馈置数、清零与级联"
+      },
+      {
+        "id": "d10.sequence",
+        "chapter": "d10",
+        "title": "序列发生与检测"
+      },
+      {
+        "id": "d11.analysis",
+        "chapter": "d11",
+        "title": "异步时钟与状态分析"
+      },
+      {
+        "id": "d11.waveform",
+        "chapter": "d11",
+        "title": "异步控制与时序波形"
+      },
+      {
+        "id": "d11.design",
+        "chapter": "d11",
+        "title": "异步计数器与时序设计"
+      },
+      {
+        "id": "d12.fsm",
+        "chapter": "d12",
+        "title": "状态机与状态编码"
+      },
+      {
+        "id": "d12.minimize",
+        "chapter": "d12",
+        "title": "状态化简与最少触发器"
+      },
+      {
+        "id": "d12.asm",
+        "chapter": "d12",
+        "title": "ASM与硬布线控制器"
+      },
+      {
+        "id": "d12.micro",
+        "chapter": "d12",
+        "title": "微指令、微程序与下地址逻辑"
+      },
+      {
+        "id": "d12.datapath",
+        "chapter": "d12",
+        "title": "控制器与数据通路"
+      },
+      {
+        "id": "d9.memory",
+        "chapter": "d9",
+        "title": "RAM/ROM结构与功能"
+      },
+      {
+        "id": "d9.expand",
+        "chapter": "d9",
+        "title": "容量、字扩展与位扩展"
+      },
+      {
+        "id": "d9.pld",
+        "chapter": "d9",
+        "title": "可编程逻辑器件与应用"
+      },
+      {
+        "id": "d8.schmitt",
+        "chapter": "d8",
+        "title": "施密特门限、回差与整形"
+      },
+      {
+        "id": "d8.mono",
+        "chapter": "d8",
+        "title": "单稳态与脉宽控制"
+      },
+      {
+        "id": "d8.oscillator",
+        "chapter": "d8",
+        "title": "多谐振荡与周期占空比"
+      },
+      {
+        "id": "d8.timer",
+        "chapter": "d8",
+        "title": "555定时器与应用"
+      },
+      {
+        "id": "d8.combined",
+        "chapter": "d8",
+        "title": "脉冲与数字模块联动"
+      }
+    ],
+    "trainingTypes": [
+      {
+        "id": "s-properties",
+        "subject": "signals",
+        "title": "判断系统性质与构造反例",
+        "legacyTypes": [
+          "A1.1"
+        ]
+      },
+      {
+        "id": "s-signal",
+        "subject": "signals",
+        "title": "分析信号性质与冲激运算",
+        "legacyTypes": [
+          "A1.2",
+          "A1.3"
+        ]
+      },
+      {
+        "id": "s-convolution",
+        "subject": "signals",
+        "title": "计算卷积与零状态响应",
+        "legacyTypes": [
+          "A2.1",
+          "A2.2",
+          "A2.8"
+        ]
+      },
+      {
+        "id": "s-identify",
+        "subject": "signals",
+        "title": "由输入输出反求系统或响应",
+        "legacyTypes": [
+          "A2.3",
+          "A2.7"
+        ]
+      },
+      {
+        "id": "s-initial",
+        "subject": "signals",
+        "title": "求初值响应并分解响应分量",
+        "legacyTypes": [
+          "A2.4",
+          "A2.5"
+        ]
+      },
+      {
+        "id": "s-step",
+        "subject": "signals",
+        "title": "求阶跃响应与稳态值",
+        "legacyTypes": [
+          "A2.6"
+        ]
+      },
+      {
+        "id": "s-fourier",
+        "subject": "signals",
+        "title": "用变换对与性质求频谱",
+        "legacyTypes": [
+          "A3.1",
+          "A4.1"
+        ]
+      },
+      {
+        "id": "s-invfourier",
+        "subject": "signals",
+        "title": "由频谱或实虚部反求信号",
+        "legacyTypes": [
+          "A3.2",
+          "A4.2"
+        ]
+      },
+      {
+        "id": "s-series",
+        "subject": "signals",
+        "title": "分析周期信号与傅里叶级数",
+        "legacyTypes": [
+          "A3.3",
+          "A3.6",
+          "A4.4",
+          "A4.5"
+        ]
+      },
+      {
+        "id": "s-integral",
+        "subject": "signals",
+        "title": "用频谱求积分、求和与能量",
+        "legacyTypes": [
+          "A3.4",
+          "A4.3"
+        ]
+      },
+      {
+        "id": "s-spectrum",
+        "subject": "signals",
+        "title": "判断幅相谱与频谱对称性",
+        "legacyTypes": [
+          "A3.5"
+        ]
+      },
+      {
+        "id": "s-inverse",
+        "subject": "signals",
+        "title": "结合收敛域求反变换",
+        "legacyTypes": [
+          "A5.1",
+          "A6.2"
+        ]
+      },
+      {
+        "id": "s-roc",
+        "subject": "signals",
+        "title": "联用零极点与收敛域判断性质",
+        "legacyTypes": [
+          "A5.2",
+          "A6.7"
+        ]
+      },
+      {
+        "id": "s-function",
+        "subject": "signals",
+        "title": "由方程、框图或条件重建系统函数",
+        "legacyTypes": [
+          "A5.3",
+          "A6.3",
+          "A5.8"
+        ]
+      },
+      {
+        "id": "s-equation",
+        "subject": "signals",
+        "title": "系统函数与微分、差分方程互换",
+        "legacyTypes": [
+          "A5.4",
+          "A6.4"
+        ]
+      },
+      {
+        "id": "s-impulse",
+        "subject": "signals",
+        "title": "由系统函数求冲激响应",
+        "legacyTypes": [
+          "A5.5",
+          "A6.5"
+        ]
+      },
+      {
+        "id": "s-realize",
+        "subject": "signals",
+        "title": "画系统框图与直接型结构",
+        "legacyTypes": [
+          "A5.6",
+          "A6.6"
+        ]
+      },
+      {
+        "id": "s-transform",
+        "subject": "signals",
+        "title": "应用拉氏与Z变换性质",
+        "legacyTypes": [
+          "A5.7",
+          "A6.1"
+        ]
+      },
+      {
+        "id": "s-sampling",
+        "subject": "signals",
+        "title": "确定采样率与混叠条件",
+        "legacyTypes": [
+          "A7.1",
+          "A7.6"
+        ]
+      },
+      {
+        "id": "s-sampling-spectrum",
+        "subject": "signals",
+        "title": "画采样与混叠频谱",
+        "legacyTypes": [
+          "A7.2"
+        ]
+      },
+      {
+        "id": "s-reconstruct",
+        "subject": "signals",
+        "title": "设计重构与保持补偿",
+        "legacyTypes": [
+          "A7.3"
+        ]
+      },
+      {
+        "id": "s-digital",
+        "subject": "signals",
+        "title": "连续系统数字实现与多速率等效",
+        "legacyTypes": [
+          "A7.4",
+          "A7.5"
+        ]
+      },
+      {
+        "id": "s-modulate",
+        "subject": "signals",
+        "title": "逐级分析调制、滤波与解调",
+        "legacyTypes": [
+          "A8.1",
+          "A8.2"
+        ]
+      },
+      {
+        "id": "s-response",
+        "subject": "signals",
+        "title": "求周期、谐波与指数激励响应",
+        "legacyTypes": [
+          "A9.1",
+          "A9.2",
+          "A9.5"
+        ]
+      },
+      {
+        "id": "s-inverse-system",
+        "subject": "signals",
+        "title": "设计逆系统与回波消除",
+        "legacyTypes": [
+          "A9.3"
+        ]
+      },
+      {
+        "id": "s-filter",
+        "subject": "signals",
+        "title": "判断滤波类型并设计等效滤波器",
+        "legacyTypes": [
+          "A9.4",
+          "A9.6"
+        ]
+      },
+      {
+        "id": "d-code",
+        "subject": "digital",
+        "title": "辨析编码性质与码制转换",
+        "legacyTypes": [
+          "B1.1"
+        ]
+      },
+      {
+        "id": "d-proof",
+        "subject": "digital",
+        "title": "逻辑恒等式证明与规则辨析",
+        "legacyTypes": [
+          "B2.1",
+          "B2.2",
+          "B2.5"
+        ]
+      },
+      {
+        "id": "d-standard",
+        "subject": "digital",
+        "title": "标准式、反函数与逻辑形式转换",
+        "legacyTypes": [
+          "B2.3"
+        ]
+      },
+      {
+        "id": "d-complete",
+        "subject": "digital",
+        "title": "构造逻辑完备集与自定义运算",
+        "legacyTypes": [
+          "B2.4"
+        ]
+      },
+      {
+        "id": "d-simplify",
+        "subject": "digital",
+        "title": "卡诺图与公式化简",
+        "legacyTypes": [
+          "B3.1",
+          "B3.4",
+          "B3.5"
+        ]
+      },
+      {
+        "id": "d-constraint",
+        "subject": "digital",
+        "title": "由化简结果反推约束与无关项",
+        "legacyTypes": [
+          "B3.3"
+        ]
+      },
+      {
+        "id": "d-hazard",
+        "subject": "digital",
+        "title": "判断并消除竞争冒险",
+        "legacyTypes": [
+          "B3.2"
+        ]
+      },
+      {
+        "id": "d-gate",
+        "subject": "digital",
+        "title": "分析门电路逻辑与电平",
+        "legacyTypes": [
+          "B4.1",
+          "B4.3"
+        ]
+      },
+      {
+        "id": "d-interface",
+        "subject": "digital",
+        "title": "计算接口电平、驱动与扇出",
+        "legacyTypes": [
+          "B4.2"
+        ]
+      },
+      {
+        "id": "d-combinational",
+        "subject": "digital",
+        "title": "从实际要求列真值表并设计逻辑",
+        "legacyTypes": [
+          "B5.1",
+          "B5.7"
+        ]
+      },
+      {
+        "id": "d-decode",
+        "subject": "digital",
+        "title": "用编码器、译码器实现与扩展",
+        "legacyTypes": [
+          "B5.2",
+          "B5.5",
+          "B5.6"
+        ]
+      },
+      {
+        "id": "d-mux",
+        "subject": "digital",
+        "title": "指定选择端的MUX实现与级联",
+        "legacyTypes": [
+          "B5.3",
+          "B5.8"
+        ]
+      },
+      {
+        "id": "d-arithmetic",
+        "subject": "digital",
+        "title": "设计加法、比较与算术模块",
+        "legacyTypes": [
+          "B5.4"
+        ]
+      },
+      {
+        "id": "d-flipflop",
+        "subject": "digital",
+        "title": "分析时钟结构与触发器功能转换",
+        "legacyTypes": [
+          "B6.1",
+          "B6.2"
+        ]
+      },
+      {
+        "id": "d-sequence",
+        "subject": "digital",
+        "title": "设计序列发生器与检测器",
+        "legacyTypes": [
+          "B7.1",
+          "B7.2",
+          "B8.3"
+        ]
+      },
+      {
+        "id": "d-counter",
+        "subject": "digital",
+        "title": "设计计数器与反馈置数清零",
+        "legacyTypes": [
+          "B8.1",
+          "B8.2"
+        ]
+      },
+      {
+        "id": "d-state",
+        "subject": "digital",
+        "title": "由电路求状态图、功能与自启动",
+        "legacyTypes": [
+          "B7.3",
+          "B8.4",
+          "B9.1",
+          "B9.2"
+        ]
+      },
+      {
+        "id": "d-waveform",
+        "subject": "digital",
+        "title": "按时钟与异步控制画波形",
+        "legacyTypes": [
+          "B9.3"
+        ]
+      },
+      {
+        "id": "d-fsm",
+        "subject": "digital",
+        "title": "从状态要求设计与化简电路",
+        "legacyTypes": [
+          "B10.1",
+          "B10.2",
+          "B10.3",
+          "B10.6"
+        ]
+      },
+      {
+        "id": "d-controller",
+        "subject": "digital",
+        "title": "ASM、硬布线与数据通路设计",
+        "legacyTypes": [
+          "B10.4",
+          "B10.7"
+        ]
+      },
+      {
+        "id": "d-micro",
+        "subject": "digital",
+        "title": "微指令格式与微程序控制设计",
+        "legacyTypes": [
+          "B10.5"
+        ]
+      },
+      {
+        "id": "d-oscillator",
+        "subject": "digital",
+        "title": "设计振荡器与周期占空比",
+        "legacyTypes": [
+          "B11.1"
+        ]
+      },
+      {
+        "id": "d-mono",
+        "subject": "digital",
+        "title": "单稳态、脉宽与器件替换分析",
+        "legacyTypes": [
+          "B11.2"
+        ]
+      },
+      {
+        "id": "d-combined",
+        "subject": "digital",
+        "title": "分析脉冲与数字模块联动",
+        "legacyTypes": [
+          "B11.3"
+        ]
+      },
+      {
+        "id": "d-shaping",
+        "subject": "digital",
+        "title": "解释施密特、整形与稳态机理",
+        "legacyTypes": [
+          "B11.4",
+          "B11.5"
+        ]
+      },
+      {
+        "id": "d-memory",
+        "subject": "digital",
+        "title": "计算存储容量与字位扩展",
+        "legacyTypes": [
+          "B12.1"
+        ]
+      }
+    ],
+    "mappingNote": "按既有题干摘要、标签及题型重新归类，综合题可涉及多个知识点。知识点标注属于整理者分类，不是官方评分细则。",
+    "scoreNote": "2025年小题分值已对照原卷PDF第61—64页核实；其他年份暂未录入分值，不能据此比较完整历年分值。"
+  },
+  "requiresProgram": "0.5.0",
+  "videoLessons": []
 }
