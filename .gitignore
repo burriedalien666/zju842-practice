@@ -9,4 +9,4 @@ data/
 coverage/
 .test-artifacts/
 userdata/
-releases/
+/releases/
