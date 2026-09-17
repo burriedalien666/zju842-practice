@@ -175,9 +175,9 @@ test("async authentication never treats an unresolved Promise as permission", as
     Array.from({ length: 8 }, () => app.inject("/api/admin/answers/q")),
   );
   assert.ok(results.every((r) => r.statusCode === 401));
-  const address = await app.listen({host:"127.0.0.1",port:0});
+  const address = await app.listen({ host: "127.0.0.1", port: 0 });
   const health = await fetch(address + "/api/health");
-  assert.equal(health.status,200);
-  assert.deepEqual(await health.json(),{ok:true});
-  assert.equal((await fetch(address + "/api/admin/corrections")).status,401);
+  assert.equal(health.status, 200);
+  assert.deepEqual(await health.json(), { ok: true });
+  assert.equal((await fetch(address + "/api/admin/corrections")).status, 401);
 });

@@ -6,6 +6,7 @@ import staticFiles from "@fastify/static";
 import sharp from "sharp";
 import { randomBytes } from "node:crypto";
 import { openDatabase, checkPassword } from "./db.js";
+import { registerLocal } from "./local.js";
 
 const fail = (code, message) =>
   Object.assign(new Error(message), { statusCode: code });
@@ -19,7 +20,10 @@ export async function createApp({
   production = false,
   logger = false,
   trustProxy = false,
+  local = null,
 }) {
+  if (local && (databaseUrl || databaseToken || production || trustProxy))
+    throw new Error("本地版不允许云数据库或公网代理配置");
   if (production && !origin?.startsWith("https://"))
     throw new Error("线上站点必须配置HTTPS PUBLIC_ORIGIN");
   const allowedOrigin = new URL(origin).origin;
@@ -53,6 +57,15 @@ export async function createApp({
       .send({ error: status >= 500 ? "服务器暂时无法完成操作" : err.message });
   });
   app.addHook("onRequest", async (req, reply) => {
+    if (local) {
+      const expected = new URL(origin).host;
+      if (
+        req.headers.host !== expected ||
+        !["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.ip)
+      )
+        throw fail(403, "本地版仅允许本机访问");
+      reply.header("Cross-Origin-Resource-Policy", "same-origin");
+    }
     reply
       .header("X-Content-Type-Options", "nosniff")
       .header("Referrer-Policy", "same-origin");
@@ -69,6 +82,7 @@ export async function createApp({
       throw fail(403, "请求来源不匹配，请从网站页面操作");
   });
   async function isAdmin(req) {
+    if (local) return req.cookies.local_session === local.launchToken;
     const token = req.cookies.session;
     return (
       typeof token === "string" &&
@@ -84,7 +98,10 @@ export async function createApp({
   }
   function qid(req) {
     const id = req.params.qid;
-    if (!questions.has(id)) throw fail(404, "题目不存在");
+    if (
+      !(local ? catalog.questions.some((q) => q.id === id) : questions.has(id))
+    )
+      throw fail(404, "题目不存在");
     return id;
   }
   async function answer(id, connection = db) {
@@ -122,9 +139,11 @@ export async function createApp({
     return { ok: true };
   });
   app.get("/api/session", async (req) => ({
+    local: !!local,
     admin: await isAdmin(req),
     configured: !!(await db.get("SELECT id FROM admin")),
   }));
+  if (local) await registerLocal(app, { ...local, dataDir, catalog, origin });
   app.post(
     "/api/login",
     { config: { rateLimit: { max: 5, timeWindow: "15 minutes" } } },

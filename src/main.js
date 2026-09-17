@@ -1,5 +1,11 @@
 import "./style.css";
 import {
+  scheduleReview,
+  isDue,
+  reviewSettings,
+  DEFAULT_INTERVALS,
+} from "./review.js";
+import {
   STORAGE_KEY,
   emptyStudy,
   loadStudy,
@@ -19,6 +25,9 @@ const esc = (s) =>
 const enc = encodeURIComponent;
 const subjects = { signals: "信号与系统", digital: "数字电路" };
 const app = $("#app");
+let localMode = false,
+  saveQueue = Promise.resolve(),
+  pendingSaves = 0;
 let catalog,
   study,
   admin = false,
@@ -59,6 +68,14 @@ function toast(message) {
   toast.timer = setTimeout(() => $("#notice").classList.remove("show"), 4500);
 }
 function persist() {
+  if (localMode) {
+    const payload = JSON.stringify(study);
+    pendingSaves++;
+    saveQueue = saveQueue
+      .then(() => api("/local/study", { method: "PUT", body: payload }))
+      .catch((e) => toast("保存失败：" + e.message + "；请导出记录"))
+      .finally(() => pendingSaves--);
+  }
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(study));
   } catch {
@@ -97,6 +114,11 @@ function layout() {
       "",
     )}</select></div><div class="filter-row"><select id="type" aria-label="题型"></select><span id="count"></span></div><div class="practice-bar">${button("practice", "顺序练习", "primary")}${button("random", "随机练习")}${button("clear", "重置筛选", "text-button")}</div><div id="question-list" class="question-list"></div></div><article id="reader" class="reader"><div class="empty">选择一道题开始</div></article></section></main><dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2>${button("close-dialog", "×", "icon", 'aria-label="关闭"')}</div><div id="dialog-body"></div></dialog><div id="notice" class="notice" role="status"></div>`;
   $("#search").value = filters.search;
+  $(".study-nav").insertAdjacentHTML(
+    "beforeend",
+    `${button("status", "到期复习", "", 'data-value="due"')}${button("status", "错题重做", "", 'data-value="wrong"')}${button("review-settings", "复习间隔", "text-button")}`,
+  );
+  if (localMode) $('[data-action="admin"]').textContent = "资料与备份";
   $("#source").value = filters.source;
   $("#year").value = filters.year;
   $("#search").addEventListener("input", (e) => {
@@ -151,14 +173,23 @@ function renderList() {
       (!filters.status ||
         (filters.status === "star"
           ? record(q.id).star
-          : record(q.id).state === filters.status)) &&
+          : filters.status === "due"
+            ? isDue(record(q.id))
+            : filters.status === "wrong"
+              ? record(q.id).review?.wrong
+              : record(q.id).state === filters.status)) &&
       (!filters.list || list?.ids.includes(q.id)) &&
       (!filters.search ||
-        `${q.title} ${q.number} ${q.year} ${q.tags.join(" ")} ${catalog.types.find((t) => t.id === q.typeId)?.title}`
+        `${q.id} ${q.title} ${q.number} ${q.year} ${q.tags.join(" ")} ${catalog.types.find((t) => t.id === q.typeId)?.title}`
           .toLowerCase()
           .includes(filters.search.toLowerCase())),
   );
   $("#heading").textContent = filters.list || subjects[filters.subject];
+  if (filters.status === "due") {
+    visible.sort((a, b) => record(a.id).review.due - record(b.id).review.due);
+    $("#heading").textContent = "到期复习";
+  }
+  if (filters.status === "wrong") $("#heading").textContent = "错题重做";
   $("#count").textContent = `${visible.length} 道题`;
   const done = catalog.questions.filter(
     (q) => q.subject === filters.subject && record(q.id).state === "done",
@@ -213,6 +244,14 @@ async function renderReader() {
     type = catalog.types.find((t) => t.id === q.typeId);
   $("#reader").innerHTML =
     `<div class="reader-heading"><div><span class="eyebrow">${esc(q.sourceTitle)}</span><h2>${q.year}年 · ${esc(q.number)}</h2></div>${button("share", "分享", "text-button")}</div><div class="reader-type">${esc(type.title)}</div><div class="reader-actions">${button("star", r.star ? "★ 已收藏" : "☆ 收藏", r.star ? "active" : "")}${button("review", "待复习", r.state === "review" ? "active" : "")}${button("done", "已掌握", r.state === "done" ? "active" : "")}${button("add-list", "加入题单")}</div><div class="question-images">${q.images.map((im) => `<button class="image-button" data-action="zoom" data-src="/${esc(im.src)}" aria-label="放大题目图片"><img src="/${esc(im.src)}" width="${im.width}" height="${im.height}" alt="${esc(q.year + "年 " + q.number + " 原题")}" loading="lazy"></button>${im.caption ? `<p class="muted small">${esc(im.caption)}</p>` : ""}`).join("")}</div>${q.note ? `<p class="source-note">${esc(q.note)}</p>` : ""}<div class="answer-section"><div class="row"><h3>参考答案</h3>${admin ? button("edit-answer", "编辑照片答案", "text-button") : ""}</div><div id="answer-content" class="muted small">正在读取…</div></div><footer class="reader-footer">${button("previous", "上一题")}${button("next", "下一题", "primary")}<span id="queue-position" class="muted small"></span>${button("correction", "题目纠错", "text-button")}</footer>`;
+  $(".reader-footer").insertAdjacentHTML(
+    "beforebegin",
+    `<section class="review-panel"><h3>本次作答</h3><div class="review-ratings">${button("grade-wrong", "做错了")}${button("grade-hard", "答对但吃力")}${button("grade-good", "独立答对", "primary")}</div><p class="muted small">${r.review ? "下次复习：" + new Date(r.review.due).toLocaleString() + " · 累计错误 " + r.review.lapses + " 次" : "作答后自评，开始安排复习"}</p></section>`,
+  );
+  if (localMode) {
+    $('[data-action="share"]').textContent = "复制题号";
+    if (admin) $('[data-action="edit-answer"]').textContent = "编辑我的答案";
+  }
   const ids = queue.includes(current) ? queue : visible.map((q) => q.id),
     i = ids.indexOf(current);
   $("#queue-position").textContent = i >= 0 ? `${i + 1} / ${ids.length}` : "";
@@ -222,6 +261,14 @@ async function renderReader() {
     const result = await api("/answers/" + enc(q.id));
     if (version !== readerVersion) return;
     answerData = result;
+    if (localMode) {
+      const official = await api("/local/official/" + enc(q.id));
+      if (version !== readerVersion) return;
+      answerData = { ...result, official: official.photos };
+      $("#answer-content").innerHTML =
+        `<div class="answer-tabs">${official.photos.length ? button("show-official", "题库答案 · " + official.photos.length + " 张") : "<span>题库暂无答案</span>"}${result.photos.length ? button("show-answer", "我的答案 · " + result.photos.length + " 张") : ""}</div>`;
+      return;
+    }
     $("#answer-content").innerHTML = result.photos.length
       ? button("show-answer", `查看答案 · ${result.photos.length} 张`)
       : "暂无已发布答案";
@@ -255,6 +302,15 @@ function renderEditor() {
     true,
   );
   $("#camera").onchange = (e) => upload(e.target.files);
+  if (localMode) {
+    $("#dialog-title").textContent = "编辑我的答案";
+    $("#dialog-body>p").textContent =
+      "只保存在你的电脑；标记为定稿后仍不会自动公开。每题最多12张，每张不超过12MB。";
+    $('[data-action="publish"]').textContent = "标记为定稿";
+    $('[data-action="withdraw"]').textContent = "取消定稿";
+    $(".upload-bar .muted").textContent =
+      `已定稿 ${adminDraft.published.length} 张 · 草稿 ${adminDraft.draft.length} 张`;
+  }
   $("#gallery").onchange = (e) => upload(e.target.files);
   document
     .querySelectorAll(".replace-photo")
@@ -329,7 +385,7 @@ async function importRecords(e) {
     );
     dialog(
       "导入学习记录",
-      `<p>将替换当前浏览器的记录：${Object.keys(imported.records).length} 道题的标记、${imported.lists.length} 个题单。</p>${button("confirm-import", "确认替换", "primary")}`,
+      `<p>将替换当前${localMode ? "本地" : "浏览器"}记录：${Object.keys(imported.records).length} 道题的标记、${imported.lists.length} 个题单。</p>${button("confirm-import", "确认替换", "primary")}`,
     );
     $('[data-action="confirm-import"]').onclick = () => {
       study = imported;
@@ -354,6 +410,57 @@ document.addEventListener("click", async (e) => {
     return;
   }
   try {
+    if (action.startsWith("grade-")) {
+      const rating = action.slice(6),
+        r = { ...record(current) };
+      if (!queue.includes(current)) queue = visible.map((q) => q.id);
+      r.review = scheduleReview(r.review, rating, study.settings);
+      r.state = rating === "good" ? "done" : "review";
+      study.version = 2;
+      study.settings = reviewSettings(study.settings);
+      study.records[current] = r;
+      persist();
+      renderList();
+      renderReader();
+      toast(rating === "wrong" ? "已加入错题，10分钟后复习" : "已安排下次复习");
+      return;
+    }
+    if (action === "show-official") {
+      $("#answer-content").innerHTML = answerData.official
+        .map(
+          (src) =>
+            `<button class="image-button" data-action="zoom" data-src="${esc(src)}"><img src="${esc(src)}" alt="题库答案"></button>`,
+        )
+        .join("");
+      return;
+    }
+    if (action === "review-settings") {
+      dialog(
+        "复习间隔",
+        `<form id="review-form"><label>答对后的间隔（天，用逗号分隔）<input name="intervals" value="${(study.settings?.intervals || DEFAULT_INTERVALS).join(",")}"></label><p class="muted small">做错后10分钟重练；吃力时缩短间隔。间隔是复习建议，不是记忆力测量。更改只影响以后作答，已有到期时间不变。</p><button class="primary">保存</button></form>`,
+      );
+      $("#review-form").onsubmit = (e) => {
+        e.preventDefault();
+        try {
+          study.settings = reviewSettings({
+            intervals: new FormData(e.target)
+              .get("intervals")
+              .split(/[,，]/)
+              .map(Number),
+          });
+          study.version = 2;
+          persist();
+          $("#dialog").close();
+        } catch (err) {
+          toast(err.message);
+        }
+      };
+      return;
+    }
+    if (action.startsWith("local-")) {
+      await localAction(action);
+      return;
+    }
     if (action === "subject") {
       filters.subject = b.dataset.value;
       filters.type = "";
@@ -422,13 +529,16 @@ document.addEventListener("click", async (e) => {
       renderReader();
     }
     if (action === "share") {
+      const shareText = localMode
+        ? `${selected().sourceTitle} · ${selected().number}（题号：${current}）`
+        : location.href;
       try {
-        await navigator.clipboard.writeText(location.href);
-        toast("题目链接已复制");
+        await navigator.clipboard.writeText(shareText);
+        toast(localMode ? "题号已复制，可粘贴到搜索框" : "题目链接已复制");
       } catch {
         dialog(
           "分享题目",
-          `<input readonly value="${esc(location.href)}" aria-label="题目链接">`,
+          `<input readonly value="${esc(shareText)}" aria-label="题目链接">`,
         );
       }
     }
@@ -529,6 +639,14 @@ document.addEventListener("click", async (e) => {
     }
     if (action === "import") $("#import-file").click();
     if (action === "correction") {
+      if (localMode) {
+        const text = `题号：${current}\n题库版本：${catalog.edition || "初始题库"}\n问题描述：`;
+        dialog(
+          "题目纠错",
+          `<p>复制下方信息，在 GitHub Q&A 描述问题。</p><textarea readonly rows="4">${esc(text)}</textarea><p><a target="_blank" rel="noopener" href="https://github.com/burriedalien666/zju842-practice/discussions/categories/q-a">打开 GitHub Q&A</a></p>`,
+        );
+        return;
+      }
       const q = current;
       dialog(
         "题目纠错",
@@ -550,6 +668,10 @@ document.addEventListener("click", async (e) => {
       };
     }
     if (action === "admin") {
+      if (localMode) {
+        await localCenter();
+        return;
+      }
       if (admin) await management();
       else {
         dialog(
@@ -617,7 +739,15 @@ document.addEventListener("click", async (e) => {
           { method: "POST" },
         );
         renderEditor();
-        toast(action === "publish" ? "答案已发布" : "公开答案已撤下，草稿保留");
+        toast(
+          localMode
+            ? action === "publish"
+              ? "已定稿，仅本地保存"
+              : "已取消定稿，草稿保留"
+            : action === "publish"
+              ? "答案已发布"
+              : "公开答案已撤下，草稿保留",
+        );
       });
     if (action === "close-editor") {
       $("#dialog").close();
@@ -653,6 +783,106 @@ window.addEventListener("popstate", () => {
     }
   }
 });
+window.addEventListener("beforeunload", (e) => {
+  if (pendingSaves) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
+setInterval(() => {
+  if (filters.status === "due" && !busy) renderList();
+}, 30000);
+async function localCenter() {
+  const info = await api("/local/info");
+  dialog(
+    "资料与备份",
+    `<p>题库版本：${esc(info.edition)}</p><p class="muted small">个人数据：${esc(info.dataDir)}</p><div class="local-controls">${button("local-updates", "检查题库更新")}${button("local-import", "导入题库包")}${button("local-backup", "备份全部个人资料")}${button("local-restore", "恢复个人资料")}${button("local-export", "导出公开题库包")}</div><p class="muted small">题库更新不覆盖个人答案或复习进度。个人备份含照片，请妥善保存。</p>`,
+  );
+}
+async function downloadResponse(res, filename) {
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "操作失败");
+  }
+  const url = URL.createObjectURL(await res.blob()),
+    a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+async function localAction(action) {
+  if (action === "local-backup") {
+    await saveQueue;
+    await downloadResponse(
+      await fetch("/api/local/backup"),
+      "842个人资料.sqlite",
+    );
+    return;
+  }
+  if (action === "local-updates") {
+    dialog("检查更新", "正在检查 GitHub…");
+    try {
+      const result = await api("/local/updates");
+      dialog(
+        "题库更新",
+        `<p>本地：${esc(catalog.edition || "初始题库")}</p><p>GitHub最新版本：${esc(result.name)}</p><p><a target="_blank" rel="noopener" href="${esc(result.url)}">查看发布页并下载题库包</a></p>${button("local-import", "导入已下载的题库包", "primary")}<p class="muted small">不自动替换程序。请按发布说明选择 .842pack 文件。</p>`,
+      );
+    } catch {
+      dialog(
+        "检查更新",
+        '<p>暂时无法连接 GitHub，已有内容可继续离线使用。</p><a target="_blank" rel="noopener" href="https://github.com/burriedalien666/zju842-practice/releases">手动打开发布页</a>',
+      );
+    }
+    return;
+  }
+  if (action === "local-import" || action === "local-restore") {
+    const restore = action === "local-restore";
+    dialog(
+      restore ? "恢复个人资料" : "导入题库更新",
+      `<p>${restore ? "将替换个人答案、题单和复习记录；建议先备份。" : "替换官方题库，保留个人答案和学习记录。请选择可信来源的题库包。"}</p><form id="pack-form"><input name="file" type="file" accept="${restore ? ".sqlite" : ".842pack"}" required><button class="primary">确认${restore ? "恢复" : "导入"}</button></form>`,
+    );
+    $("#pack-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      await locked(async () => {
+        await saveQueue;
+        await api("/local/" + (restore ? "restore" : "import-pack"), {
+          method: "POST",
+          body: form,
+        });
+        location.reload();
+      });
+    };
+    return;
+  }
+  if (action === "local-export") {
+    const result = await api("/local/exportable");
+    dialog(
+      "导出公开题库包",
+      `<form id="export-pack-form"><label>题库版本<input name="edition" required maxlength="100" value="${new Date().toISOString().slice(0, 10)}"></label><p>默认仅导出已有题库资料。下面勾选的个人定稿答案也会进入公开包；私人草稿和学习记录不会导出。</p>${result.items.map((i) => `<label class="export-choice"><input type="checkbox" name="ids" value="${esc(i.id)}">${esc(i.id)} · ${i.count}张</label>`).join("")}<button class="primary">生成题库包</button></form>`,
+    );
+    $("#export-pack-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      await locked(async () => {
+        await downloadResponse(
+          await fetch("/api/local/export-pack", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              edition: data.get("edition"),
+              ids: data.getAll("ids"),
+            }),
+          }),
+          "842题库.842pack",
+        );
+        toast("题库包已导出，请检查后发布到GitHub");
+      });
+    };
+    return;
+  }
+}
 try {
   const res = await fetch("/catalog.json");
   if (!res.ok) throw new Error("题库加载失败");
@@ -668,7 +898,18 @@ try {
     storageError = "已有学习记录无法读取，请先检查备份；未覆盖原记录";
   }
   try {
-    admin = (await api("/session")).admin;
+    const session = await api("/session");
+    admin = session.admin;
+    localMode = !!session.local;
+    if (localMode) {
+      const saved = await api("/local/study");
+      if (saved.study)
+        study = validateStudy(
+          saved.study,
+          new Set(catalog.questions.map((q) => q.id)),
+        );
+      else persist();
+    }
   } catch {
     /* 离线时仍可读取已加载题目。 */
   }

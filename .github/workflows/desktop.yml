@@ -1,0 +1,41 @@
+name: Desktop packages
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows-x64
+          - os: macos-15-intel
+            platform: macos-x64
+          - os: macos-15
+            platform: macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.15.0'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run test:desktop
+      - run: npm run package:desktop
+      - name: Test packaged application
+        shell: bash
+        run: |
+          package_dir=$(find releases -maxdepth 2 -type d -name 'zju842-*' | head -1)
+          node scripts/test-desktop.js "$package_dir"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zju842-${{ matrix.platform }}
+          path: releases/*.zip
+          retention-days: 7

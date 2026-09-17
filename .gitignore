@@ -8,3 +8,5 @@ data/
 *.log
 coverage/
 .test-artifacts/
+userdata/
+releases/

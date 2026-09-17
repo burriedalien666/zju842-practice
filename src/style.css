@@ -748,3 +748,32 @@ textarea {
     padding: 4px 10px;
   }
 }
+:root {
+  --review-border: #d9e8dd;
+}
+.review-panel {
+  margin-top: 24px;
+  border: 1px solid var(--review-border);
+  padding: 16px;
+  border-radius: 12px;
+  background: #f7faf7;
+}
+.review-ratings,
+.answer-tabs,
+.local-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.local-controls button {
+  flex: 1 0 42%;
+}
+.export-choice {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+#dialog-body > textarea {
+  width: 100%;
+}

@@ -5,7 +5,7 @@ export function emptyStudy() {
 export function validateStudy(input, ids) {
   if (
     !input ||
-    input.version !== 1 ||
+    ![1, 2].includes(input.version) ||
     !input.records ||
     typeof input.records !== "object" ||
     Array.isArray(input.records) ||
@@ -14,8 +14,17 @@ export function validateStudy(input, ids) {
   )
     throw new Error("学习记录格式不正确");
   const clean = emptyStudy();
+  if (input.version === 2 || input.settings) {
+    clean.version = 2;
+    clean.settings = reviewSettings(input.settings);
+  }
   for (const [id, r] of Object.entries(input.records)) {
-    if (!ids.has(id)) continue;
+    if (
+      !id ||
+      id.length > 160 ||
+      ["__proto__", "constructor", "prototype"].includes(id)
+    )
+      throw new Error("题目编号不合法");
     if (
       !r ||
       !["", "done", "review"].includes(r.state) ||
@@ -23,6 +32,7 @@ export function validateStudy(input, ids) {
     )
       throw new Error("学习标记格式不正确");
     clean.records[id] = { state: r.state, star: r.star };
+    if (r.review) clean.records[id].review = validateReview(r.review);
   }
   const names = new Set();
   for (const list of input.lists) {
@@ -66,3 +76,4 @@ export function shuffled(ids, random = Math.random) {
   }
   return result;
 }
+import { reviewSettings, validateReview } from "./review.js";

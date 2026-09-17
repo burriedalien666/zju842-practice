@@ -16,6 +16,7 @@ COPY --from=build /app/public ./public
 COPY package.json ./
 COPY LICENSE CONTENT-NOTICE.md ./
 COPY server ./server
+COPY src/study.js src/review.js ./src/
 COPY scripts/setup-admin.js ./scripts/setup-admin.js
 RUN mkdir /app/data && chown node:node /app/data
 USER node
