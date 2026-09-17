@@ -1,0 +1,76 @@
+.update-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.update-tools label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.update-tools input {
+  width: auto;
+}
+.update-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.update-card {
+  border: 1px solid #dce5df;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f7faf8;
+}
+.update-card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+.update-card p {
+  margin: 0;
+  line-height: 1.65;
+}
+.update-card button {
+  margin-top: auto;
+}
+.update-version {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.update-job {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #eaf4ed;
+}
+.update-job progress {
+  width: 100%;
+  accent-color: #39795b;
+}
+.update-notes {
+  white-space: pre-wrap;
+  max-height: 240px;
+  overflow: auto;
+  margin: 12px 0;
+  line-height: 1.7;
+}
+#update-error,
+#confirm-error {
+  color: #a1322e;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .update-cards {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,6 +2,7 @@ import "./style.css";
 import "./navigation.css";
 import "./papers.css";
 import { StudySaver } from "./persistence.js";
+import { createUpdateCenter } from "./updates.js";
 import {
   buildChapters,
   chapterForType,
@@ -124,6 +125,14 @@ function record(id) {
 function selected() {
   return catalog.questions.find((q) => q.id === current);
 }
+const updateCenter = createUpdateCenter({
+  api,
+  dialog,
+  esc,
+  toast,
+  requireSaved: requireSavedStudy,
+  revision: () => saver.revision,
+});
 function button(action, text, cls = "", attrs = "") {
   return `<button type="button" data-action="${action}" class="${cls}" ${attrs}>${text}</button>`;
 }
@@ -192,7 +201,13 @@ function layout() {
     "beforeend",
     `${button("status", "到期复习", "", 'data-value="due"')}${button("status", "错题重做", "", 'data-value="wrong"')}${button("review-settings", "复习间隔", "text-button")}`,
   );
-  if (localMode) $('[data-action="admin"]').textContent = "资料与备份";
+  if (localMode) {
+    $('[data-action="admin"]').textContent = "资料与备份";
+    $(".sidebar-bottom").insertAdjacentHTML(
+      "afterbegin",
+      button("local-updates", "更新中心", "text-button"),
+    );
+  }
   $("#source").value = filters.source;
   $("#year").value = filters.year;
   $("#search").addEventListener("input", (e) => {
@@ -1538,7 +1553,7 @@ async function localCenter() {
   const info = await api("/local/info");
   dialog(
     "资料与备份",
-    `<p>题库版本：${esc(info.edition)}</p><p class="muted small">个人数据：${esc(info.dataDir)}</p><div class="local-controls">${button("local-updates", "检查题库更新")}${button("local-import", "导入题库包")}${button("local-backup", "备份全部个人资料")}${button("local-restore", "恢复个人资料")}${button("local-export", "导出公开题库包")}</div><p class="muted small">题库更新不覆盖个人答案或复习进度。个人备份含照片，请妥善保存。</p>`,
+    `<p>程序版本：v${esc(info.version)} · 题库：${esc(info.edition)}</p><p class="muted small">个人数据：${esc(info.dataDir)}</p><div class="local-controls">${button("local-updates", "更新中心")}${button("local-import", "手动导入题库包")}${button("local-import-answers", "手动导入公共答案")}${button("local-backup", "备份全部个人资料")}${button("local-restore", "恢复个人资料")}${button("local-export", "导出公开题库包")}${button("local-export-answers", "导出公共答案包")}</div><p class="muted small">题库和公共答案更新不覆盖个人答案或复习进度。个人备份含照片，请妥善保存。</p>`,
   );
 }
 async function downloadResponse(res, filename) {
@@ -1563,64 +1578,71 @@ async function localAction(action) {
     return;
   }
   if (action === "local-updates") {
-    dialog("检查更新", "正在检查 GitHub…");
-    try {
-      const result = await api("/local/updates");
-      dialog(
-        "题库更新",
-        `<p>本地：${esc(catalog.edition || "初始题库")}</p><p>GitHub最新版本：${esc(result.name)}</p><p><a target="_blank" rel="noopener" href="${esc(result.url)}">查看发布页并下载题库包</a></p>${button("local-import", "导入已下载的题库包", "primary")}<p class="muted small">不自动替换程序。请按发布说明选择 .842pack 文件。</p>`,
-      );
-    } catch {
-      dialog(
-        "检查更新",
-        '<p>暂时无法连接 GitHub，已有内容可继续离线使用。</p><a target="_blank" rel="noopener" href="https://github.com/burriedalien666/zju842-practice/releases">手动打开发布页</a>',
-      );
-    }
+    await updateCenter.open();
     return;
   }
-  if (action === "local-import" || action === "local-restore") {
+  if (
+    action === "local-import" ||
+    action === "local-restore" ||
+    action === "local-import-answers"
+  ) {
     const restore = action === "local-restore";
+    const answers = action === "local-import-answers";
     dialog(
-      restore ? "恢复个人资料" : "导入题库更新",
-      `<p>${restore ? "将替换个人答案、题单和复习记录；建议先备份。" : "替换官方题库，保留个人答案和学习记录。请选择可信来源的题库包。"}</p><form id="pack-form"><input name="file" type="file" accept="${restore ? ".sqlite" : ".842pack"}" required><button class="primary">确认${restore ? "恢复" : "导入"}</button></form>`,
+      restore ? "恢复个人资料" : answers ? "导入公共答案更新" : "导入题库更新",
+      `<p>${restore ? "将替换个人答案、题单和复习记录；建议先备份。" : "更新公共资料，保留个人答案和学习记录。请选择可信来源的资料包。"}</p><form id="pack-form"><input name="file" type="file" accept="${restore ? ".sqlite" : answers ? ".842answers" : ".842pack"}" required><button class="primary">确认${restore ? "恢复" : "导入"}</button></form>`,
     );
     $("#pack-form").onsubmit = async (e) => {
       e.preventDefault();
       const form = new FormData(e.target);
       await locked(async () => {
         await requireSavedStudy();
-        await api("/local/" + (restore ? "restore" : "import-pack"), {
-          method: "POST",
-          body: form,
-          ...(restore ? { headers: { "If-Match": saver.revision } } : {}),
-        });
+        await api(
+          "/local/" +
+            (restore ? "restore" : answers ? "import-answers" : "import-pack"),
+          {
+            method: "POST",
+            body: form,
+            ...(restore ? { headers: { "If-Match": saver.revision } } : {}),
+          },
+        );
         location.reload();
       });
     };
     return;
   }
-  if (action === "local-export") {
+  if (action === "local-export" || action === "local-export-answers") {
+    const answersOnly = action === "local-export-answers";
     const result = await api("/local/exportable");
+    const version = answersOnly
+      ? (await api("/local/updates")).entries.answers.current + 1
+      : 0;
     dialog(
-      "导出公开题库包",
-      `<form id="export-pack-form"><label>题库版本<input name="edition" required maxlength="100" value="${new Date().toISOString().slice(0, 10)}"></label><p>默认仅导出已有题库资料。下面勾选的个人定稿答案也会进入公开包；私人草稿和学习记录不会导出。</p>${result.items.map((i) => `<label class="export-choice"><input type="checkbox" name="ids" value="${esc(i.id)}">${esc(i.id)} · ${i.count}张</label>`).join("")}<button class="primary">生成题库包</button></form>`,
+      answersOnly ? "导出公共答案包" : "导出公开题库包",
+      `<form id="export-pack-form">${answersOnly ? `<label>答案版本号（每次发布递增）<input name="revision" type="number" min="${version}" value="${version}" required></label>` : ""}<label>版本说明<input name="edition" required maxlength="100" value="${new Date().toISOString().slice(0, 10)}"></label><p>仅导出已有公共资料和下面明确勾选的个人定稿答案；私人草稿和学习记录不会导出。导出不等于发布。</p>${result.items.map((i) => `<label class="export-choice"><input type="checkbox" name="ids" value="${esc(i.id)}">${esc(i.id)} · ${i.count}张</label>`).join("")}<button class="primary">生成${answersOnly ? "答案" : "题库"}包</button></form>`,
     );
     $("#export-pack-form").onsubmit = async (e) => {
       e.preventDefault();
       const data = new FormData(e.target);
       await locked(async () => {
         await downloadResponse(
-          await fetch("/api/local/export-pack", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              edition: data.get("edition"),
-              ids: data.getAll("ids"),
-            }),
-          }),
-          "842题库.842pack",
+          await fetch(
+            "/api/local/" + (answersOnly ? "export-answers" : "export-pack"),
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                edition: data.get("edition"),
+                ids: data.getAll("ids"),
+                ...(answersOnly
+                  ? { revision: Number(data.get("revision")) }
+                  : {}),
+              }),
+            },
+          ),
+          answersOnly ? "842公共答案.842answers" : "842题库.842pack",
         );
-        toast("题库包已导出，请检查后发布到GitHub");
+        toast("资料包已导出，请检查后发布到GitHub");
       });
     };
     return;
@@ -1725,6 +1747,7 @@ try {
   syncNavigation();
   rememberNavigation();
   if (storageError) toast(storageError);
+  if (localMode) void updateCenter.automatic();
 } catch (error) {
   app.innerHTML = `<main class="empty"><h1>暂时无法打开题库</h1><p>${esc(error.message)}</p><a href="/">重新加载</a></main>`;
 }

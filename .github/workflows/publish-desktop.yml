@@ -41,9 +41,8 @@ jobs:
           path: release-assets
           merge-multiple: true
       - run: npm ci
-      - name: Prepare the independent library package
-        run: |
-          node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {writeZip,packPaths} from "./server/packs.js";const c=JSON.parse(fs.readFileSync("public/catalog.json"));c.edition="2026-09-17";await writeZip("release-assets/zju842-library-2026-09-17.842pack",[{name:"catalog.json",bytes:Buffer.from(JSON.stringify(c))},...[...packPaths(c)].filter(p=>p!=="catalog.json").map(p=>({name:p,file:path.resolve("public",p)}))]);'
+      - name: Prepare independent library, answers and update index
+        run: npm run prepare:updates
       - name: Verify package contents
         run: |
           python - <<'PY'
@@ -63,5 +62,5 @@ jobs:
           PY
       - name: Publish release
         run: |
-          gh release create "$RELEASE_TAG" release-assets/*.zip release-assets/*.842pack --draft --target "$REVISION" --title "$(head -n 1 "docs/releases/$RELEASE_TAG.md" | sed 's/^# //')" --notes-file "docs/releases/$RELEASE_TAG.md"
+          gh release create "$RELEASE_TAG" release-assets/*.zip release-assets/*.842pack release-assets/*.842answers release-assets/zju842-updates.json --draft --target "$REVISION" --title "$(head -n 1 "docs/releases/$RELEASE_TAG.md" | sed 's/^# //')" --notes-file "docs/releases/$RELEASE_TAG.md"
           gh release edit "$RELEASE_TAG" --draft=false --latest

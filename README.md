@@ -10,13 +10,13 @@
 
 不要下载GitHub自动生成的Source code压缩包当作免安装成品。发布包包含运行环境，无需自行安装Node.js或Docker。
 
-v0.3.0 下载包包含章节选题、整卷练习、倒计时及保存可靠性修复，无需从源码运行：
+v0.4.0 下载包新增程序、题库、公共答案三个独立更新入口，保留章节选题、整卷练习、倒计时与间隔复习，无需从源码运行：
 
-- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-windows-x64.zip)
-- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-macos-arm64.zip)
-- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-macos-x64.zip)
+- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-windows-x64.zip)
+- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-macos-arm64.zip)
+- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.4.0/zju842-0.4.0-macos-x64.zip)
 
-旧版用户请先备份个人资料，再按[升级步骤](docs/local-guide.md#升级程序)迁移。仅导入 `.842pack` 不会升级程序功能。
+v0.3.0及更早版本需要最后手动升级一次：先备份个人资料，再按[升级步骤](docs/local-guide.md#升级程序)迁移。之后支持在程序内确认下载、安装和重启。仅导入题库包不会升级程序功能。
 
 ## 功能
 
@@ -26,11 +26,14 @@ v0.3.0 下载包包含章节选题、整卷练习、倒计时及保存可靠性�
 - 题库答案与“我的答案”分开；支持多图导入、旋转、排序、替换和定稿。个人答案不自动上传。
 - 学习记录和个人照片存入程序旁的 `userdata`，不依赖浏览器缓存。提供个人备份与恢复。
 - 持续显示保存状态，保存失败时可重试或导出；多标签页修改冲突时阻止覆盖。未保存内容可在同一标签页刷新后恢复，关闭前请先保存或导出。
-- 官方题库通过 `.842pack` 资料包更新，不覆盖个人答案、收藏、题单或复习记录。用户主动检查GitHub更新，不静默替换可执行程序。
+- 更新中心分别管理程序、题库和公共答案；启动时自动检查仅提示，用户确认后才下载安装，可关闭自动检查。程序更新自动备份并重启，启动失败恢复旧程序。
+- 题库通过 `.842pack`、公共答案通过 `.842answers` 独立更新，不覆盖个人答案、收藏、题单或复习记录；保留手动导入入口。
 - 作者可以导出题库包，并明确选择需要公开的个人定稿答案；私人草稿、密码和学习记录不会导出。
 - 纠错前往GitHub Discussions Q&A，需要网络及GitHub账号。
 
 现有题库含2009—2025年469条题目、287张裁切图。后续期末题可使用同一题库结构，见[题库维护](docs/questions.md)。不分发原PDF、整页扫描或历史AI答案草稿。
+
+后续设想见[更新计划](docs/roadmap.md)：历年章节热力图与B站讲解入口仅列入计划，尚未实现。
 
 ## 从源码运行
 

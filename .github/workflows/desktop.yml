@@ -34,6 +34,7 @@ jobs:
         run: |
           package_dir=$(find releases -maxdepth 2 -type d -name 'zju842-*' | head -1)
           node scripts/test-desktop.js "$package_dir"
+          node scripts/test-update-desktop.js "$package_dir"
       - uses: actions/upload-artifact@v4
         with:
           name: zju842-${{ matrix.platform }}

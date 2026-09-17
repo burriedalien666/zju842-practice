@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { writeZip, packPaths } from "../server/packs.js";
+import { answerFiles } from "../server/answer-packs.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(
@@ -31,6 +32,10 @@ const catalog = JSON.parse(
   fs.readFileSync(path.join(root, "public/catalog.json"), "utf8"),
 );
 for (const name of packPaths(catalog)) copy("public/" + name);
+const officialAnswers = JSON.parse(
+  fs.readFileSync(path.join(root, "public/answers.json"), "utf8"),
+);
+for (const name of answerFiles(officialAnswers)) copy("public/" + name);
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const dependencyPaths = execFileSync(
   npm,
@@ -58,15 +63,26 @@ fs.copyFileSync(
     process.platform === "win32" ? "node.exe" : "node",
   ),
 );
-const licenseResponse = await fetch(
-  `https://raw.githubusercontent.com/nodejs/node/${process.version}/LICENSE`,
-  { signal: AbortSignal.timeout(20000) },
-);
-if (!licenseResponse.ok) throw new Error("无法获取运行环境许可证");
-fs.writeFileSync(
-  path.join(target, "runtime/LICENSE"),
-  await licenseResponse.text(),
-);
+const licenseArg = process.argv.indexOf("--runtime-license");
+let license;
+if (licenseArg >= 0) {
+  if (!process.argv[licenseArg + 1])
+    throw new Error("请提供与当前 Node.js 版本对应的许可证文件");
+  license = fs.readFileSync(path.resolve(process.argv[licenseArg + 1]), "utf8");
+  if (
+    !license.includes("Node.js") ||
+    !license.includes("Permission is hereby granted")
+  )
+    throw new Error("运行环境许可证内容不完整");
+} else {
+  const licenseResponse = await fetch(
+    `https://raw.githubusercontent.com/nodejs/node/${process.version}/LICENSE`,
+    { signal: AbortSignal.timeout(20000) },
+  );
+  if (!licenseResponse.ok) throw new Error("无法获取运行环境许可证");
+  license = await licenseResponse.text();
+}
+fs.writeFileSync(path.join(target, "runtime/LICENSE"), license);
 if (process.platform === "win32")
   fs.writeFileSync(
     path.join(target, "启动题库.cmd"),

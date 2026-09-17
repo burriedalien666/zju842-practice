@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "libraryId": "zju842",
+  "libraryRevision": 1,
+  "edition": "2026-09-17",
   "types": [
     {
       "id": "A1.1",

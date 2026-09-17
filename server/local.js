@@ -7,6 +7,14 @@ import { DatabaseSync, backup } from "node:sqlite";
 import { validateStudy, emptyStudy } from "../src/study.js";
 import { packPaths, writeZip, extractPack } from "./packs.js";
 import { loadCatalog } from "./catalog.js";
+import { createUpdates } from "./updates.js";
+import { atomicJson } from "./update-files.js";
+import {
+  readOfficialAnswers,
+  extractAnswers,
+  activateAnswers,
+  answerFiles,
+} from "./answer-packs.js";
 import {
   ensureLocalStudySchema,
   readLocalStudy,
@@ -26,12 +34,138 @@ export function currentLibrary(dataDir, baseDir) {
 
 export async function registerLocal(
   app,
-  { dataDir, catalog, baseDir, launchToken, origin },
+  {
+    dataDir,
+    catalog,
+    baseDir,
+    launchToken,
+    origin,
+    installRoot,
+    activateProgram,
+    updateSource,
+  },
 ) {
   const db = app.db;
   const cookieName = "local_session_" + new URL(origin).port;
   let library = currentLibrary(dataDir, baseDir);
   await ensureLocalStudySchema(db);
+  const official = () =>
+    readOfficialAnswers(dataDir, catalog, library, baseDir);
+  async function installLibrary(file, expected) {
+    const name = "edition-" + randomBytes(8).toString("hex");
+    const destination = path.join(dataDir, "libraries", name);
+    fs.mkdirSync(destination, { recursive: true });
+    try {
+      const next = await extractPack(file, destination);
+      if (expected || next.updateKind === "library") {
+        if (
+          next.libraryId !== "zju842" ||
+          !Number.isSafeInteger(next.libraryRevision) ||
+          next.libraryRevision < (catalog.libraryRevision || 0) ||
+          (expected && next.libraryRevision !== expected.revision) ||
+          Object.keys(next.officialAnswers || {}).length
+        )
+          throw new Error("题库包版本不匹配或混入了答案更新");
+        const ids = new Set(next.questions.map((q) => q.id));
+        if (catalog.questions.some((q) => !ids.has(q.id)))
+          throw new Error("新版缺少已有题号，已停止更新以保留学习记录");
+        if (!fs.existsSync(path.join(dataDir, "official-answers.json"))) {
+          const old = official();
+          const dir = path.join(
+            dataDir,
+            "libraries",
+            "answers-" + randomBytes(8).toString("hex"),
+          );
+          fs.mkdirSync(dir, { recursive: true });
+          atomicJson(path.join(dir, "answers.json"), old.value);
+          for (const file of answerFiles(old.value))
+            if (file !== "answers.json") {
+              fs.mkdirSync(path.dirname(path.join(dir, file)), {
+                recursive: true,
+              });
+              fs.copyFileSync(
+                path.join(old.directory, file),
+                path.join(dir, file),
+              );
+            }
+          activateAnswers(dataDir, dir);
+        }
+      }
+      atomicJson(path.join(dataDir, "library.json"), { directory: name });
+      library = destination;
+      Object.keys(catalog).forEach((k) => delete catalog[k]);
+      Object.assign(catalog, next);
+      return {
+        ok: true,
+        questions: catalog.questions.length,
+        edition: catalog.edition,
+      };
+    } catch (e) {
+      fs.rmSync(destination, { recursive: true, force: true });
+      throw e;
+    }
+  }
+  async function installAnswers(file, expected) {
+    const dir = path.join(
+      dataDir,
+      "libraries",
+      "answers-" + randomBytes(8).toString("hex"),
+    );
+    fs.mkdirSync(dir, { recursive: true });
+    try {
+      const next = await extractAnswers(file, dir);
+      if (expected && next.revision !== expected.revision)
+        throw new Error("答案包版本与发布信息不符");
+      if (
+        next.requiresLibraryRevision > (catalog.libraryRevision || 0) ||
+        Object.keys(next.answers).some(
+          (id) => !catalog.questions.some((q) => q.id === id),
+        )
+      )
+        throw new Error("答案对应的题目尚未安装，请先更新题库");
+      if (next.revision < official().value.revision)
+        throw new Error("不能用旧答案包覆盖新版公共答案");
+      activateAnswers(dataDir, dir);
+      return { ok: true, edition: next.edition };
+    } catch (e) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      throw e;
+    }
+  }
+  const updates = createUpdates({
+    app,
+    dataDir,
+    catalog,
+    answers: official,
+    installLibrary,
+    installAnswers,
+    installRoot,
+    activateProgram,
+    ...(updateSource ? { source: updateSource } : {}),
+  });
+  app.decorate("localActiveWrites", 0);
+  app.addHook("onRequest", async (req) => {
+    if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return;
+    if (updates.pauseWrites)
+      throw Object.assign(new Error("正在安装更新，请稍后操作"), {
+        statusCode: 409,
+      });
+    if (
+      updates.busy &&
+      /\/local\/(import-pack|import-answers|restore|export-pack|export-answers)$/.test(
+        req.url,
+      )
+    )
+      throw Object.assign(new Error("请等待当前更新完成"), { statusCode: 409 });
+    req.localWriteActive = true;
+    app.localActiveWrites++;
+  });
+  app.addHook("onResponse", async (req) => {
+    if (req.localWriteActive) {
+      req.localWriteActive = false;
+      app.localActiveWrites--;
+    }
+  });
   async function requireLocal(req) {
     if (req.cookies[cookieName] !== launchToken)
       throw Object.assign(new Error("请通过本地启动器打开题库"), {
@@ -56,21 +190,20 @@ export async function registerLocal(
     return reply.sendFile(req.params.file, path.join(library, "questions"));
   });
   app.get("/api/local/official/:qid", async (req) => ({
-    photos: (catalog.officialAnswers?.[req.params.qid] || []).map(
+    photos: (official().value.answers[req.params.qid] || []).map(
       (p) => "/api/local/official-media/" + path.basename(p),
     ),
   }));
   app.get("/api/local/official-media/:file", async (req, reply) => {
+    const currentAnswers = official();
     const name = "answers/" + req.params.file;
     if (
-      !Object.values(catalog.officialAnswers || {}).some((a) =>
-        a.includes(name),
-      )
+      !Object.values(currentAnswers.value.answers).some((a) => a.includes(name))
     )
       return reply.code(404).send();
     return reply
       .type("image/webp")
-      .send(fs.createReadStream(path.join(library, name)));
+      .send(fs.createReadStream(path.join(currentAnswers.directory, name)));
   });
   app.get("/api/local/info", { onRequest: requireLocal }, async () => ({
     edition: catalog.edition || "初始题库",
@@ -79,27 +212,33 @@ export async function registerLocal(
     updates: "https://github.com/burriedalien666/zju842-practice/releases",
     qa: "https://github.com/burriedalien666/zju842-practice/discussions/categories/q-a",
   }));
-  app.get("/api/local/updates", { onRequest: requireLocal }, async () => {
-    const response = await fetch(
-      "https://api.github.com/repos/burriedalien666/zju842-practice/releases/latest",
-      {
-        headers: {
-          Accept: "application/vnd.github+json",
-          "User-Agent": "zju842-local",
-        },
-        signal: AbortSignal.timeout(8000),
-      },
-    );
-    if (!response.ok)
-      throw Object.assign(new Error("暂时无法查询发布版本"), {
-        statusCode: 503,
-      });
-    const release = await response.json();
-    return {
-      name: release.name || release.tag_name,
-      url: "https://github.com/burriedalien666/zju842-practice/releases/latest",
-    };
-  });
+  app.get("/api/local/updates", { onRequest: requireLocal }, async () =>
+    updates.status(),
+  );
+  const updateCall = (fn) => async (req, reply) => {
+    try {
+      return await fn(req, reply);
+    } catch (e) {
+      throw Object.assign(e, { statusCode: e.statusCode || 400 });
+    }
+  };
+  app.post(
+    "/api/local/updates/check",
+    { onRequest: requireLocal },
+    updateCall((req) => updates.check(req.body?.automatic === true)),
+  );
+  app.put(
+    "/api/local/updates/settings",
+    { onRequest: requireLocal },
+    updateCall((req) => updates.changeSettings(req.body?.autoCheck)),
+  );
+  app.post(
+    "/api/local/updates/install",
+    { onRequest: requireLocal },
+    updateCall((req) =>
+      updates.start(req.body?.kind, req.body?.target, req.headers["if-match"]),
+    ),
+  );
   app.get("/api/local/study", { onRequest: requireLocal }, async () => {
     return readLocalStudy(db);
   });
@@ -227,29 +366,93 @@ export async function registerLocal(
     { onRequest: requireLocal },
     async (req) => {
       const file = await receive(req, "pack", 2 * 1024 ** 3);
-      const name = "edition-" + randomBytes(8).toString("hex"),
-        destination = path.join(dataDir, "libraries", name);
-      fs.mkdirSync(destination, { recursive: true });
       try {
-        const next = await extractPack(file, destination);
-        const temp = path.join(dataDir, "library.json.tmp");
-        fs.writeFileSync(temp, JSON.stringify({ directory: name }));
-        fs.renameSync(temp, path.join(dataDir, "library.json"));
-        library = destination;
-        Object.keys(catalog).forEach((k) => delete catalog[k]);
-        Object.assign(catalog, next);
-        return {
-          ok: true,
-          questions: catalog.questions.length,
-          edition: catalog.edition,
-        };
+        return await installLibrary(file);
       } catch (error) {
-        fs.rmSync(destination, { recursive: true, force: true });
         throw Object.assign(error, { statusCode: 400 });
       } finally {
         fs.unlinkSync(file);
       }
     },
+  );
+  app.post(
+    "/api/local/import-answers",
+    { onRequest: requireLocal },
+    updateCall(async (req) => {
+      const file = await receive(req, "answer-pack", 1024 ** 3);
+      try {
+        return await installAnswers(file);
+      } finally {
+        fs.unlinkSync(file);
+      }
+    }),
+  );
+  app.post(
+    "/api/local/export-answers",
+    { onRequest: requireLocal },
+    updateCall(async (req, reply) => {
+      const { ids = [], edition, revision } = req.body || {};
+      if (
+        !Array.isArray(ids) ||
+        ids.some((id) => !catalog.questions.some((q) => q.id === id)) ||
+        typeof edition !== "string" ||
+        !edition.trim() ||
+        edition.length > 100 ||
+        !Number.isSafeInteger(revision) ||
+        revision <= official().value.revision
+      )
+        throw new Error("请填写递增的答案版本号、版本说明并选择公开的定稿答案");
+      const old = official(),
+        next = structuredClone(old.value);
+      Object.assign(next, {
+        revision,
+        edition,
+        requiresLibraryRevision: catalog.libraryRevision || 0,
+      });
+      const entries = new Map();
+      for (const file of answerFiles(next))
+        if (file !== "answers.json")
+          entries.set(file, {
+            name: file,
+            file: path.join(old.directory, file),
+          });
+      for (const id of ids) {
+        const row = await db.get(
+          "SELECT published FROM answers WHERE qid=?",
+          id,
+        );
+        const photos = JSON.parse(row?.published || "[]");
+        if (!photos.length) throw new Error("选中的定稿答案已变化，请重新选择");
+        next.answers[id] = [];
+        for (const photo of photos) {
+          const record = await db.get(
+            "SELECT bytes FROM photos WHERE id=? AND qid=?",
+            photo,
+            id,
+          );
+          if (!record) throw new Error("答案图片不存在");
+          const name = "answers/" + photo + ".webp";
+          next.answers[id].push(name);
+          entries.set(name, { name, bytes: Buffer.from(record.bytes) });
+        }
+      }
+      const selected = answerFiles(next),
+        file = path.join(
+          dataDir,
+          "answers-export-" + randomBytes(8).toString("hex") + ".842answers",
+        );
+      await writeZip(file, [
+        { name: "answers.json", bytes: Buffer.from(JSON.stringify(next)) },
+        ...[...entries.values()].filter((e) => selected.has(e.name)),
+      ]);
+      reply.header(
+        "Content-Disposition",
+        'attachment; filename="842-answers.842answers"',
+      );
+      const stream = fs.createReadStream(file);
+      stream.on("close", () => fs.unlinkSync(file));
+      return reply.send(stream);
+    }),
   );
   app.get("/api/local/exportable", { onRequest: requireLocal }, async () => ({
     items: (
