@@ -106,9 +106,12 @@ export async function extractPack(file, destination) {
     throw new Error("更新包图片不完整或包含未引用文件");
   for (const name of expected)
     if (name !== "catalog.json") {
-      const metadata = await sharp(fs.readFileSync(path.join(destination, name)), {
-        limitInputPixels: 60000000,
-      }).metadata();
+      const metadata = await sharp(
+        fs.readFileSync(path.join(destination, name)),
+        {
+          limitInputPixels: 60000000,
+        },
+      ).metadata();
       if (
         !["jpeg", "png", "webp"].includes(metadata.format) ||
         (metadata.pages || 1) > 1

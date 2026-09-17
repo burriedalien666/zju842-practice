@@ -1,0 +1,59 @@
+name: Publish verified desktop release
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Desktop packages run ID
+        required: true
+      revision:
+        description: Commit tested by that run
+        required: true
+permissions:
+  actions: read
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_ID: ${{ inputs.run_id }}
+      REVISION: ${{ inputs.revision }}
+    steps:
+      - name: Verify the tested revision
+        run: |
+          gh run view "$RUN_ID" --json status,conclusion,headSha,workflowName > /tmp/desktop-run.json
+          node -e 'const r=require("/tmp/desktop-run.json");if(r.status!=="completed"||r.conclusion!=="success"||r.headSha!==process.env.REVISION||r.workflowName!=="Desktop packages")process.exit(1)'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.15.0'
+          cache: npm
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: release-assets
+          merge-multiple: true
+      - run: npm ci
+      - name: Prepare the independent library package
+        run: |
+          node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {writeZip,packPaths} from "./server/packs.js";const c=JSON.parse(fs.readFileSync("public/catalog.json"));c.edition="2026-09-17";await writeZip("release-assets/zju842-library-2026-09-17.842pack",[{name:"catalog.json",bytes:Buffer.from(JSON.stringify(c))},...[...packPaths(c)].filter(p=>p!=="catalog.json").map(p=>({name:p,file:path.resolve("public",p)}))]);'
+      - name: Verify package contents
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile
+          assets=list(pathlib.Path('release-assets').glob('*.zip'))
+          assert len(assets)==3,assets
+          for file in assets:
+              with zipfile.ZipFile(file) as archive:
+                  names=archive.namelist()
+                  assert any(n.endswith('/server/desktop.js') for n in names)
+                  assert not any('/.env' in n or '/userdata/' in n or '/data/admin-access' in n or n.endswith('.pdf') for n in names)
+                  print(file.name,round(file.stat().st_size/1048576,2),'MiB')
+          PY
+      - name: Publish release
+        run: |
+          gh release create v0.2.0 release-assets/*.zip release-assets/*.842pack --target "$REVISION" --title 'v0.2.0 本地版：间隔复习与个人答案' --notes 'Windows、Mac Apple 芯片和Mac Intel分别下载对应ZIP，完整解压后启动。无需安装Node.js或Docker。新增到期复习、错题重做、可调整间隔、个人答案、题库独立更新和个人资料备份。各平台已通过打包后启动及重启保存检查。首次下载不必另下842pack；该文件供已有本地版更新题库。题库尚无作者发布的答案，不包含历史AI答案。首次运行可能出现系统来源提示；包未做商业代码签名。请阅读包内使用说明。'

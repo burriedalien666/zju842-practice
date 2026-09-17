@@ -60,7 +60,7 @@ fs.copyFileSync(
 );
 const licenseResponse = await fetch(
   `https://raw.githubusercontent.com/nodejs/node/${process.version}/LICENSE`,
-  {signal:AbortSignal.timeout(20000)}
+  { signal: AbortSignal.timeout(20000) },
 );
 if (!licenseResponse.ok) throw new Error("无法获取运行环境许可证");
 fs.writeFileSync(
