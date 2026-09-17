@@ -24,7 +24,7 @@ const copy = (from, to = from) =>
   fs.cpSync(path.join(root, from), path.join(target, to), { recursive: true });
 for (const name of ["server", "LICENSE", "CONTENT-NOTICE.md", "package.json"])
   copy(name);
-for (const name of ["study.js", "review.js"]) copy("src/" + name);
+for (const name of ["study.js", "review.js", "papers.js"]) copy("src/" + name);
 copy("dist/index.html");
 copy("dist/assets");
 const catalog = JSON.parse(

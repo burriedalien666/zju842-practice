@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "settings": {"intervals": [1, 3, 7]},
+  "records": {
+    "2009|一|1": {"state": "review", "star": true, "review": {"stage": 0, "lapses": 1, "attempts": 1, "due": 1600000000000, "last": 1599999400000, "rating": "wrong", "wrong": true}},
+    "2009|一|2": {"state": "review", "star": true},
+    "2009|一|3": {"state": "done", "star": false}
+  },
+  "lists": [{"name": "人工测试题单", "ids": ["2009|一|1", "2009|一|2"]}]
+}

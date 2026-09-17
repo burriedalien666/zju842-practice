@@ -1,4 +1,5 @@
 import { reviewSettings, validateReview } from "./review.js";
+import { validateExamDate, validatePaperRuns } from "./papers.js";
 export const STORAGE_KEY = "zju842-study-v3";
 export function emptyStudy() {
   return { version: 1, records: {}, lists: [] };
@@ -15,6 +16,19 @@ export function validateStudy(input, ids) {
   )
     throw new Error("学习记录格式不正确");
   const clean = emptyStudy();
+  if (input.examDate !== undefined)
+    clean.examDate = validateExamDate(input.examDate);
+  if (input.papers !== undefined)
+    clean.papers = validatePaperRuns(input.papers);
+  if (input.lastQuestion !== undefined) {
+    if (
+      typeof input.lastQuestion !== "string" ||
+      !input.lastQuestion ||
+      input.lastQuestion.length > 160
+    )
+      throw new Error("最近练习记录格式不正确");
+    clean.lastQuestion = input.lastQuestion;
+  }
   if (input.version === 2 || input.settings) {
     clean.version = 2;
     clean.settings = reviewSettings(input.settings);

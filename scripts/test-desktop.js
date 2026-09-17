@@ -69,11 +69,19 @@ try {
     settings: { intervals: [1, 3, 7] },
     lists: [],
   };
+  const initial = await (
+    await fetch(base + "/api/local/study", { headers: { cookie } })
+  ).json();
   assert.equal(
     (
       await fetch(base + "/api/local/study", {
         method: "PUT",
-        headers: { cookie, Origin: base, "Content-Type": "application/json" },
+        headers: {
+          cookie,
+          Origin: base,
+          "Content-Type": "application/json",
+          "If-Match": initial.revision,
+        },
         body: JSON.stringify(state),
       })
     ).status,

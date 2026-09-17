@@ -6,6 +6,13 @@ import { DatabaseSync, backup } from "node:sqlite";
 import { validateStudy, emptyStudy } from "../src/study.js";
 import { packPaths, writeZip, extractPack } from "./packs.js";
 import { loadCatalog } from "./catalog.js";
+import {
+  ensureLocalStudySchema,
+  readLocalStudy,
+  writeLocalStudy,
+  assertStudyRevision,
+  replaceLocalStudy,
+} from "./study-version.js";
 
 export function currentLibrary(dataDir, baseDir) {
   const pointer = path.join(dataDir, "library.json");
@@ -21,12 +28,11 @@ export async function registerLocal(
   { dataDir, catalog, baseDir, launchToken, origin },
 ) {
   const db = app.db;
+  const cookieName = "local_session_" + new URL(origin).port;
   let library = currentLibrary(dataDir, baseDir);
-  await db.run(
-    "CREATE TABLE IF NOT EXISTS local_state(id INTEGER PRIMARY KEY CHECK(id=1),value TEXT NOT NULL)",
-  );
+  await ensureLocalStudySchema(db);
   async function requireLocal(req) {
-    if (req.cookies.local_session !== launchToken)
+    if (req.cookies[cookieName] !== launchToken)
       throw Object.assign(new Error("请通过本地启动器打开题库"), {
         statusCode: 401,
       });
@@ -34,7 +40,7 @@ export async function registerLocal(
   app.get("/__open/:token", async (req, reply) => {
     if (req.params.token !== launchToken)
       return reply.code(403).send("启动链接无效");
-    reply.setCookie("local_session", launchToken, {
+    reply.setCookie(cookieName, launchToken, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -94,8 +100,7 @@ export async function registerLocal(
     };
   });
   app.get("/api/local/study", { onRequest: requireLocal }, async () => {
-    const row = await db.get("SELECT value FROM local_state WHERE id=1");
-    return { study: row ? JSON.parse(row.value) : null };
+    return readLocalStudy(db);
   });
   app.put(
     "/api/local/study",
@@ -105,11 +110,7 @@ export async function registerLocal(
         req.body,
         new Set(catalog.questions.map((q) => q.id)),
       );
-      await db.run(
-        "INSERT OR REPLACE INTO local_state VALUES(1,?)",
-        JSON.stringify(study),
-      );
-      return { ok: true };
+      return writeLocalStudy(db, study, req.headers["if-match"]);
     },
   );
   app.get(
@@ -190,6 +191,7 @@ export async function registerLocal(
           )
             throw new Error("备份答案不完整");
       await db.transaction(async (tx) => {
+        const revision = await assertStudyRevision(tx, req.headers["if-match"]);
         await tx.run("DELETE FROM answers");
         await tx.run("DELETE FROM photos");
         for (const p of photoRows) {
@@ -211,10 +213,7 @@ export async function registerLocal(
             a.published,
             a.updated,
           );
-        await tx.run(
-          "INSERT OR REPLACE INTO local_state VALUES(1,?)",
-          JSON.stringify(study),
-        );
+        await replaceLocalStudy(tx, study, revision);
       });
       return { ok: true };
     } finally {

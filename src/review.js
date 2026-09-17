@@ -35,7 +35,10 @@ export function validateReview(r) {
     typeof r.wrong !== "boolean"
   )
     throw new Error("复习记录格式不正确");
+  if (r.suspended !== undefined && typeof r.suspended !== "boolean")
+    throw new Error("复习暂停状态不合法");
   return {
+    ...(r.suspended !== undefined ? { suspended: r.suspended } : {}),
     stage: r.stage,
     lapses: r.lapses,
     attempts: r.attempts,
@@ -88,7 +91,9 @@ export function scheduleReview(
   };
 }
 export function isDue(record, now = Date.now()) {
-  return !!record?.review && record.review.due <= now;
+  return (
+    !!record?.review && !record.review.suspended && record.review.due <= now
+  );
 }
 export function dueIds(questions, records, now = Date.now()) {
   return questions

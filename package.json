@@ -16,6 +16,7 @@
     "build": "vite build",
     "start": "node --env-file-if-exists=.env server/index.js",
     "test": "node --test tests/*.test.js",
+    "test:core": "node --test tests/chapters.test.js tests/interactions.test.js tests/learning-view.test.js tests/papers.test.js tests/review.test.js tests/study.test.js tests/persistence.test.js tests/study-version.test.js",
     "format": "prettier --write src server scripts tests docs README.md index.html vite.config.js",
     "admin:setup": "node --env-file-if-exists=.env scripts/setup-admin.js",
     "import:questions": "node scripts/import-questions.js"

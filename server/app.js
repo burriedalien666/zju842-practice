@@ -82,7 +82,7 @@ export async function createApp({
       throw fail(403, "请求来源不匹配，请从网站页面操作");
   });
   async function isAdmin(req) {
-    if (local) return req.cookies.local_session === local.launchToken;
+    if (local) return req.cookies['local_session_' + new URL(origin).port] === local.launchToken;
     const token = req.cookies.session;
     return (
       typeof token === "string" &&

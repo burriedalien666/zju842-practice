@@ -1,4 +1,23 @@
 import "./style.css";
+import "./navigation.css";
+import "./papers.css";
+import { StudySaver } from "./persistence.js";
+import {
+  buildChapters,
+  chapterForType,
+  chapterForQuestion,
+  filterQuestions,
+} from "./chapters.js";
+import { paintNavigation } from "./navigation.js";
+import {
+  scopeName,
+  toggleMark,
+  removeScopeMark,
+  reconcileSelection,
+  clearSearchFilters,
+} from "./interactions.js";
+import { examPapers, validateExamDate, paperStats } from "./papers.js";
+import { paintPapers, countdownMarkup, ratingText } from "./paper-view.js";
 import {
   scheduleReview,
   isDue,
@@ -27,7 +46,12 @@ const subjects = { signals: "信号与系统", digital: "数字电路" };
 const app = $("#app");
 let localMode = false,
   saveQueue = Promise.resolve(),
+  saver = null,
   pendingSaves = 0;
+let page = "modules",
+  chapters = [];
+let focusMode = false;
+let paperYear = "";
 let catalog,
   study,
   admin = false,
@@ -41,6 +65,7 @@ let filters = {
   source: "",
   year: "",
   type: "",
+  chapter: "",
   status: "",
   list: "",
   search: "",
@@ -58,7 +83,10 @@ async function api(url, options = {}) {
     },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "操作失败");
+  if (!res.ok)
+    throw Object.assign(new Error(data.error || "操作失败"), {
+      statusCode: res.status,
+    });
   return data;
 }
 function toast(message) {
@@ -67,20 +95,28 @@ function toast(message) {
   clearTimeout(toast.timer);
   toast.timer = setTimeout(() => $("#notice").classList.remove("show"), 4500);
 }
+function renderSaveStatus() {
+  const slot = $("#save-status");
+  if (!slot || !saver) return;
+  pendingSaves = saver.dirty ? 1 : 0;
+  slot.hidden = false;
+  slot.classList.toggle("save-warning", !!saver.error);
+  slot.innerHTML = saver.error
+    ? `<span><strong>尚未保存到本机</strong>：${esc(saver.error.message)}${saver.durable ? "（本标签页刷新可恢复；关闭前请导出）" : "；浏览器暂存也不可用，请立即导出"}</span><div>${saver.error.statusCode === 409 ? "" : button("retry-save", "重试保存")}${button("export", "导出本页记录")}${button("reload-study", "读取磁盘记录", "text-button")}</div>`
+    : `<span>${saver.dirty ? "正在保存到本机…" : "已保存到本机"}</span>`;
+}
 function persist() {
-  if (localMode) {
-    const payload = JSON.stringify(study);
-    pendingSaves++;
-    saveQueue = saveQueue
-      .then(() => api("/local/study", { method: "PUT", body: payload }))
-      .catch((e) => toast("保存失败：" + e.message + "；请导出记录"))
-      .finally(() => pendingSaves--);
-  }
+  if (localMode && saver) saveQueue = saver.queue(study);
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(study));
+    if (!localMode) localStorage.setItem(STORAGE_KEY, JSON.stringify(study));
   } catch {
     toast("浏览器无法保存记录，请先导出备份");
   }
+}
+async function requireSavedStudy() {
+  await saveQueue;
+  if (saver?.dirty)
+    throw new Error("尚有未写入磁盘的记录，请先重试保存或导出本页记录");
 }
 function record(id) {
   return study.records[id] || { star: false, state: "" };
@@ -112,7 +148,45 @@ function layout() {
     .map((y) => `<option>${y}</option>`)
     .join(
       "",
-    )}</select></div><div class="filter-row"><select id="type" aria-label="题型"></select><span id="count"></span></div><div class="practice-bar">${button("practice", "顺序练习", "primary")}${button("random", "随机练习")}${button("clear", "重置筛选", "text-button")}</div><div id="question-list" class="question-list"></div></div><article id="reader" class="reader"><div class="empty">选择一道题开始</div></article></section></main><dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2>${button("close-dialog", "×", "icon", 'aria-label="关闭"')}</div><div id="dialog-body"></div></dialog><div id="notice" class="notice" role="status"></div>`;
+    )}</select></div><div class="filter-row">${button("back-chapter", "章节目录", "text-button")}<span id="count"></span></div><div class="practice-bar">${button("practice", "顺序练习", "primary")}${button("random", "随机练习")}${button("clear", "重置筛选", "text-button")}</div><div id="question-list" class="question-list"></div></div><article id="reader" class="reader"><div class="empty">选择一道题开始</div></article></section></main><dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2>${button("close-dialog", "×", "icon", 'aria-label="关闭"')}</div><div id="dialog-body"></div></dialog><div id="notice" class="notice" role="status"></div>`;
+  $(".topbar").insertAdjacentHTML(
+    "beforebegin",
+    '<nav id="breadcrumb" class="breadcrumb" aria-label="当前位置"></nav>',
+  );
+  $(".subjects").insertAdjacentHTML(
+    "afterend",
+    button("modules", "▦ 章节学习"),
+  );
+  $('[data-action="modules"]').insertAdjacentHTML(
+    "afterend",
+    button("papers", "▤ 历年真题卷"),
+  );
+  $(".topbar").insertAdjacentHTML(
+    "afterbegin",
+    '<div id="exam-countdown-slot"></div>',
+  );
+  $(".sidebar").insertAdjacentHTML(
+    "beforeend",
+    '<nav id="chapter-shortcuts" class="chapter-shortcuts" aria-label="本学科章节目录"></nav>',
+  );
+  $(".study-nav").previousElementSibling.before($("#chapter-shortcuts"));
+  const workspace = $(".workspace");
+  const toolbar = $(".catalog-panel>.filter-row");
+  toolbar.className = "course-toolbar";
+  toolbar.append($('[data-action="clear"]'));
+  workspace.before(toolbar);
+  toolbar.insertAdjacentHTML(
+    "afterend",
+    '<div id="learning-scope" class="learning-scope" hidden></div>',
+  );
+  workspace.insertAdjacentHTML(
+    "beforebegin",
+    '<div id="reading-tools" class="reading-tools" hidden></div>',
+  );
+  workspace.insertAdjacentHTML(
+    "beforebegin",
+    '<section id="chapter-browser" class="chapter-browser" aria-label="章节与题型"></section>',
+  );
   $("#search").value = filters.search;
   $(".study-nav").insertAdjacentHTML(
     "beforeend",
@@ -123,12 +197,12 @@ function layout() {
   $("#year").value = filters.year;
   $("#search").addEventListener("input", (e) => {
     filters.search = e.target.value;
-    renderList();
+    refreshFilters();
   });
-  for (const name of ["source", "year", "type"])
+  for (const name of ["source", "year"])
     $("#" + name).addEventListener("change", (e) => {
       filters[name] = e.target.value;
-      renderList();
+      refreshFilters();
     });
   $("#import-file").addEventListener("change", importRecords);
   $("#dialog").addEventListener("cancel", (e) => {
@@ -137,21 +211,13 @@ function layout() {
   $("#dialog").addEventListener("close", () => {
     if (adminDraft && current) renderReader();
   });
-  renderTypes();
+  $(".topbar").insertAdjacentHTML(
+    "afterend",
+    '<div id="save-status" class="save-status" role="status" hidden></div>',
+  );
+  renderSaveStatus();
   renderLists();
   renderList();
-}
-function renderTypes() {
-  $("#type").innerHTML =
-    '<option value="">全部题型</option>' +
-    catalog.types
-      .filter((t) => t.subject === filters.subject)
-      .map(
-        (t) =>
-          `<option value="${esc(t.id)}">${esc(t.groupTitle)} · ${esc(t.title)}</option>`,
-      )
-      .join("");
-  $("#type").value = filters.type;
 }
 function renderLists() {
   $("#lists").innerHTML =
@@ -162,28 +228,59 @@ function renderLists() {
       )
       .join("") || '<span class="muted small">暂无题单</span>';
 }
-function renderList() {
-  const list = study.lists.find((l) => l.name === filters.list);
-  visible = catalog.questions.filter(
-    (q) =>
-      q.subject === filters.subject &&
-      (!filters.source || q.sourceKind === filters.source) &&
-      (!filters.year || q.year === Number(filters.year)) &&
-      (!filters.type || q.typeId === filters.type) &&
-      (!filters.status ||
-        (filters.status === "star"
-          ? record(q.id).star
-          : filters.status === "due"
-            ? isDue(record(q.id))
-            : filters.status === "wrong"
-              ? record(q.id).review?.wrong
-              : record(q.id).state === filters.status)) &&
-      (!filters.list || list?.ids.includes(q.id)) &&
-      (!filters.search ||
-        `${q.id} ${q.title} ${q.number} ${q.year} ${q.tags.join(" ")} ${catalog.types.find((t) => t.id === q.typeId)?.title}`
-          .toLowerCase()
-          .includes(filters.search.toLowerCase())),
+function refreshFilters() {
+  queue = [];
+  renderList();
+  if (page !== "reader") {
+    rememberNavigation();
+    return;
+  }
+  if (visible.length) {
+    if (!visible.some((q) => q.id === current))
+      openQuestion(visible[0].id, true);
+    else renderReader();
+  } else {
+    current = null;
+    syncNavigation();
+    renderEmptyReader();
+  }
+  rememberNavigation();
+}
+function renderEmptyReader() {
+  readerVersion++;
+  answerData = null;
+  adminDraft = null;
+  queue = [];
+  $("#reader").innerHTML =
+    `<div class="empty reader-empty"><h2>暂无${esc(scopeName(filters) || "符合条件的")}题目</h2><p>可以选择其他章节，或返回当前列表。</p><div>${button("chapter-picker", "切换章节", "primary")}${button("scope-back", "返回" + (scopeName(filters) || "全部题目"))}${button("scope-clear", "浏览全部题目", "text-button")}</div></div>`;
+}
+function reconcileLearningView(previousIds) {
+  renderLists();
+  renderList();
+  if (page !== "reader") return;
+  const next = reconcileSelection(
+    previousIds,
+    visible.map((q) => q.id),
+    current,
+    queue,
   );
+  current = next.current;
+  queue = next.queue;
+  syncNavigation();
+  renderList();
+  if (current) renderReader();
+  else renderEmptyReader();
+}
+function renderList() {
+  $("#exam-countdown-slot").innerHTML = countdownMarkup(study.examDate);
+  $(".course-toolbar").hidden = page === "papers" || page === "paper";
+  if (page === "papers" || page === "paper") {
+    app.classList.remove("focus-mode");
+    paintPapers({ catalog, study, year: page === "paper" ? paperYear : "" });
+    return;
+  }
+  $('[data-action="papers"]').classList.remove("active");
+  visible = filterQuestions(catalog, filters, study, chapters);
   $("#heading").textContent = filters.list || subjects[filters.subject];
   if (filters.status === "due") {
     visible.sort((a, b) => record(a.id).review.due - record(b.id).review.due);
@@ -208,9 +305,33 @@ function renderList() {
     .forEach((b) =>
       b.classList.toggle(
         "active",
-        b.dataset.value === filters.status && !filters.list,
+        ["reader", "chapter"].includes(page) &&
+          b.dataset.value === filters.status &&
+          !filters.list,
       ),
     );
+  paintNavigation({
+    chapters,
+    catalog,
+    filters,
+    page,
+    records: study.records,
+    matching: filterQuestions(catalog, filters, study, chapters, false),
+    current,
+    lastQuestion: study.lastQuestion,
+    focusMode,
+  });
+  app.classList.toggle("focus-mode", page === "reader" && focusMode);
+  $("#reading-tools").hidden = page !== "reader";
+  if (page === "reader") {
+    const chapter = chapters.find((c) => c.id === filters.chapter);
+    const questions = queue.includes(current)
+        ? queue
+        : visible.map((q) => q.id),
+      index = questions.indexOf(current);
+    $("#reading-tools").innerHTML =
+      `<div class="reading-location">${button("chapter-picker", "☷ 切换章节", "text-button")}<span>${esc(chapter?.title || subjects[filters.subject])}</span></div><div class="reading-steps"><span>${index >= 0 ? index + 1 : 0} / ${questions.length}</span>${button("previous", "← 上一题", "", index <= 0 ? "disabled" : "")}${button("next", "下一题 →", "primary", index < 0 || index >= questions.length - 1 ? "disabled" : "")}${button("focus", focusMode ? "退出专注" : "专注做题", "", `aria-pressed="${focusMode}"`)}</div>`;
+  }
 }
 function openQuestion(id, replace = false) {
   if (busy) {
@@ -222,14 +343,21 @@ function openQuestion(id, replace = false) {
     toast("此题目链接不存在");
     return;
   }
+  page = "reader";
   current = id;
+  if (study.lastQuestion !== id) {
+    study.lastQuestion = id;
+    persist();
+  }
   if (filters.subject !== q.subject) {
     filters.subject = q.subject;
+    filters.chapter = chapterForQuestion(chapters, q)?.id || "";
     filters.type = "";
     layout();
   }
   const url = new URL(location.href);
   url.searchParams.set("q", id);
+  url.searchParams.delete("paper");
   history[replace ? "replaceState" : "pushState"]({}, "", url);
   renderList();
   renderReader();
@@ -241,7 +369,9 @@ async function renderReader() {
   answerData = null;
   adminDraft = null;
   const r = record(q.id),
-    type = catalog.types.find((t) => t.id === q.typeId);
+    type =
+      chapterForQuestion(chapters, q)?.types.find((t) => t.id === q.typeId) ||
+      catalog.types.find((t) => t.id === q.typeId);
   $("#reader").innerHTML =
     `<div class="reader-heading"><div><span class="eyebrow">${esc(q.sourceTitle)}</span><h2>${q.year}年 · ${esc(q.number)}</h2></div>${button("share", "分享", "text-button")}</div><div class="reader-type">${esc(type.title)}</div><div class="reader-actions">${button("star", r.star ? "★ 已收藏" : "☆ 收藏", r.star ? "active" : "")}${button("review", "待复习", r.state === "review" ? "active" : "")}${button("done", "已掌握", r.state === "done" ? "active" : "")}${button("add-list", "加入题单")}</div><div class="question-images">${q.images.map((im) => `<button class="image-button" data-action="zoom" data-src="/${esc(im.src)}" aria-label="放大题目图片"><img src="/${esc(im.src)}" width="${im.width}" height="${im.height}" alt="${esc(q.year + "年 " + q.number + " 原题")}" loading="lazy"></button>${im.caption ? `<p class="muted small">${esc(im.caption)}</p>` : ""}`).join("")}</div>${q.note ? `<p class="source-note">${esc(q.note)}</p>` : ""}<div class="answer-section"><div class="row"><h3>参考答案</h3>${admin ? button("edit-answer", "编辑照片答案", "text-button") : ""}</div><div id="answer-content" class="muted small">正在读取…</div></div><footer class="reader-footer">${button("previous", "上一题")}${button("next", "下一题", "primary")}<span id="queue-position" class="muted small"></span>${button("correction", "题目纠错", "text-button")}</footer>`;
   $(".reader-footer").insertAdjacentHTML(
@@ -252,25 +382,64 @@ async function renderReader() {
     $('[data-action="share"]').textContent = "复制题号";
     if (admin) $('[data-action="edit-answer"]').textContent = "编辑我的答案";
   }
+  $('[data-action="star"]').textContent = r.star ? "★ 取消收藏" : "☆ 收藏";
+  $('[data-action="review"]').textContent =
+    r.state === "review" ? "取消待复习" : "加入待复习";
+  $('[data-action="done"]').textContent =
+    r.state === "done" ? "取消掌握" : "标记掌握";
+  if (scopeName(filters))
+    $(".reader-actions").insertAdjacentHTML(
+      "beforeend",
+      button(
+        "remove-view",
+        filters.list
+          ? "移出当前题单"
+          : {
+              star: "移出收藏",
+              review: "移出待复习",
+              done: "取消掌握标记",
+              wrong: "移出错题",
+              due: "暂停这题复习",
+            }[filters.status],
+        "remove-view",
+      ),
+    );
+  if (r.review?.suspended) {
+    $(".review-panel p").textContent =
+      `已暂停自动复习 · 累计错误 ${r.review.lapses} 次`;
+    $(".review-panel").insertAdjacentHTML(
+      "beforeend",
+      button("resume-review", "恢复自动复习"),
+    );
+  }
   const ids = queue.includes(current) ? queue : visible.map((q) => q.id),
     i = ids.indexOf(current);
   $("#queue-position").textContent = i >= 0 ? `${i + 1} / ${ids.length}` : "";
-  $('[data-action="previous"]').disabled = i <= 0;
-  $('[data-action="next"]').disabled = i < 0 || i >= ids.length - 1;
+  document
+    .querySelectorAll('[data-action="previous"]')
+    .forEach((b) => (b.disabled = i <= 0));
+  document
+    .querySelectorAll('[data-action="next"]')
+    .forEach((b) => (b.disabled = i < 0 || i >= ids.length - 1));
   try {
     const result = await api("/answers/" + enc(q.id));
     if (version !== readerVersion) return;
     answerData = result;
     if (localMode) {
-      const official = await api("/local/official/" + enc(q.id));
+      const [official, personal] = await Promise.all([
+        api("/local/official/" + enc(q.id)),
+        admin
+          ? api("/admin/answers/" + enc(q.id))
+          : Promise.resolve({ draft: [] }),
+      ]);
       if (version !== readerVersion) return;
       answerData = { ...result, official: official.photos };
       $("#answer-content").innerHTML =
-        `<div class="answer-tabs">${official.photos.length ? button("show-official", "题库答案 · " + official.photos.length + " 张") : "<span>题库暂无答案</span>"}${result.photos.length ? button("show-answer", "我的答案 · " + result.photos.length + " 张") : ""}</div>`;
+        `<div class="answer-tabs">${official.photos.length ? button("show-official", "题库答案 · " + official.photos.length + " 张", "", 'aria-pressed="false"') : "<span>题库暂无答案</span>"}${result.photos.length ? button("show-answer", "我的定稿 · " + result.photos.length + " 张", "", 'aria-pressed="false"') : ""}${personal.draft.length ? button("edit-answer", "继续编辑草稿 · " + personal.draft.length + " 张", "text-button") : ""}</div><div id="answer-view" hidden></div>`;
       return;
     }
     $("#answer-content").innerHTML = result.photos.length
-      ? button("show-answer", `查看答案 · ${result.photos.length} 张`)
+      ? `<div class="answer-tabs">${button("show-answer", `查看答案 · ${result.photos.length} 张`, "", 'aria-pressed="false"')}</div><div id="answer-view" hidden></div>`
       : "暂无已发布答案";
   } catch (e) {
     if (version === readerVersion) $("#answer-content").textContent = e.message;
@@ -291,8 +460,38 @@ function photoHtml(ids) {
     )
     .join("");
 }
+function toggleAnswer(kind) {
+  const view = $("#answer-view");
+  if (!view || !answerData) return;
+  const hide = !view.hidden && view.dataset.kind === kind;
+  view.hidden = hide;
+  view.dataset.kind = kind;
+  view.innerHTML = hide
+    ? ""
+    : kind === "official"
+      ? answerData.official
+          .map(
+            (src) =>
+              `<button class="image-button" data-action="zoom" data-src="${esc(src)}" aria-label="放大题库答案"><img src="${esc(src)}" alt="题库答案"></button>`,
+          )
+          .join("")
+      : photoHtml(answerData.photos);
+  for (const [action, source] of [
+    ["show-official", "official"],
+    ["show-answer", "personal"],
+  ]) {
+    const control = $(`[data-action="${action}"]`, $("#answer-content"));
+    if (control) {
+      control.setAttribute("aria-pressed", String(!hide && kind === source));
+      control.classList.toggle("active", !hide && kind === source);
+    }
+  }
+}
 async function editAnswer() {
-  adminDraft = await api("/admin/answers/" + enc(current));
+  const id = current;
+  const draft = await api("/admin/answers/" + enc(id));
+  if (current !== id || page !== "reader") return;
+  adminDraft = draft;
   renderEditor();
 }
 function renderEditor() {
@@ -388,12 +587,17 @@ async function importRecords(e) {
       `<p>将替换当前${localMode ? "本地" : "浏览器"}记录：${Object.keys(imported.records).length} 道题的标记、${imported.lists.length} 个题单。</p>${button("confirm-import", "确认替换", "primary")}`,
     );
     $('[data-action="confirm-import"]').onclick = () => {
+      const previousIds = visible.map((q) => q.id);
       study = imported;
+      if (page === "paper" && !study.papers?.[paperYear]) {
+        page = "papers";
+        paperYear = "";
+      }
       persist();
       $("#dialog").close();
-      renderLists();
-      renderList();
-      renderReader();
+      reconcileLearningView(previousIds);
+      syncNavigation();
+      rememberNavigation();
       toast("记录已导入");
     };
   } catch (error) {
@@ -410,7 +614,303 @@ document.addEventListener("click", async (e) => {
     return;
   }
   try {
+    if (action === "retry-save") {
+      saveQueue = saver.retry();
+      await saveQueue;
+      return;
+    }
+    if (action === "reload-study") {
+      dialog(
+        "读取磁盘记录",
+        `<p>将放弃本页未保存的改动，读取磁盘中的最新记录。请先导出本页记录以免丢失。</p>${button("export", "先导出本页记录", "primary")}${button("confirm-reload-study", "放弃本页改动并读取")}`,
+      );
+      return;
+    }
+    if (action === "confirm-reload-study") {
+      await saveQueue;
+      const saved = await api("/local/study");
+      const nextStudy = validateStudy(
+        saved.study || emptyStudy(),
+        new Set(catalog.questions.map((q) => q.id)),
+      );
+      const previousIds = visible.map((q) => q.id);
+      saver.reset(saved.revision);
+      study = nextStudy;
+      if (page === "paper" && !study.papers?.[paperYear]) {
+        page = "papers";
+        paperYear = "";
+      }
+      $("#dialog").close();
+      reconcileLearningView(previousIds);
+      syncNavigation();
+      toast("已读取磁盘记录");
+      return;
+    }
+    if (action === "remove-view") {
+      if (!current) return;
+      const ids = visible.map((q) => q.id),
+        name = scopeName(filters);
+      removeScopeMark(study, current, filters);
+      persist();
+      reconcileLearningView(ids);
+      toast(
+        filters.status === "due"
+          ? "已暂停这题的到期提醒，历史记录保留"
+          : "已移出" + name + "，其他标记和答案保留",
+      );
+      return;
+    }
+    if (action === "resume-review") {
+      const r = record(current);
+      if (r.review) {
+        r.review.suspended = false;
+        r.review.due = Date.now();
+        study.records[current] = r;
+        persist();
+        renderReader();
+        toast("已恢复，加入到期复习");
+      }
+      return;
+    }
+    if (action === "scope-back") {
+      if ($("#dialog").open) $("#dialog").close();
+      filters.chapter = "";
+      filters.type = "";
+      current = null;
+      queue = [];
+      page = "reader";
+      syncNavigation();
+      reconcileLearningView([]);
+      return;
+    }
+    if (action === "scope-clear") {
+      if ($("#dialog").open) $("#dialog").close();
+      filters.status = "";
+      filters.list = "";
+      filters = clearSearchFilters(filters);
+      current = null;
+      queue = [];
+      if (page === "reader") {
+        syncNavigation();
+        reconcileLearningView([]);
+      } else {
+        syncNavigation();
+        renderList();
+      }
+      return;
+    }
+    if (action === "exam-date") {
+      dialog(
+        "考研倒计时",
+        `<form id="exam-date-form"><label>你的目标考试日期<input type="date" name="date" required min="2020-01-01" max="2099-12-31" value="${esc(study.examDate || "")}"></label><p class="muted small">按本地日历计算剩余天数，30天内突出提醒。请以报考当年的官方通知为准。</p><button class="primary">保存日期</button>${button("exam-date-clear", "暂不显示天数")}</form>`,
+      );
+      $("#exam-date-form").onsubmit = (e) => {
+        e.preventDefault();
+        try {
+          study.examDate = validateExamDate(new FormData(e.target).get("date"));
+          persist();
+          $("#dialog").close();
+          renderList();
+        } catch (error) {
+          toast(error.message);
+        }
+      };
+      return;
+    }
+    if (action === "exam-date-clear") {
+      study.examDate = "";
+      persist();
+      $("#dialog").close();
+      renderList();
+      return;
+    }
+    if (action === "papers") {
+      page = "papers";
+      current = null;
+      queue = [];
+      paperYear = "";
+      syncNavigation();
+      layout();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "open-paper") {
+      paperYear = b.dataset.year;
+      page = "paper";
+      current = null;
+      queue = [];
+      study.papers ||= {};
+      study.papers[paperYear] ||= {
+        started: Date.now(),
+        finished: null,
+        marks: {},
+      };
+      persist();
+      syncNavigation();
+      renderList();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "paper-jump") {
+      e.preventDefault();
+      document
+        .getElementById("paper-" + encodeURIComponent(b.dataset.id))
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (action === "paper-grade") {
+      const id = b.dataset.id,
+        rating = b.dataset.rating,
+        run = study.papers[paperYear];
+      if (run.finished !== null) {
+        toast("本轮已结束；请重新做一轮后再标记");
+        return;
+      }
+      run.marks[id] = rating;
+      if (rating !== "done") {
+        const r = { ...record(id) };
+        r.review = scheduleReview(r.review, rating, study.settings);
+        r.state = rating === "good" ? "done" : "review";
+        study.records[id] = r;
+        study.version = 2;
+        study.settings = reviewSettings(study.settings);
+      }
+      persist();
+      b.closest(".paper-question").querySelector(".paper-result").textContent =
+        ratingText(rating);
+      document.querySelectorAll(".paper-index a").forEach((a) => {
+        if (a.dataset.id === id) a.classList.add("answered");
+      });
+      const stats = paperStats(
+        examPapers(catalog).find((p) => p.id === paperYear),
+        run,
+      );
+      $("#paper-progress").textContent =
+        `本轮已做 ${stats.completed} / ${stats.total}`;
+      return;
+    }
+    if (action === "paper-answer") {
+      const panel = b.closest(".paper-question").querySelector(".paper-answer");
+      if (panel.childElementCount) {
+        panel.innerHTML = "";
+        b.textContent = "查看答案";
+        return;
+      }
+      b.disabled = true;
+      try {
+        const id = b.dataset.id;
+        const [personal, official] = await Promise.all([
+          api("/answers/" + enc(id)),
+          localMode
+            ? api("/local/official/" + enc(id))
+            : Promise.resolve({ photos: [] }),
+        ]);
+        panel.innerHTML = `${official.photos.length ? "<h3>题库答案</h3>" + official.photos.map((src) => `<button class="image-button" data-action="zoom" data-src="${esc(src)}"><img src="${esc(src)}" alt="题库答案" loading="lazy"></button>`).join("") : ""}${personal.photos.length ? "<h3>我的答案</h3>" + photoHtml(personal.photos) : ""}${!official.photos.length && !personal.photos.length ? '<p class="muted">这道题暂无答案</p>' : ""}`;
+        b.textContent = "收起答案";
+      } finally {
+        b.disabled = false;
+      }
+      return;
+    }
+    if (action === "paper-finish") {
+      const run = study.papers[paperYear],
+        paper = examPapers(catalog).find((p) => p.id === paperYear),
+        stats = paperStats(paper, run);
+      dialog(
+        "本轮整卷总结",
+        `<p>${paperYear} 年 · 已标记 ${stats.completed}/${stats.total} 项</p><p>未标记 ${stats.total - stats.completed} 项 · 做错 ${stats.wrong} 项 · 独立答对 ${stats.good} 项</p><p class="muted small">根据本轮自评统计，不是试卷得分。做错的题已进入错题与复习安排。</p>${button("paper-confirm-finish", run.finished ? "关闭总结" : "结束本轮", "primary")}`,
+      );
+      return;
+    }
+    if (action === "paper-confirm-finish") {
+      study.papers[paperYear].finished ||= Date.now();
+      persist();
+      $("#dialog").close();
+      renderList();
+      return;
+    }
+    if (action === "paper-restart") {
+      dialog(
+        "重新做一轮",
+        `<p>清空本卷的本轮作答标记，从头开始。个人答案和复习记录不受影响。</p>${button("paper-confirm-restart", "确认开始新一轮", "primary")}`,
+      );
+      return;
+    }
+    if (action === "paper-confirm-restart") {
+      study.papers[paperYear] = {
+        started: Date.now(),
+        finished: null,
+        marks: {},
+      };
+      persist();
+      $("#dialog").close();
+      renderList();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "focus") {
+      focusMode = !focusMode;
+      renderList();
+      return;
+    }
+    if (action === "resume") {
+      const q = catalog.questions.find((q) => q.id === study.lastQuestion);
+      if (!q) return;
+      filters = {
+        subject: q.subject,
+        chapter: chapterForQuestion(chapters, q)?.id || "",
+        type: q.typeId,
+        source: "",
+        year: "",
+        status: "",
+        list: "",
+        search: "",
+      };
+      queue = [];
+      page = "reader";
+      layout();
+      openQuestion(q.id);
+      return;
+    }
+    if (action === "chapter-picker") {
+      const matching = filterQuestions(
+        catalog,
+        filters,
+        study,
+        chapters,
+        false,
+      );
+      dialog(
+        "切换章节",
+        `<p class="scope-picker-note">当前范围：${esc(scopeName(filters) || "全部题目")} · ${subjects[filters.subject]}</p><div class="chapter-picker-grid">${chapters
+          .filter((c) => c.subject === filters.subject)
+          .map((c) =>
+            button(
+              "picker-chapter",
+              `<small>${esc(c.number)}</small><span>${esc(c.title)}</span><em>${matching.filter((q) => c.questionIds.has(q.id)).length} 题</em>`,
+              c.id === filters.chapter ? "active" : "",
+              `data-id="${c.id}"`,
+            ),
+          )
+          .join("")}</div>`,
+      );
+      return;
+    }
+    if (action === "picker-chapter") {
+      $("#dialog").close();
+      filters.chapter = b.dataset.id;
+      filters.type = "";
+      page = "chapter";
+      current = null;
+      queue = [];
+      syncNavigation();
+      renderList();
+      window.scrollTo(0, 0);
+      return;
+    }
     if (action.startsWith("grade-")) {
+      if (!current) return;
+      const previousIds = visible.map((q) => q.id);
       const rating = action.slice(6),
         r = { ...record(current) };
       if (!queue.includes(current)) queue = visible.map((q) => q.id);
@@ -420,18 +920,12 @@ document.addEventListener("click", async (e) => {
       study.settings = reviewSettings(study.settings);
       study.records[current] = r;
       persist();
-      renderList();
-      renderReader();
+      reconcileLearningView(previousIds);
       toast(rating === "wrong" ? "已加入错题，10分钟后复习" : "已安排下次复习");
       return;
     }
-    if (action === "show-official") {
-      $("#answer-content").innerHTML = answerData.official
-        .map(
-          (src) =>
-            `<button class="image-button" data-action="zoom" data-src="${esc(src)}"><img src="${esc(src)}" alt="题库答案"></button>`,
-        )
-        .join("");
+    if (action === "show-official" || action === "show-answer") {
+      toggleAnswer(action === "show-official" ? "official" : "personal");
       return;
     }
     if (action === "review-settings") {
@@ -461,50 +955,130 @@ document.addEventListener("click", async (e) => {
       await localAction(action);
       return;
     }
-    if (action === "subject") {
-      filters.subject = b.dataset.value;
+    if (action === "classification-source") {
+      dialog(
+        "分类依据",
+        '<p>信号与系统按基础、时域、连续频域、离散频域、采样调制、拉普拉斯变换、Z变换七章组织。</p><p>数字电路按编码、逻辑代数、门电路、组合逻辑、组合模块、触发器、时序逻辑组织，并保留脉冲电路、存储器等842真题专题。</p><p class="muted small">章节顺序参考你提供的《信号系统与数字电路》大纲。文件注明2020年905单考，本分类仅用于导航，不据此删减842题目或认定当前考试范围。</p>',
+      );
+      return;
+    }
+    if (action === "modules") {
+      goModules();
+      return;
+    }
+    if (action === "chapter") {
+      filters.chapter = b.dataset.id;
       filters.type = "";
+      page = "chapter";
+      current = null;
       queue = [];
-      layout();
+      syncNavigation();
+      renderList();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "type") {
+      filters.type = b.dataset.id;
+      if (
+        !chapters
+          .find((c) => c.id === filters.chapter)
+          ?.types.some((t) => t.id === filters.type)
+      )
+        filters.chapter = chapterForType(chapters, filters.type)?.id || "";
+      page = "reader";
+      queue = [];
+      renderList();
+      if (visible.length) openQuestion(visible[0].id);
+      return;
+    }
+    if (action === "back-chapter") {
+      page = filters.chapter ? "chapter" : "modules";
+      filters.type = "";
+      current = null;
+      queue = [];
+      syncNavigation();
+      renderList();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "browse-all") {
+      filters.chapter = "";
+      filters.type = "";
+      page = "reader";
+      renderList();
       if (visible.length) openQuestion(visible[0].id);
       else {
         current = null;
-        const url = new URL(location.href);
-        url.searchParams.delete("q");
-        history.pushState({}, "", url);
+        syncNavigation();
+        renderList();
+        renderEmptyReader();
       }
+      return;
+    }
+    if (action === "chapter-practice" || action === "chapter-random") {
+      page = "reader";
+      filters.type = "";
+      renderList();
+      queue = visible.map((q) => q.id);
+      if (action === "chapter-random") queue = shuffled(queue);
+      if (queue.length) openQuestion(queue[0]);
+      return;
+    }
+    if (action === "subject") {
+      filters.subject = b.dataset.value;
+      filters.chapter = "";
+      filters.type = "";
+      current = null;
+      queue = [];
+      page = scopeName(filters) ? "reader" : "modules";
+      syncNavigation();
+      layout();
+      if (page === "reader") reconcileLearningView([]);
+      return;
     }
     if (action === "status") {
       filters.status = b.dataset.value;
       filters.list = "";
+      filters.chapter = "";
+      filters.type = "";
+      page = "reader";
       queue = [];
       renderLists();
       renderList();
+      if (visible.length) openQuestion(visible[0].id);
+      else {
+        current = null;
+        syncNavigation();
+        renderList();
+        renderEmptyReader();
+      }
     }
     if (action === "list") {
       filters.list = study.lists[Number(b.dataset.index)].name;
       filters.status = "";
+      filters.chapter = "";
+      filters.type = "";
+      page = "reader";
       queue = [];
       renderLists();
       renderList();
+      if (visible.length) openQuestion(visible[0].id);
+      else {
+        current = null;
+        syncNavigation();
+        renderList();
+        renderEmptyReader();
+      }
     }
     if (action === "question") {
       queue = [];
       openQuestion(b.dataset.id);
     }
     if (action === "clear") {
-      filters = {
-        subject: filters.subject,
-        source: "",
-        year: "",
-        type: "",
-        status: "",
-        list: "",
-        search: "",
-      };
+      filters = clearSearchFilters(filters);
       queue = [];
       layout();
-      if (current) renderReader();
+      if (page === "reader") refreshFilters();
     }
     if (action === "practice" || action === "random") {
       queue = visible.map((q) => q.id);
@@ -515,23 +1089,20 @@ document.addEventListener("click", async (e) => {
     if (action === "previous" || action === "next") {
       const ids = queue.includes(current) ? queue : visible.map((q) => q.id),
         next = ids[ids.indexOf(current) + (action === "next" ? 1 : -1)];
-      if (next) openQuestion(next);
+      if (next) {
+        openQuestion(next);
+        if (focusMode) window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
     if (["star", "review", "done"].includes(action)) {
-      if (!queue.includes(current) && visible.some((q) => q.id === current))
-        queue = visible.map((q) => q.id);
-      const r = { ...record(current) };
-      if (action === "star") r.star = !r.star;
-      else r.state = r.state === action ? "" : action;
-      study.records[current] = r;
+      if (!current) return;
+      const previousIds = visible.map((q) => q.id);
+      study.records[current] = toggleMark(record(current), action);
       persist();
-      renderList();
-      renderReader();
+      reconcileLearningView(previousIds);
     }
     if (action === "share") {
-      const shareText = localMode
-        ? `${selected().sourceTitle} · ${selected().number}（题号：${current}）`
-        : location.href;
+      const shareText = localMode ? current : location.href;
       try {
         await navigator.clipboard.writeText(shareText);
         toast(localMode ? "题号已复制，可粘贴到搜索框" : "题目链接已复制");
@@ -563,8 +1134,6 @@ document.addEventListener("click", async (e) => {
       im.style.maxWidth = "none";
     }
     if (action === "close-dialog") $("#dialog").close();
-    if (action === "show-answer")
-      $("#answer-content").innerHTML = photoHtml(answerData.photos);
     if (action === "new-list") {
       dialog(
         "新建题单",
@@ -592,11 +1161,15 @@ document.addEventListener("click", async (e) => {
         `<p>删除「${esc(study.lists[i].name)}」？题目和学习标记不会删除。</p>${button("confirm-delete-list", "删除题单")}`,
       );
       $('[data-action="confirm-delete-list"]').onclick = () => {
-        if (filters.list === study.lists[i].name) filters.list = "";
+        const previousIds = visible.map((q) => q.id);
+        if (filters.list === study.lists[i].name) {
+          filters.list = "";
+          queue = [];
+        }
         study.lists.splice(i, 1);
         persist();
-        renderLists();
-        renderList();
+        reconcileLearningView(previousIds);
+        rememberNavigation();
         $("#dialog").close();
       };
     }
@@ -607,23 +1180,24 @@ document.addEventListener("click", async (e) => {
           .map((l, i) =>
             button(
               "toggle-list-item",
-              `${l.ids.includes(current) ? "✓ " : "＋ "}${esc(l.name)}`,
+              `${l.ids.includes(current) ? "✓ 已加入 · 点击移出 " : "＋ 加入 "}${esc(l.name)}`,
               "list-choice",
-              `data-index="${i}"`,
+              `data-index="${i}" data-qid="${esc(current)}"`,
             ),
           )
           .join("") ||
           `<p>还没有题单。</p>${button("new-list", "创建题单", "primary")}`,
       );
     if (action === "toggle-list-item") {
+      const previousIds = visible.map((q) => q.id),
+        id = b.dataset.qid;
       const l = study.lists[Number(b.dataset.index)];
-      l.ids = l.ids.includes(current)
-        ? l.ids.filter((id) => id !== current)
-        : [...l.ids, current];
+      l.ids = l.ids.includes(id)
+        ? l.ids.filter((item) => item !== id)
+        : [...l.ids, id];
       persist();
-      renderLists();
-      renderList();
-      b.textContent = `${l.ids.includes(current) ? "✓ " : "＋ "}${l.name}`;
+      reconcileLearningView(previousIds);
+      b.textContent = `${l.ids.includes(id) ? "✓ 已加入 · 点击移出 " : "＋ 加入 "}${l.name}`;
     }
     if (action === "export") {
       const url = URL.createObjectURL(
@@ -769,28 +1343,196 @@ document.addEventListener("click", async (e) => {
     }
   } catch (error) {
     toast(error.message);
+  } finally {
+    rememberNavigation();
   }
 });
-window.addEventListener("popstate", () => {
-  const id = new URL(location.href).searchParams.get("q");
-  if (id) {
-    current = id;
-    if (selected()) {
-      filters.subject = selected().subject;
-      filters.type = "";
-      layout();
-      renderReader();
-    }
+document.addEventListener("keydown", (event) => {
+  if (
+    page !== "reader" ||
+    busy ||
+    $("#dialog")?.open ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    event.repeat
+  )
+    return;
+  if (event.target.closest("input, textarea, select, [contenteditable]"))
+    return;
+  const action =
+    event.key === "ArrowLeft"
+      ? "previous"
+      : event.key === "ArrowRight"
+        ? "next"
+        : null;
+  const control = action && $(`#reading-tools [data-action="${action}"]`);
+  if (control && !control.disabled) {
+    event.preventDefault();
+    control.click();
   }
+});
+function rememberNavigation() {
+  history.replaceState(
+    {
+      ...history.state,
+      practiceView: {
+        page,
+        filters: { ...filters },
+        current,
+        queue: [...queue],
+        paperYear,
+        focusMode,
+      },
+    },
+    "",
+    location.href,
+  );
+}
+function restoreNavigation() {
+  const saved = history.state?.practiceView;
+  if (
+    !saved ||
+    !["modules", "chapter", "reader", "papers", "paper"].includes(saved.page) ||
+    !saved.filters ||
+    !["signals", "digital"].includes(saved.filters.subject)
+  )
+    return false;
+  for (const key of [
+    "subject",
+    "source",
+    "year",
+    "chapter",
+    "type",
+    "status",
+    "list",
+    "search",
+  ])
+    if (typeof saved.filters[key] !== "string") return false;
+  if (
+    saved.filters.chapter &&
+    !chapters.some((c) => c.id === saved.filters.chapter)
+  )
+    return false;
+  filters = { ...saved.filters };
+  page = saved.page;
+  paperYear = saved.paperYear || "";
+  focusMode = !!saved.focusMode;
+  const available = filterQuestions(catalog, filters, study, chapters).map(
+    (q) => q.id,
+  );
+  current =
+    page === "reader"
+      ? available.includes(saved.current)
+        ? saved.current
+        : available[0] || null
+      : null;
+  queue = Array.isArray(saved.queue)
+    ? saved.queue.filter((id) => available.includes(id))
+    : [];
+  if (
+    page === "paper" &&
+    (!examPapers(catalog).some((p) => p.id === paperYear) ||
+      !study.papers?.[paperYear])
+  ) {
+    page = "papers";
+    paperYear = "";
+  }
+  return true;
+}
+function syncNavigation() {
+  const url = new URL(location.href);
+  if (page === "paper") url.searchParams.set("paper", paperYear);
+  else url.searchParams.delete("paper");
+  if (current) url.searchParams.set("q", current);
+  else url.searchParams.delete("q");
+  history.replaceState(history.state, "", url);
+}
+function goModules() {
+  page = "modules";
+  filters.chapter = "";
+  filters.type = "";
+  filters.status = "";
+  filters.list = "";
+  current = null;
+  queue = [];
+  syncNavigation();
+  renderList();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("popstate", () => {
+  if (busy) {
+    syncNavigation();
+    rememberNavigation();
+    toast("照片正在保存，请完成后再返回");
+    return;
+  }
+  if (restoreNavigation()) {
+    syncNavigation();
+    rememberNavigation();
+    layout();
+    if (page === "reader") {
+      if (current) renderReader();
+      else renderEmptyReader();
+    }
+    return;
+  }
+  const year = new URL(location.href).searchParams.get("paper");
+  if (year && examPapers(catalog).some((p) => p.id === year)) {
+    paperYear = year;
+    page = "paper";
+    current = null;
+    queue = [];
+    study.papers ||= {};
+    study.papers[year] ||= { started: Date.now(), finished: null, marks: {} };
+    layout();
+    return;
+  }
+  const id = new URL(location.href).searchParams.get("q"),
+    q = catalog.questions.find((q) => q.id === id);
+  current = q?.id || null;
+  queue = [];
+  if (q) {
+    page = "reader";
+    filters.subject = q.subject;
+    filters.chapter = chapterForQuestion(chapters, q)?.id || "";
+    filters.type = q.typeId;
+  } else {
+    page = "modules";
+    filters.chapter = "";
+    filters.type = "";
+  }
+  layout();
+  if (current) renderReader();
 });
 window.addEventListener("beforeunload", (e) => {
-  if (pendingSaves) {
+  if (pendingSaves || saver?.dirty || busy) {
     e.preventDefault();
     e.returnValue = "";
   }
 });
 setInterval(() => {
-  if (filters.status === "due" && !busy) renderList();
+  if ($("#exam-countdown-slot"))
+    $("#exam-countdown-slot").innerHTML = countdownMarkup(study.examDate);
+  if (
+    page === "reader" &&
+    filters.status === "due" &&
+    !busy &&
+    !$("#dialog")?.open
+  ) {
+    const previousIds = visible.map((q) => q.id);
+    const nextIds = filterQuestions(catalog, filters, study, chapters).map(
+      (q) => q.id,
+    );
+    if (
+      nextIds.length !== previousIds.length ||
+      nextIds.some((id) => !previousIds.includes(id))
+    ) {
+      reconcileLearningView(previousIds);
+      rememberNavigation();
+    }
+  }
 }, 30000);
 async function localCenter() {
   const info = await api("/local/info");
@@ -813,7 +1555,7 @@ async function downloadResponse(res, filename) {
 }
 async function localAction(action) {
   if (action === "local-backup") {
-    await saveQueue;
+    await requireSavedStudy();
     await downloadResponse(
       await fetch("/api/local/backup"),
       "842个人资料.sqlite",
@@ -846,10 +1588,11 @@ async function localAction(action) {
       e.preventDefault();
       const form = new FormData(e.target);
       await locked(async () => {
-        await saveQueue;
+        await requireSavedStudy();
         await api("/local/" + (restore ? "restore" : "import-pack"), {
           method: "POST",
           body: form,
+          ...(restore ? { headers: { "If-Match": saver.revision } } : {}),
         });
         location.reload();
       });
@@ -887,36 +1630,100 @@ try {
   const res = await fetch("/catalog.json");
   if (!res.ok) throw new Error("题库加载失败");
   catalog = await res.json();
+  chapters = buildChapters(catalog);
   let storageError;
-  try {
-    study = loadStudy(
-      localStorage,
-      new Set(catalog.questions.map((q) => q.id)),
-    );
-  } catch {
-    study = emptyStudy();
-    storageError = "已有学习记录无法读取，请先检查备份；未覆盖原记录";
-  }
   try {
     const session = await api("/session");
     admin = session.admin;
     localMode = !!session.local;
   } catch {
-    /* 离线时仍可读取已加载题目。 */
+    throw new Error(
+      "无法确认保存模式，请确认本地启动器仍在运行后重试；已有记录未修改",
+    );
   }
   if (localMode) {
-    const saved = await api("/local/study");
-    if (saved.study)
-      study = validateStudy(
-        saved.study,
+    const [saved, info] = await Promise.all([
+      api("/local/study"),
+      api("/local/info"),
+    ]);
+    study = validateStudy(
+      saved.study || emptyStudy(),
+      new Set(catalog.questions.map((q) => q.id)),
+    );
+    let staging;
+    try {
+      staging = sessionStorage;
+    } catch {
+      staging = {
+        getItem() {
+          throw new Error("storage unavailable");
+        },
+        setItem() {
+          throw new Error("storage unavailable");
+        },
+        removeItem() {
+          throw new Error("storage unavailable");
+        },
+      };
+    }
+    saver = new StudySaver({
+      storage: staging,
+      key: STORAGE_KEY + ":pending:" + enc(info.dataDir),
+      revision: saved.revision,
+      send: (body, revision) =>
+        api("/local/study", {
+          method: "PUT",
+          headers: { "If-Match": revision },
+          body,
+        }),
+      onChange: renderSaveStatus,
+    });
+    const pending = saver.readPending();
+    if (pending) {
+      const recovered = validateStudy(
+        JSON.parse(pending.payload),
         new Set(catalog.questions.map((q) => q.id)),
       );
-    else persist();
+      if (saver.restore(pending, study)) study = recovered;
+    }
+  } else {
+    try {
+      study = loadStudy(
+        localStorage,
+        new Set(catalog.questions.map((q) => q.id)),
+      );
+    } catch {
+      study = emptyStudy();
+      storageError = "已有浏览器记录无法读取，请检查备份";
+    }
   }
+  const restoredNavigation = restoreNavigation();
   layout();
   const id = new URL(location.href).searchParams.get("q");
-  if (id && catalog.questions.some((q) => q.id === id)) openQuestion(id, true);
-  else if (visible.length) openQuestion(visible[0].id, true);
+  const year = new URL(location.href).searchParams.get("paper");
+  if (restoredNavigation) {
+    if (page === "reader") {
+      if (current) renderReader();
+      else renderEmptyReader();
+    }
+  } else if (year && examPapers(catalog).some((p) => p.id === year)) {
+    paperYear = year;
+    page = "paper";
+    current = null;
+    study.papers ||= {};
+    study.papers[year] ||= { started: Date.now(), finished: null, marks: {} };
+    persist();
+    renderList();
+  } else if (id && catalog.questions.some((q) => q.id === id)) {
+    const q = catalog.questions.find((q) => q.id === id);
+    filters.subject = q.subject;
+    filters.chapter = chapterForQuestion(chapters, q)?.id || "";
+    filters.type = q.typeId;
+    layout();
+    openQuestion(id, true);
+  }
+  syncNavigation();
+  rememberNavigation();
   if (storageError) toast(storageError);
 } catch (error) {
   app.innerHTML = `<main class="empty"><h1>暂时无法打开题库</h1><p>${esc(error.message)}</p><a href="/">重新加载</a></main>`;

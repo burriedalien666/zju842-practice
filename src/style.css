@@ -777,3 +777,50 @@ textarea {
 #dialog-body > textarea {
   width: 100%;
 }
+
+.notice {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.notice.show {
+  opacity: 1;
+  visibility: visible;
+}
+.save-status {
+  margin: -6px 0 14px;
+  font-size: 12px;
+  color: #526d5c;
+}
+.save-status.save-warning {
+  padding: 12px;
+  border: 1px solid #b57432;
+  border-radius: 10px;
+  background: #fff6e7;
+  color: #704515;
+}
+.save-status > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.save-status button {
+  font-size: 12px;
+}
+.answer-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+#answer-view {
+  margin-top: 14px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #246849;
+  outline-offset: 3px;
+}
