@@ -2,7 +2,7 @@
 
 本地运行的842题库：Windows和macOS下载后解压启动，在自己的浏览器中刷题。已有题目、答案、收藏、题单和复习记录均可离线使用，不要求云端账号，不产生网站托管费用。
 
-[下载发布包](https://github.com/burriedalien666/zju842-practice/releases) · [使用说明](docs/local-guide.md) · [纠错与问答](https://github.com/burriedalien666/zju842-practice/discussions/categories/q-a)
+[下载最新版](https://github.com/burriedalien666/zju842-practice/releases/latest) · [使用说明](docs/local-guide.md) · [纠错与问答](https://github.com/burriedalien666/zju842-practice/discussions/categories/q-a)
 
 ## 开始使用
 
@@ -10,7 +10,13 @@
 
 不要下载GitHub自动生成的Source code压缩包当作免安装成品。发布包包含运行环境，无需自行安装Node.js或Docker。
 
-`main` 分支源码包含下述最新功能；已发布的 v0.2.0 下载包不会随源码同步自动更新，体验新版请按下方说明从源码运行。
+v0.3.0 下载包包含章节选题、整卷练习、倒计时及保存可靠性修复，无需从源码运行：
+
+- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-windows-x64.zip)
+- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-macos-arm64.zip)
+- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.3.0/zju842-0.3.0-macos-x64.zip)
+
+旧版用户请先备份个人资料，再按[升级步骤](docs/local-guide.md#升级程序)迁移。仅导入 `.842pack` 不会升级程序功能。
 
 ## 功能
 

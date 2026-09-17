@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import packageInfo from "../package.json" with { type: "json" };
 import { randomBytes } from "node:crypto";
 import { pipeline } from "node:stream/promises";
 import { DatabaseSync, backup } from "node:sqlite";
@@ -74,7 +75,7 @@ export async function registerLocal(
   app.get("/api/local/info", { onRequest: requireLocal }, async () => ({
     edition: catalog.edition || "初始题库",
     dataDir,
-    version: "0.2.0",
+    version: packageInfo.version,
     updates: "https://github.com/burriedalien666/zju842-practice/releases",
     qa: "https://github.com/burriedalien666/zju842-practice/discussions/categories/q-a",
   }));

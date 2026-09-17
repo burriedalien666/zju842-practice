@@ -31,6 +31,9 @@ jobs:
         with:
           node-version: '24.15.0'
           cache: npm
+      - name: Read release version and notes
+        run: |
+          node --input-type=module -e 'import fs from "node:fs";const p=JSON.parse(fs.readFileSync("package.json"));if(!/^\d+\.\d+\.\d+$/.test(p.version))throw new Error("Invalid release version");const tag="v"+p.version;fs.accessSync("docs/releases/"+tag+".md");fs.appendFileSync(process.env.GITHUB_ENV,"RELEASE_TAG="+tag+"\n");'
       - uses: actions/download-artifact@v4
         with:
           run-id: ${{ inputs.run_id }}
@@ -44,16 +47,21 @@ jobs:
       - name: Verify package contents
         run: |
           python - <<'PY'
-          import pathlib,zipfile
+          import json,pathlib,zipfile
+          version=json.loads(pathlib.Path('package.json').read_text())['version']
           assets=list(pathlib.Path('release-assets').glob('*.zip'))
-          assert len(assets)==3,assets
+          expected={f'zju842-{version}-{platform}.zip' for platform in ['windows-x64','macos-x64','macos-arm64']}
+          assert {f.name for f in assets}==expected,assets
           for file in assets:
               with zipfile.ZipFile(file) as archive:
                   names=archive.namelist()
                   assert any(n.endswith('/server/desktop.js') for n in names)
                   assert not any('/.env' in n or '/userdata/' in n or '/data/admin-access' in n or n.endswith('.pdf') for n in names)
+                  package=json.loads(archive.read(file.stem+'/package.json'))
+                  assert package['version']==version,file.name
                   print(file.name,round(file.stat().st_size/1048576,2),'MiB')
           PY
       - name: Publish release
         run: |
-          gh release create v0.2.0 release-assets/*.zip release-assets/*.842pack --target "$REVISION" --title 'v0.2.0 本地版：间隔复习与个人答案' --notes 'Windows、Mac Apple 芯片和Mac Intel分别下载对应ZIP，完整解压后启动。无需安装Node.js或Docker。新增到期复习、错题重做、可调整间隔、个人答案、题库独立更新和个人资料备份。各平台已通过打包后启动及重启保存检查。首次下载不必另下842pack；该文件供已有本地版更新题库。题库尚无作者发布的答案，不包含历史AI答案。首次运行可能出现系统来源提示；包未做商业代码签名。请阅读包内使用说明。'
+          gh release create "$RELEASE_TAG" release-assets/*.zip release-assets/*.842pack --draft --target "$REVISION" --title "$(head -n 1 "docs/releases/$RELEASE_TAG.md" | sed 's/^# //')" --notes-file "docs/releases/$RELEASE_TAG.md"
+          gh release edit "$RELEASE_TAG" --draft=false --latest

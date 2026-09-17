@@ -62,6 +62,11 @@ try {
   ).json();
   assert.equal(session.local, true);
   assert.equal(session.admin, true);
+  const info = await (
+    await fetch(base + "/api/local/info", { headers: { cookie } })
+  ).json();
+  const packageInfo = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assert.equal(info.version, packageInfo.version);
   assert.equal((await fetch(base + "/api/local/study")).status, 401);
   const state = {
     version: 2,
