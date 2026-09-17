@@ -28,6 +28,8 @@ export function paintAnalysis({ catalog, state, change, openQuestion }) {
   const chapterSet = catalog.curriculum.chapters.filter(
     (c) => c.subject === state.subject,
   );
+  const shortcuts = document.querySelector("#chapter-shortcuts");
+  shortcuts.innerHTML = `<details open><summary>本学科目录</summary><div>${chapterSet.map((c) => `<button data-action="chapter" data-id="${esc(c.id)}"><span class="shortcut-number">${esc(c.number)}</span><span>${esc(c.title)}</span></button>`).join("")}</div></details>`;
   const rows = data.rows.filter(
     (r) =>
       (!state.chapter ||
