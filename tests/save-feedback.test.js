@@ -36,3 +36,15 @@ test("expired session, conflicts and disk errors are distinct; blocked staging d
   assert.match(disk.detail, /立即导出/);
   assert.ok(!disk.detail.includes("仍暂存"));
 });
+
+test("local 503 lifecycle errors retain staged changes and provide a save retry", () => {
+  const message = saveFeedback({
+    dirty: true,
+    durable: true,
+    error: { code: "LOCAL_UNAVAILABLE", statusCode: 503 },
+  });
+  assert.match(message.title, /尚未保存/);
+  assert.match(message.detail, /不要先刷新或关闭/);
+  assert.match(message.detail, /暂存/);
+  assert.equal(message.retry, true);
+});

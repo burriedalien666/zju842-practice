@@ -9,6 +9,12 @@ export function saveFeedback(saver) {
   const staged = saver.durable
     ? "本页改动仍暂存在当前标签页；关闭前请先保存或导出。"
     : "浏览器暂存也不可用，请立即导出本页记录。";
+  if (error.code === "LOCAL_UNAVAILABLE")
+    return {
+      title: "本地服务正在停止或重启，改动尚未保存",
+      detail: "请等待启动完成后重试保存；不要先刷新或关闭本页。" + staged,
+      retry: true,
+    };
   if (
     error.code === "LOCAL_CONNECTION" ||
     /Failed to fetch|NetworkError|Load failed/i.test(error.message)

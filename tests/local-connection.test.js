@@ -102,3 +102,39 @@ test("connection probes are single-flight and never accept a different personal 
   assert.equal(connection.error.code, "LOCAL_DIRECTORY");
   assert.match(connectionFeedback(connection.error).detail, /原程序/);
 });
+
+test("local shutdown 503 uses a recoverable lifecycle error for JSON or plain text responses", async (t) => {
+  const original = globalThis.fetch;
+  t.after(() => {
+    globalThis.fetch = original;
+  });
+  for (const body of [
+    '{"error":"Service Unavailable"}',
+    "Service Unavailable",
+  ]) {
+    let observed;
+    globalThis.fetch = async () => new Response(body, { status: 503 });
+    await assert.rejects(
+      requestApi(
+        "/local/info",
+        {},
+        {
+          local: true,
+          onError: (e) => {
+            observed = e;
+          },
+        },
+      ),
+      (e) => {
+        assert.equal(e, observed);
+        assert.equal(e.code, "LOCAL_UNAVAILABLE");
+        assert.equal(e.statusCode, 503);
+        const feedback = connectionFeedback(e);
+        assert.match(feedback.title, /暂不可用/);
+        assert.match(feedback.detail, /不要先刷新或关闭/);
+        assert.doesNotMatch(e.message, /Service Unavailable|GitHub/);
+        return true;
+      },
+    );
+  }
+});

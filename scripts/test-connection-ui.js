@@ -79,7 +79,7 @@ try {
     .waitFor({ state: "visible", timeout: 23000 });
   assert.match(
     await page.locator("#connection-status").innerText(),
-    /本地题库服务已断开/,
+    /本地题库服务(?:已断开|暂不可用)/,
   );
   await page.locator('[data-action="star"]').click();
   await page.waitForFunction(() =>

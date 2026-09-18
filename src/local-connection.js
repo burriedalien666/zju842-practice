@@ -1,4 +1,10 @@
 export function connectionFeedback(error) {
+  if (error?.code === "LOCAL_UNAVAILABLE")
+    return {
+      title: "本地题库服务暂不可用，暂时无法保存或更新",
+      detail:
+        "程序可能正在停止、重启或尚未就绪。请等待启动完成后重新检查连接；若服务已停止，请重新运行原启动器。不要先刷新或关闭本页，有未保存改动请先导出。",
+    };
   if (error?.code === "LOCAL_CONNECTION")
     return {
       title: "本地题库服务已断开，暂时无法保存或更新",
@@ -45,6 +51,20 @@ export async function requestApi(
           { code: "LOCAL_CONNECTION", cause },
         )
       : cause;
+    onError(error);
+    throw error;
+  }
+  // During graceful shutdown Fastify can return 503 before the socket closes.
+  // This is a local lifecycle state, not a GitHub download failure.
+  if (local && response.status === 503) {
+    await response.body?.cancel();
+    const error = Object.assign(
+      new Error("本地题库服务暂不可用，请等待启动或重启完成后重试"),
+      {
+        code: "LOCAL_UNAVAILABLE",
+        statusCode: 503,
+      },
+    );
     onError(error);
     throw error;
   }
