@@ -11,10 +11,19 @@ function canonical(value) {
   return value;
 }
 export class StudySaver {
-  constructor({ send, storage, key, revision, onChange = () => {} }) {
+  constructor({
+    send,
+    readCurrent,
+    storage,
+    key,
+    revision,
+    onChange = () => {},
+  }) {
     if (typeof revision !== "string" || !revision)
       throw new Error("保存协议版本不匹配，请重启本地服务并刷新页面");
     this.send = send;
+    this.readCurrent = readCurrent;
+    this.retrying = null;
     this.storage = storage;
     this.key = key;
     this.revision = revision;
@@ -120,12 +129,57 @@ export class StudySaver {
     return this.running;
   }
   retry() {
+    if (this.retrying) return this.retrying;
+    if (this.running) return this.running;
     if (this.error?.statusCode === 409) return Promise.resolve();
+    if (this.readCurrent && this.dirty) {
+      // A failed fetch can mean the write committed but its acknowledgement was lost.
+      // Read first, without changing the version on a genuine cross-tab conflict.
+      this.retrying = Promise.resolve()
+        .then(async () => {
+          try {
+            const current = await this.readCurrent();
+            if (typeof current?.revision !== "string" || !current.revision)
+              throw new Error("服务器未返回有效的保存版本");
+            if (
+              JSON.stringify(canonical(current.study)) ===
+              JSON.stringify(canonical(JSON.parse(this.pending)))
+            ) {
+              this.revision = current.revision;
+              this.pending = null;
+              this.error = null;
+              this.checkpoint();
+              return;
+            }
+            if (current.revision !== this.revision) {
+              this.error = Object.assign(
+                new Error(
+                  "磁盘记录已在其他页面更新，请先导出并核对，不会自动覆盖",
+                ),
+                { statusCode: 409 },
+              );
+              this.onChange();
+              return;
+            }
+            this.error = null;
+            await this.flush();
+          } catch (error) {
+            this.error = error;
+            this.onChange();
+          }
+        })
+        .finally(() => {
+          this.retrying = null;
+          this.onChange();
+        });
+      this.onChange();
+      return this.retrying;
+    }
     this.error = null;
     return this.flush();
   }
   reset(revision) {
-    if (this.running) throw new Error("请等待当前保存结束");
+    if (this.running || this.retrying) throw new Error("请等待当前保存结束");
     this.revision = revision;
     this.pending = null;
     this.error = null;

@@ -2,8 +2,13 @@ import "./style.css";
 import "./navigation.css";
 import "./papers.css";
 import { StudySaver } from "./persistence.js";
+import { saveFeedback } from "./save-feedback.js";
 import { createUpdateCenter } from "./updates.js";
 import { paintAnalysis } from "./analysis-view.js";
+import {
+  initialAnalysisState,
+  normaliseAnalysisState,
+} from "./analysis-state.js";
 import { questionConcepts, videosMarkup } from "./learning-content.js";
 import {
   buildChapters,
@@ -55,17 +60,7 @@ let page = "modules",
   chapters = [];
 let focusMode = false;
 let chapterMode = "training";
-let analysisState = {
-  subject: "signals",
-  from: "2009",
-  to: "2025",
-  level: "chapter",
-  metric: "count",
-  chapter: "",
-  search: "",
-  selected: "",
-  year: "",
-};
+let analysisState = initialAnalysisState({ questions: [] });
 let fromAnalysis = false;
 let paperYear = "";
 let catalog,
@@ -89,15 +84,24 @@ let filters = {
 let visible = [],
   readerVersion = 0;
 async function api(url, options = {}) {
-  const res = await fetch("/api" + url, {
-    ...options,
-    headers: {
-      ...(options.body && !(options.body instanceof FormData)
-        ? { "Content-Type": "application/json" }
-        : {}),
-      ...options.headers,
-    },
-  });
+  let res;
+  try {
+    res = await fetch("/api" + url, {
+      ...options,
+      headers: {
+        ...(options.body && !(options.body instanceof FormData)
+          ? { "Content-Type": "application/json" }
+          : {}),
+        ...options.headers,
+      },
+    });
+  } catch (cause) {
+    if (!localMode) throw cause;
+    throw Object.assign(new Error("无法连接本地题库服务"), {
+      code: "LOCAL_CONNECTION",
+      cause,
+    });
+  }
   const data = await res.json();
   if (!res.ok)
     throw Object.assign(new Error(data.error || "操作失败"), {
@@ -117,9 +121,10 @@ function renderSaveStatus() {
   pendingSaves = saver.dirty ? 1 : 0;
   slot.hidden = false;
   slot.classList.toggle("save-warning", !!saver.error);
+  const feedback = saveFeedback(saver);
   slot.innerHTML = saver.error
-    ? `<span><strong>尚未保存到本机</strong>：${esc(saver.error.message)}${saver.durable ? "（本标签页刷新可恢复；关闭前请导出）" : "；浏览器暂存也不可用，请立即导出"}</span><div>${saver.error.statusCode === 409 ? "" : button("retry-save", "重试保存")}${button("export", "导出本页记录")}${button("reload-study", "读取磁盘记录", "text-button")}</div>`
-    : `<span>${saver.dirty ? "正在保存到本机…" : "已保存到本机"}</span>`;
+    ? `<span><strong>${esc(feedback.title)}</strong></span><p>${esc(feedback.detail)}</p><div>${feedback.retry ? button("retry-save", saver.retrying ? "正在核对保存状态…" : "重试保存", "", saver.retrying ? "disabled" : "") : ""}${button("export", "导出本页记录")}${button("reload-study", "放弃本页改动，读取磁盘记录", "text-button")}</div>`
+    : `<span>${esc(feedback.title)}</span>`;
 }
 function persist() {
   if (localMode && saver) saveQueue = saver.queue(study);
@@ -306,6 +311,8 @@ function reconcileLearningView(previousIds) {
   else renderEmptyReader();
 }
 function renderList() {
+  app.classList.toggle("analysis-mode", page === "analysis");
+  $("#exam-countdown-slot").hidden = page === "analysis";
   document
     .querySelectorAll('[data-action="analysis"]')
     .forEach((b) => b.classList.toggle("active", page === "analysis"));
@@ -313,8 +320,10 @@ function renderList() {
     paintAnalysis({
       catalog,
       state: analysisState,
+      dialog,
+      remember: rememberNavigation,
       change: (next) => {
-        analysisState = next;
+        analysisState = normaliseAnalysisState(catalog, next);
         if (filters.subject !== next.subject) {
           filters.subject = next.subject;
           filters.chapter = "";
@@ -345,7 +354,7 @@ function renderList() {
       },
     });
     app.classList.remove("focus-mode");
-    $("#progress").textContent = "公开真题统计 · 不含个人作答记录";
+    $("#progress").textContent = "";
     document
       .querySelectorAll(
         '[data-action="papers"],[data-action="modules"],[data-action="status"]',
@@ -764,7 +773,10 @@ document.addEventListener("click", async (e) => {
       syncNavigation();
       renderList();
       rememberNavigation();
-      window.scrollTo(0, 0);
+      window.scrollTo(
+        0,
+        action === "analysis-return" ? analysisState.scrollY || 0 : 0,
+      );
       return;
     }
     if (action === "chapter-mode") {
@@ -1213,6 +1225,24 @@ document.addEventListener("click", async (e) => {
       return;
     }
     if (action === "subject") {
+      if (page === "analysis") {
+        analysisState = normaliseAnalysisState(catalog, {
+          ...analysisState,
+          subject: b.dataset.value,
+          chapter: "",
+          search: "",
+          selected: "",
+          year: "",
+          scrollLeft: 0,
+          scrollTop: 0,
+        });
+        filters.subject = b.dataset.value;
+        filters.chapter = "";
+        filters.type = "";
+        layout();
+        rememberNavigation();
+        return;
+      }
       filters.subject = b.dataset.value;
       filters.chapter = "";
       filters.type = "";
@@ -1612,7 +1642,7 @@ function restoreNavigation() {
   if (filters.questionIds && !Array.isArray(filters.questionIds))
     delete filters.questionIds;
   if (saved.analysisState && typeof saved.analysisState === "object")
-    analysisState = { ...analysisState, ...saved.analysisState };
+    analysisState = normaliseAnalysisState(catalog, saved.analysisState);
   chapterMode = saved.chapterMode === "knowledge" ? "knowledge" : "training";
   fromAnalysis = !!saved.fromAnalysis;
   page = saved.page;
@@ -1838,13 +1868,7 @@ try {
   const res = await fetch("/catalog.json");
   if (!res.ok) throw new Error("题库加载失败");
   catalog = await res.json();
-  const examYears = catalog.questions
-    .filter((q) => q.sourceKind === "entrance")
-    .map((q) => q.year);
-  if (examYears.length) {
-    analysisState.from = String(Math.min(...examYears));
-    analysisState.to = String(Math.max(...examYears));
-  }
+  analysisState = initialAnalysisState(catalog);
   chapters = buildChapters(catalog);
   let storageError;
   try {
@@ -1891,6 +1915,23 @@ try {
           headers: { "If-Match": revision },
           body,
         }),
+      readCurrent: async () => {
+        const [saved, currentInfo] = await Promise.all([
+          api("/local/study"),
+          api("/local/info"),
+        ]);
+        if (currentInfo.dataDir !== info.dataDir)
+          throw new Error(
+            "当前服务使用了不同的资料目录，请启动原资料目录，或先导出本页记录",
+          );
+        return {
+          ...saved,
+          study: validateStudy(
+            saved.study || emptyStudy(),
+            new Set(catalog.questions.map((q) => q.id)),
+          ),
+        };
+      },
       onChange: renderSaveStatus,
     });
     const pending = saver.readPending();

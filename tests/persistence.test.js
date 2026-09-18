@@ -238,3 +238,105 @@ test("old server acknowledgement without revision stays dirty instead of claimin
   assert.equal(saver.dirty, true);
   assert.match(saver.error.message, /版本/);
 });
+
+test("manual retry recognises a committed write after a lost response without a second PUT", async () => {
+  let sends = 0,
+    reads = 0;
+  const saver = setup(
+    async () => {
+      sends++;
+      throw new TypeError("Failed to fetch");
+    },
+    {
+      readCurrent: async () => {
+        reads++;
+        return { revision: "rev1", study: state(1) };
+      },
+    },
+  );
+  await saver.queue(state(1));
+  await saver.retry();
+  assert.equal(sends, 1);
+  assert.equal(reads, 1);
+  assert.equal(saver.dirty, false);
+  assert.equal(saver.revision, "rev1");
+});
+test("manual reconnect retains original revision and cannot overwrite another tab", async () => {
+  let sends = 0;
+  const saver = setup(
+    async () => {
+      sends++;
+      throw new TypeError("Failed to fetch");
+    },
+    { readCurrent: async () => ({ revision: "rev2", study: state(2) }) },
+  );
+  await saver.queue(state(1));
+  await saver.retry();
+  assert.equal(sends, 1);
+  assert.equal(saver.error.statusCode, 409);
+  assert.equal(saver.revision, "rev0");
+  assert.equal(saver.dirty, true);
+});
+test("failed reconnect retains staged data, and recovery saves the newest queued edit", async () => {
+  let connected = false,
+    sends = 0,
+    readFails = true;
+  const saver = setup(
+    async (payload, revision) => {
+      sends++;
+      if (!connected) throw new TypeError("Failed to fetch");
+      assert.equal(JSON.parse(payload).n, 2);
+      assert.equal(revision, "rev0");
+      return { revision: "rev1" };
+    },
+    {
+      readCurrent: async () => {
+        if (readFails)
+          throw Object.assign(new Error("session"), { statusCode: 401 });
+        return { revision: "rev0", study: state(0) };
+      },
+    },
+  );
+  await saver.queue(state(1));
+  await saver.queue(state(2));
+  await saver.retry();
+  assert.equal(saver.dirty, true);
+  assert.equal(saver.error.statusCode, 401);
+  assert.equal(JSON.parse(saver.readPending().payload).n, 2);
+  connected = true;
+  readFails = false;
+  await saver.retry();
+  assert.equal(saver.dirty, false);
+  assert.equal(sends, 2);
+});
+test("repeated retry clicks share the same read and do not discard an edit made during reconnect", async () => {
+  const gate = deferred();
+  let reads = 0,
+    sends = 0;
+  const saver = setup(
+    async (payload) => {
+      sends++;
+      if (sends === 1) throw new TypeError("Failed to fetch");
+      assert.equal(JSON.parse(payload).n, 2);
+      return { revision: "rev1" };
+    },
+    {
+      readCurrent: async () => {
+        reads++;
+        await gate.promise;
+        return { revision: "rev0", study: state(0) };
+      },
+    },
+  );
+  await saver.queue(state(1));
+  const retry = saver.retry();
+  await Promise.resolve();
+  const second = saver.retry();
+  await saver.queue(state(2));
+  assert.throws(() => saver.reset("rev4"), /等待/);
+  gate.resolve();
+  await Promise.all([retry, second]);
+  assert.equal(reads, 1);
+  assert.equal(sends, 2);
+  assert.equal(saver.dirty, false);
+});
