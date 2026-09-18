@@ -9,19 +9,27 @@ import { validateCatalog, loadCatalog } from "./catalog.js";
 
 export async function writeZip(file, entries) {
   const zip = new yazl.ZipFile();
-  const completion = pipeline(
-    zip.outputStream,
-    fs.createWriteStream(file, { flags: "wx" }),
-  );
-  for (const entry of entries) {
-    if (entry.file)
-      zip.addFile(entry.file, entry.name, {
-        compress: !/\.(webp|png|jpe?g)$/.test(entry.name),
-      });
-    else zip.addBuffer(entry.bytes, entry.name, { compress: false });
+  const output = fs.createWriteStream(file, { flags: "wx" });
+  let owned = false;
+  output.once("open", () => { owned = true; });
+  zip.on("error", error => zip.outputStream.destroy(error));
+  const completion = pipeline(zip.outputStream, output);
+  // Observe promptly even when addFile/addBuffer throws synchronously.
+  void completion.catch(() => {});
+  try {
+    for (const entry of entries) {
+      if (entry.file)
+        zip.addFile(entry.file, entry.name, { compress: !/\.(webp|png|jpe?g)$/.test(entry.name) });
+      else zip.addBuffer(entry.bytes, entry.name, { compress: false });
+    }
+    zip.end();
+    await completion;
+  } catch (error) {
+    zip.outputStream.destroy(error);
+    await completion.catch(() => {});
+    if (owned) fs.rmSync(file, { force: true });
+    throw error;
   }
-  zip.end();
-  await completion;
 }
 export function packPaths(catalog) {
   validateCatalog(catalog);
@@ -106,8 +114,9 @@ export async function extractPack(file, destination) {
     throw new Error("更新包图片不完整或包含未引用文件");
   for (const name of expected)
     if (name !== "catalog.json") {
+      const imageBytes = fs.readFileSync(path.join(destination, name));
       const metadata = await sharp(
-        fs.readFileSync(path.join(destination, name)),
+        imageBytes,
         {
           limitInputPixels: 60000000,
         },
@@ -117,6 +126,11 @@ export async function extractPack(file, destination) {
         (metadata.pages || 1) > 1
       )
         throw new Error("更新包包含不可读取的图片");
+      const extension = path.extname(name).slice(1).replace("jpg", "jpeg");
+      if (metadata.format !== extension) throw new Error("\u56fe\u7247\u6269\u5c55\u540d\u4e0e\u5b9e\u9645\u683c\u5f0f\u4e0d\u5339\u914d");
+      // Do not give libvips a filename: failed installs must be removable on Windows.
+      await sharp(imageBytes, { limitInputPixels: 60000000, failOn: "warning" })
+        .resize({ width: 1, height: 1, fit: "inside" }).raw().toBuffer();
     }
   return catalog;
 }

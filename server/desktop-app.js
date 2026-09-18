@@ -5,12 +5,16 @@ import { randomBytes } from "node:crypto";
 import { spawn } from "node:child_process";
 import { createApp } from "./app.js";
 import { loadCatalog } from "./catalog.js";
-import { currentLibrary } from "./local.js";
+import { currentLibrary } from "./content-store.js";
+import { recordDesktopEvent } from "./desktop-diagnostics.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // 启动器不读取.env。分发版从不使用作者的云端密钥或管理员账号。
 const dataDir = path.resolve(root, process.env.ZJU842_DATA_DIR || "userdata");
 fs.mkdirSync(dataDir, { recursive: true });
+recordDesktopEvent(dataDir, "starting");
+process.on("uncaughtExceptionMonitor", error => recordDesktopEvent(dataDir, "uncaught", { code: error.code }));
+process.on("exit", code => recordDesktopEvent(dataDir, "exit", { code }));
 const baseDir = path.join(process.env.ZJU842_INSTALL_ROOT || root, "public"),
   library = currentLibrary(dataDir, baseDir);
 const catalog = loadCatalog(path.join(library, "catalog.json"), library);
@@ -59,7 +63,7 @@ for (let port = initial; port < initial + 10; port++) {
     if (error.code !== "EADDRINUSE" || port === initial + 9) throw error;
   }
 }
-process.on("disconnect", () => app.close().then(() => process.exit(0)));
+process.on("disconnect", () => { recordDesktopEvent(dataDir, "disconnect"); app.close().then(() => process.exit(0)); });
 const url = origin + "/__open/" + launchToken;
 if (process.send) {
   await new Promise((resolve) => {
@@ -70,6 +74,7 @@ if (process.send) {
   });
   committed = true;
 }
+recordDesktopEvent(dataDir, "ready");
 console.log("842题库已启动。关闭此窗口即可结束。");
 console.log("个人数据目录：" + dataDir);
 if (process.env.ZJU842_NO_BROWSER === "1") console.log("TEST_START_URL=" + url);
@@ -85,4 +90,4 @@ else
     console.log("请在浏览器打开：" + url),
   );
 for (const signal of ["SIGINT", "SIGTERM"])
-  process.on(signal, () => app.close().then(() => process.exit(0)));
+  process.on(signal, () => { recordDesktopEvent(dataDir, "signal", { code: signal }); app.close().then(() => process.exit(0)); });

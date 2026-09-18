@@ -472,3 +472,24 @@ test("program staging validates versions and rejects private files before activa
     "extraction alone never activates code",
   );
 });
+
+test('R02 real Fastify manual answer import reports original disk fault and separate cleanup warning', async t => {
+  const f=await fixture(t), zip=await f.makeAnswers({requiresLibraryRevision:1});
+  const boundary='review-r1-boundary';
+  const body=Buffer.concat([
+    Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="answer.842answers"\r\nContent-Type: application/octet-stream\r\n\r\n`),
+    fs.readFileSync(zip),Buffer.from(`\r\n--${boundary}--\r\n`),
+  ]);
+  const rename=fs.renameSync,rm=fs.rmSync,libraries=path.resolve(f.dataDir,'libraries');
+  fs.renameSync=(a,b)=>{if(b===path.join(f.dataDir,'official-answers.json'))throw Object.assign(new Error('disk full fixture'),{code:'ENOSPC'});return rename(a,b);};
+  fs.rmSync=(p,o)=>{if(o?.recursive&&path.dirname(p)===libraries)throw Object.assign(new Error('private cleanup path'),{code:'EPERM'});return rm(p,o);};
+  let response;
+  try{response=await f.request('POST','/api/local/import-answers',body,{'content-type':`multipart/form-data; boundary=${boundary}`});}
+  finally{fs.renameSync=rename;fs.rmSync=rm;}
+  assert.equal(response.statusCode,400);
+  const data=response.json();assert.equal(data.code,'ENOSPC');assert.equal(data.stage,'installation');
+  assert.equal(data.cleanupPending,true);assert.equal(data.cleanupErrors[0].code,'EPERM');
+  assert.match(data.error,/disk full fixture/);assert.match(data.error,/\u672a\u6e05\u7406\u5b8c\u6210/);
+  assert.equal(JSON.stringify(data).includes(f.dataDir),false);
+  assert.equal(fs.existsSync(path.join(f.dataDir,'official-answers.json')),false);
+});

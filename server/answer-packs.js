@@ -3,43 +3,8 @@ import path from "node:path";
 import sharp from "sharp";
 import { extractUpdateZip, atomicJson, readJson } from "./update-files.js";
 
-export function validateAnswers(value) {
-  if (
-    !value ||
-    value.format !== 1 ||
-    value.kind !== "answers" ||
-    value.libraryId !== "zju842" ||
-    !Number.isSafeInteger(value.revision) ||
-    value.revision < 0 ||
-    !Number.isSafeInteger(value.requiresLibraryRevision) ||
-    value.requiresLibraryRevision < 0 ||
-    typeof value.edition !== "string" ||
-    value.edition.length > 100 ||
-    !value.answers ||
-    typeof value.answers !== "object" ||
-    Array.isArray(value.answers)
-  )
-    throw new Error("答案包版本或索引格式不正确");
-  for (const [id, images] of Object.entries(value.answers)) {
-    if (
-      !id ||
-      id.length > 160 ||
-      ["__proto__", "constructor", "prototype"].includes(id) ||
-      !Array.isArray(images) ||
-      images.length > 12 ||
-      images.some(
-        (p) =>
-          typeof p !== "string" || !/^answers\/[a-zA-Z0-9_-]+\.webp$/.test(p),
-      )
-    )
-      throw new Error("答案题号或图片路径不正确");
-  }
-  return value;
-}
-export function answerFiles(value) {
-  validateAnswers(value);
-  return new Set(["answers.json", ...Object.values(value.answers).flat()]);
-}
+export { validateAnswers, answerFiles } from "./answer-schema.js";
+import { validateAnswers, answerFiles } from "./answer-schema.js";
 export async function extractAnswers(file, destination) {
   const names = await extractUpdateZip(
     file,
@@ -59,11 +24,16 @@ export async function extractAnswers(file, destination) {
     if (name !== "answers.json") {
       if (fs.statSync(path.join(destination, name)).size > 12 * 1024 ** 2)
         throw new Error("答案图片过大");
-      const m = await sharp(fs.readFileSync(path.join(destination, name)), {
+      const imageBytes = fs.readFileSync(path.join(destination, name));
+      const m = await sharp(imageBytes, {
         limitInputPixels: 60000000,
       }).metadata();
       if (m.format !== "webp" || (m.pages || 1) > 1)
         throw new Error("答案图片无法读取");
+      // Reuse the bytes: filename input can retain a Windows file handle in libvips.
+      // Metadata alone can accept truncated payloads; keep the bounded strict decode.
+      await sharp(imageBytes, { limitInputPixels: 60000000, failOn: "warning" })
+        .resize({ width: 1, height: 1, fit: "inside" }).raw().toBuffer();
     }
   return value;
 }

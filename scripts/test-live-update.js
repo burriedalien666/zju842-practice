@@ -98,7 +98,7 @@ try {
   await page.locator("#confirm-update").click();
   let final,
     reported = "";
-  const end = Date.now() + 11 * 60 * 1000;
+  const end = Date.now() + 32 * 60 * 1000;
   while (Date.now() < end) {
     if (child.exitCode !== null) throw new Error("升级时程序退出: " + output);
     try {

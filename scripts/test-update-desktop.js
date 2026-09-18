@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import sharp from "sharp";
 import { writeZip } from "../server/packs.js";
 import { platformKey } from "../server/update-source.js";
+import { desktopFixtureEntries, waitForFixture, redactFixtureOutput } from "./desktop-fixture.js";
 
 if (!process.argv[2])
   throw new Error(
@@ -21,6 +22,7 @@ const root = path.join(temp, "portable"),
 const manifestFile = path.join(temp, "manifest.json");
 const fixtureVersion = "0.5.91",
   brokenVersion = "0.5.92";
+let stop, safeToRemove = true;
 let child,
   output = "",
   base,
@@ -44,8 +46,10 @@ try {
   const mock = path.join(temp, "mock-release.mjs");
   fs.writeFileSync(
     mock,
-    `import fs from 'node:fs'; import path from 'node:path'; import {Readable} from 'node:stream';
+    `import fs from 'node:fs'; import path from 'node:path'; import {Readable} from 'node:stream'; import {registerHooks} from 'node:module';
 const dir=${JSON.stringify(temp)};
+const networkShim='data:text/javascript,'+encodeURIComponent("export function readNetworkConfig(){return {}}; export async function resolveNetwork(){return {proxyEnv:{},summary:{source:'fixture-transport'}}}; export const requestHTTPS=(url,options)=>globalThis.fetch(url,options);");
+registerHooks({resolve(specifier,context,next){ if(specifier==='./update-network.js' && context.parentURL?.includes('/server/update-source.js')) return {url:networkShim,shortCircuit:true}; return next(specifier,context); }});
 globalThis.fetch=async (url)=>{
  const u=new URL(url);
  if(u.hostname==='api.github.com' && u.pathname.endsWith('/releases/latest')) return new Response(JSON.stringify({tag_name:'fixture',assets:[{name:'zju842-updates.json'}]}));
@@ -56,16 +60,7 @@ globalThis.fetch=async (url)=>{
  return new Response(Readable.toWeb(fs.createReadStream(path.join(dir,name))));
 };`,
   );
-  const entries = [];
-  function walk(directory, prefix = "") {
-    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-      const name = prefix + entry.name,
-        file = path.join(directory, entry.name);
-      if (entry.isDirectory()) walk(file, name + "/");
-      else if (entry.isFile()) entries.push({ name, file });
-    }
-  }
-  walk(candidateSource || root);
+  const entries = desktopFixtureEntries(candidateSource || root);
   const candidatePackage = JSON.parse(
     fs.readFileSync(path.join(candidateSource || root, "package.json")),
   );
@@ -138,6 +133,7 @@ globalThis.fetch=async (url)=>{
   }
   async function launch() {
     output = "";
+    safeToRemove = false;
     child = spawn(
       path.join(root, "runtime", runtimeName),
       [path.join(root, "server/desktop.js")],
@@ -163,7 +159,7 @@ globalThis.fetch=async (url)=>{
     const end = Date.now() + 30000;
     while (!output.match(/TEST_START_URL=(\S+)/)) {
       if (Date.now() > end || child.exitCode !== null)
-        throw new Error("Launch failed: " + output);
+        throw new Error("Launch failed: " + redactFixtureOutput(output));
       await new Promise((r) => setTimeout(r, 50));
     }
     const url = output.match(/TEST_START_URL=(\S+)/)[1];
@@ -171,14 +167,36 @@ globalThis.fetch=async (url)=>{
     const response = await fetch(url, { redirect: "manual" });
     cookie = response.headers.get("set-cookie").split(";")[0];
   }
-  async function stop() {
+  stop = async () => {
+    const ownerPid = child?.pid;
+    let childPid;
+    const lockPath = path.join(dataDir, "desktop.lock");
+    if (fs.existsSync(lockPath)) {
+      const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+      if (lock.pid !== ownerPid) throw new Error("Unexpected fixture lock owner; cleanup withheld");
+      childPid = lock.childPid;
+    }
     if (child?.exitCode === null) {
       const done = once(child, "close");
       child.kill();
       await done;
-      child = null;
     }
-  }
+    const alive = pid => {
+      if (!Number.isInteger(pid) || pid <= 0) return false;
+      try { process.kill(pid, 0); return true; } catch (e) { return e.code !== "ESRCH"; }
+    };
+    const deadline = Date.now() + 10000;
+    while (alive(childPid)) {
+      if (Date.now() > deadline) throw new Error("Owned desktop child still running; fixture cleanup withheld");
+      await new Promise(r => setTimeout(r, 100));
+    }
+    // Windows can leave supervisor-owned locks after forced termination. Remove
+    // only this temporary instance's lock, and only after both owned PIDs stop.
+    for (const file of [lockPath, path.join(root, ".app-lock")])
+      if (fs.existsSync(file) && JSON.parse(fs.readFileSync(file, "utf8")).pid === ownerPid)
+        fs.unlinkSync(file);
+    child = null; safeToRemove = true;
+  };
   async function api(route, body, headers = {}) {
     const response = await fetch(base + "/api" + route, {
       method: body === undefined ? "GET" : "POST",
@@ -194,20 +212,11 @@ globalThis.fetch=async (url)=>{
     assert.equal(response.status, 200, JSON.stringify(result));
     return result;
   }
-  async function waitUntil(predicate) {
-    const deadline = Date.now() + 60000;
-    while (Date.now() < deadline) {
-      try {
-        if (await predicate()) return;
-      } catch {
-        /* service closes during restart */
-      }
-      if (child.exitCode !== null)
-        throw new Error("Supervisor exited: " + output);
-      await new Promise((r) => setTimeout(r, 150));
-    }
-    throw new Error("Upgrade timed out: " + output);
-  }
+  const waitUntil = predicate => waitForFixture(predicate, {
+    inspect: () => api("/local/updates"),
+    processExited: () => child?.exitCode !== null,
+    output: () => output,
+  });
   setRelease(fixtureVersion, goodAsset);
   await launch();
   const catalog = await (await fetch(base + "/catalog.json")).json();
@@ -318,10 +327,7 @@ globalThis.fetch=async (url)=>{
     "UPDATE DESKTOP PASS: real packaged activation, same shortcut restart, personal records/photos preserved, broken release rolled back (fixture release transport)",
   );
 } finally {
-  if (child?.exitCode === null) {
-    const done = once(child, "close");
-    child.kill();
-    await done;
-  }
-  fs.rmSync(temp, { recursive: true, force: true });
+  if (child) { try { await stop?.(); } catch (e) { console.error(e.message); } }
+  if (safeToRemove) fs.rmSync(temp, { recursive: true, force: true });
+  else console.error("Fixture retained because owned process shutdown was not confirmed");
 }

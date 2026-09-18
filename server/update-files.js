@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { randomBytes } from "node:crypto";
 import { pipeline } from "node:stream/promises";
 import { promisify } from "node:util";
-import yauzl from "yauzl";
+
 
 export const validVersion = (v) =>
   typeof v === "string" && /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(v);
@@ -16,8 +17,18 @@ export function newer(a, b) {
 }
 export function atomicJson(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file + ".tmp", JSON.stringify(data));
-  fs.renameSync(file + ".tmp", file);
+  const temporary = file + ".tmp-" + randomBytes(8).toString("hex");
+  let fd;
+  try {
+    fd = fs.openSync(temporary, "wx", 0o600);
+    fs.writeFileSync(fd, JSON.stringify(data));
+    fs.fsyncSync(fd);
+    fs.closeSync(fd); fd = undefined;
+    fs.renameSync(temporary, file);
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
+    fs.rmSync(temporary, { force: true });
+  }
 }
 export function readJson(file, fallback) {
   return fs.existsSync(file)
@@ -32,6 +43,7 @@ export async function extractUpdateZip(
   allow,
   maxBytes = 2 * 1024 ** 3,
 ) {
+  const { default: yauzl } = await import("yauzl");
   const zip = await promisify(yauzl.open)(file, { lazyEntries: true });
   const names = new Set();
   let total = 0;

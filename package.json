@@ -1,6 +1,6 @@
 {
   "name": "zju842-practice",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "desktopUpdateProtocol": 1,
   "license": "MIT",
   "private": true,
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test:connection-ui": "node scripts/test-connection-ui.js",
+    "test:update-content-ui": "node scripts/test-update-content-ui.js",
     "videos": "node scripts/manage-videos.js",
     "classify:questions": "node scripts/build-curriculum.js",
     "desktop": "node server/desktop.js",
@@ -25,7 +26,14 @@
     "admin:setup": "node --env-file-if-exists=.env scripts/setup-admin.js",
     "import:questions": "node scripts/import-questions.js",
     "import:answers": "node scripts/import-public-answers.js",
-    "prepare:updates": "node scripts/prepare-updates.js"
+    "prepare:updates": "node scripts/prepare-updates.js",
+    "test:update-network": "node --test tests/update-network.test.js",
+    "test:update-review": "node --test tests/update-network.test.js tests/update-state.test.js tests/content-policy.test.js tests/update-files-review.test.js tests/desktop-fixture-review.test.js",
+    "diagnose:updates": "node scripts/diagnose-updates.js",
+    "test:update-ui-review": "node scripts/test-update-ui-review.js",
+    "test:update-content": "node --test tests/content-install-review.test.js tests/local-handler-review.test.js",
+    "package:source": "node scripts/package-source.js",
+    "test:review-r1": "node --test tests/content-staging.test.js tests/image-file-lifetime.test.js tests/remote-update-errors.test.js tests/content-install-review.test.js tests/update-state.test.js"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.2",

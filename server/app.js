@@ -1,3 +1,4 @@
+import { contentCleanupDetails, contentCleanupNotice } from "./content-staging.js";
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import multipart from "@fastify/multipart";
@@ -52,9 +53,19 @@ export async function createApp({
         { requestId: req.id, errorType: err.name },
         "Request failed",
       );
+    // Expose only safe cleanup metadata for authenticated local import failures.
+    const cleanup = local && status < 500 ? contentCleanupDetails(err) : {};
     reply
       .code(status)
-      .send({ error: status >= 500 ? "服务器暂时无法完成操作" : err.message });
+      .send({
+        error: status >= 500 ? "服务器暂时无法完成操作" :
+          err.message + (cleanup.cleanupPending ? contentCleanupNotice : ""),
+        ...(cleanup.cleanupPending ? {
+          ...cleanup,
+          code: typeof err.code === "string" && /^E[A-Z0-9_]{1,39}$/.test(err.code) ? err.code : "CONTENT_INSTALL_FAILED",
+          stage: "installation",
+        } : {}),
+      });
   });
   app.addHook("onRequest", async (req, reply) => {
     if (local) {

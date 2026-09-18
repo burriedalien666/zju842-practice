@@ -1,4 +1,3 @@
-import { createClient } from "@libsql/client/web";
 import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
@@ -99,7 +98,7 @@ export async function openDatabase(dir, { url, authToken } = {}) {
     fs.mkdirSync(dir, { recursive: true });
   }
   const client = url
-    ? createClient({ url, authToken })
+    ? (await import("@libsql/client/web")).createClient({ url, authToken })
     : localClient(path.resolve(dir, "site.sqlite"));
   try {
     // 云端不支持 journal_mode/user_version；现有表结构可以直接沿用。

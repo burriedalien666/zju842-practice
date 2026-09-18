@@ -1,3 +1,4 @@
+import { contentCleanupDetails, contentCleanupNotice } from "./content-staging.js";
 import fs from "node:fs";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
@@ -80,23 +81,32 @@ export function createUpdates({
   installAnswers,
   installRoot,
   activateProgram,
-  source = new GitHubUpdates(),
+  source = new GitHubUpdates(undefined, { dataDir }),
   version = packageInfo.version,
 }) {
   const settingsFile = path.join(dataDir, "update-settings.json");
   const cacheFile = path.join(dataDir, "update-cache.json");
-  let cache = readJson(cacheFile, null),
-    job = null,
-    pauseWrites = false;
+  const warnings = [];
+  function optional(file, fallback) {
+    try { return readJson(file, fallback); }
+    catch (e) {
+      if (!(e instanceof SyntaxError)) throw e;
+      if (!warnings.includes("UPDATE_METADATA_RESET")) warnings.push("UPDATE_METADATA_RESET");
+      return fallback;
+    }
+  }
+  let cache = optional(cacheFile, null), job = null, pauseWrites = false, checkingPromise;
+
   if (cache) {
     try {
       validateManifest(cache.manifest);
+      if (!Number.isFinite(cache.checkedAt) || cache.checkedAt < 0 || cache.checkedAt > Date.now() + 60000) throw new Error("Invalid cache time");
     } catch {
       cache = null;
     }
   }
   const settings = () => ({
-    autoCheck: readJson(settingsFile, { autoCheck: true }).autoCheck !== false,
+    autoCheck: fs.existsSync(settingsFile) ? optional(settingsFile, { autoCheck: false })?.autoCheck === true : true,
   });
   const supported = !!(
     installRoot &&
@@ -154,20 +164,25 @@ export function createUpdates({
       entries,
       job,
       checkedAt: cache?.checkedAt || null,
+      cacheAgeMs: cache ? Math.max(0, Date.now() - cache.checkedAt) : null,
+      checking: !!checkingPromise,
+      warnings: [...warnings],
       releaseUrl: RELEASES + "/latest",
-      lastResult: readJson(path.join(dataDir, "last-update-result.json"), null),
+      lastResult: optional(path.join(dataDir, "last-update-result.json"), null),
     };
   }
   async function check(automatic = false) {
-    if (
-      automatic &&
-      (!settings().autoCheck ||
-        (cache && Date.now() - cache.checkedAt < 6 * 3600000))
-    )
+    if (automatic && (!settings().autoCheck || (cache && Date.now() - cache.checkedAt < 6 * 3600000)))
       return status();
-    const manifest = validateManifest(await source.check());
-    cache = { manifest, checkedAt: Date.now() };
-    atomicJson(cacheFile, cache);
+    if (!checkingPromise) {
+      checkingPromise = (async () => {
+        const manifest = validateManifest(await source.check());
+        const next = { manifest, checkedAt: Date.now() };
+        atomicJson(cacheFile, next);
+        cache = next;
+      })().finally(() => { checkingPromise = null; });
+    }
+    await checkingPromise;
     return status();
   }
   function changeSettings(autoCheck) {
@@ -175,7 +190,12 @@ export function createUpdates({
     atomicJson(settingsFile, { autoCheck });
     return status();
   }
-  async function start(kind, target, revision) {
+  async function start(kind, target, revision, requestId) {
+    if (requestId != null && (typeof requestId !== "string" || !/^[a-f0-9-]{36}$/.test(requestId))) throw new Error("Invalid update request ID");
+    if (requestId && job?.requestId === requestId) {
+      if (job.kind !== kind || job.target !== target) throw new Error("Update request ID was reused");
+      return status();
+    }
     if (!["program", "library", "answers"].includes(kind))
       throw new Error("未知更新类型");
     if (job && !["done", "failed"].includes(job.state))
@@ -183,11 +203,14 @@ export function createUpdates({
     const entry = status().entries[kind];
     if (!entry.available || entry.reason || entry.target !== target)
       throw new Error(entry.reason || "更新版本已变化，请重新检查更新");
+    const item = structuredClone(cache.manifest[kind]);
     const previous = job;
     job = {
       id: randomBytes(8).toString("hex"),
       kind,
       target,
+      requestId: requestId || null,
+      startedAt: Date.now(),
       state: "checking",
       received: 0,
       total: 0,
@@ -201,21 +224,26 @@ export function createUpdates({
     }
     job.state = "downloading";
     job.message = "正在下载";
-    const item = structuredClone(cache.manifest[kind]);
     // Return promptly; polling can show progress during a large program download.
     setImmediate(() => run(kind, item, revision));
     return status();
   }
   async function run(kind, item, revision) {
     const dir = path.join(dataDir, "update-downloads");
-    fs.mkdirSync(dir, { recursive: true });
     const file = path.join(dir, job.id + ".download");
     try {
+      fs.mkdirSync(dir, { recursive: true });
+      // Clean only this instance's stale, uniquely named downloads.
+      for (const name of fs.readdirSync(dir)) {
+        if (/^[a-f0-9]{16}\.download$/.test(name) && name !== path.basename(file))
+          fs.rmSync(path.join(dir, name), { force: true });
+      }
       const asset =
         kind === "program" ? item.assets[platformKey()] : item.asset;
       if (!asset) throw new Error("当前系统没有可用更新包");
-      await source.download(asset, file, (received, total) => {
-        Object.assign(job, { received, total });
+      await source.download(asset, file, (received, total, detail = {}) => {
+        Object.assign(job, { received, total, attempt: detail.attempt || 1 });
+        job.message = detail.retrying ? "\u4e0b\u8f7d\u5931\u8d25\uff0c\u6b63\u5728\u6709\u9650\u91cd\u8bd5 (" + detail.attempt + "/3)" : "\u6b63\u5728\u4e0b\u8f7d";
       });
       job.state = "installing";
       job.message = "正在验证并安装";
@@ -264,11 +292,15 @@ export function createUpdates({
       job.message = "更新已完成";
     } catch (error) {
       job.state = "failed";
+      job.code = error.code || "UPDATE_FAILED";
+      job.stage = error.stage || "installation";
+      Object.assign(job, contentCleanupDetails(error));
       job.message =
         error.code === "ENOSPC" ? "磁盘空间不足，原版本未改变" : error.message;
+      if (job.cleanupPending) job.message += contentCleanupNotice;
     } finally {
       if (job.state !== "restarting") pauseWrites = false;
-      if (fs.existsSync(file)) fs.unlinkSync(file);
+      try { fs.rmSync(file, { force: true }); } catch { job.cleanupPending = true; }
     }
   }
   return {
@@ -276,6 +308,7 @@ export function createUpdates({
     check,
     start,
     changeSettings,
+    diagnostic: () => source.diagnostic?.() || { format: 1, network: { source: "injected-test-transport" } },
     get pauseWrites() {
       return pauseWrites;
     },

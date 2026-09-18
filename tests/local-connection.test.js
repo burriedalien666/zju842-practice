@@ -10,7 +10,6 @@ import {
   createLocalConnection,
   connectionFeedback,
 } from "../src/local-connection.js";
-import { GitHubUpdates } from "../server/update-source.js";
 
 test("real stopped service, expired launch session and recovery use the frontend request path", async (t) => {
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "842-connection-"));
@@ -102,16 +101,4 @@ test("connection probes are single-flight and never accept a different personal 
   assert.equal(calls, 1);
   assert.equal(connection.error.code, "LOCAL_DIRECTORY");
   assert.match(connectionFeedback(connection.error).detail, /原程序/);
-});
-
-test("GitHub connection errors identify the remote network, not the local service", async () => {
-  const source = new GitHubUpdates(async () => {
-    throw new TypeError("fetch failed");
-  });
-  await assert.rejects(source.check(), (e) => {
-    assert.match(e.message, /本地程序正在运行/);
-    assert.match(e.message, /GitHub/);
-    assert.equal(connectionFeedback(e), null);
-    return true;
-  });
 });

@@ -5,14 +5,13 @@ import { randomBytes } from "node:crypto";
 import { pipeline } from "node:stream/promises";
 import { DatabaseSync, backup } from "node:sqlite";
 import { validateStudy, emptyStudy } from "../src/study.js";
-import { packPaths, writeZip, extractPack } from "./packs.js";
-import { loadCatalog } from "./catalog.js";
+import { packPaths, writeZip } from "./packs.js";
+import { createContentStore } from "./content-store.js";
+export { currentLibrary } from "./content-store.js";
 import { createUpdates } from "./updates.js";
 import { atomicJson } from "./update-files.js";
+import { registerLocalWriteGate } from "./local-write-gate.js";
 import {
-  readOfficialAnswers,
-  extractAnswers,
-  activateAnswers,
   answerFiles,
 } from "./answer-packs.js";
 import {
@@ -22,15 +21,6 @@ import {
   assertStudyRevision,
   replaceLocalStudy,
 } from "./study-version.js";
-
-export function currentLibrary(dataDir, baseDir) {
-  const pointer = path.join(dataDir, "library.json");
-  if (!fs.existsSync(pointer)) return baseDir;
-  const { directory } = JSON.parse(fs.readFileSync(pointer, "utf8"));
-  if (!/^edition-[a-f0-9]{16}$/.test(directory))
-    throw new Error("题库位置不合法");
-  return path.join(dataDir, "libraries", directory);
-}
 
 export async function registerLocal(
   app,
@@ -47,91 +37,9 @@ export async function registerLocal(
 ) {
   const db = app.db;
   const cookieName = "local_session_" + new URL(origin).port;
-  let library = currentLibrary(dataDir, baseDir);
   await ensureLocalStudySchema(db);
-  const official = () =>
-    readOfficialAnswers(dataDir, catalog, library, baseDir);
-  async function installLibrary(file, expected) {
-    const name = "edition-" + randomBytes(8).toString("hex");
-    const destination = path.join(dataDir, "libraries", name);
-    fs.mkdirSync(destination, { recursive: true });
-    try {
-      const next = await extractPack(file, destination);
-      if (expected || next.updateKind === "library") {
-        if (
-          next.libraryId !== "zju842" ||
-          !Number.isSafeInteger(next.libraryRevision) ||
-          next.libraryRevision < (catalog.libraryRevision || 0) ||
-          (expected && next.libraryRevision !== expected.revision) ||
-          Object.keys(next.officialAnswers || {}).length
-        )
-          throw new Error("题库包版本不匹配或混入了答案更新");
-        const ids = new Set(next.questions.map((q) => q.id));
-        if (catalog.questions.some((q) => !ids.has(q.id)))
-          throw new Error("新版缺少已有题号，已停止更新以保留学习记录");
-        if (!fs.existsSync(path.join(dataDir, "official-answers.json"))) {
-          const old = official();
-          const dir = path.join(
-            dataDir,
-            "libraries",
-            "answers-" + randomBytes(8).toString("hex"),
-          );
-          fs.mkdirSync(dir, { recursive: true });
-          atomicJson(path.join(dir, "answers.json"), old.value);
-          for (const file of answerFiles(old.value))
-            if (file !== "answers.json") {
-              fs.mkdirSync(path.dirname(path.join(dir, file)), {
-                recursive: true,
-              });
-              fs.copyFileSync(
-                path.join(old.directory, file),
-                path.join(dir, file),
-              );
-            }
-          activateAnswers(dataDir, dir);
-        }
-      }
-      atomicJson(path.join(dataDir, "library.json"), { directory: name });
-      library = destination;
-      Object.keys(catalog).forEach((k) => delete catalog[k]);
-      Object.assign(catalog, next);
-      return {
-        ok: true,
-        questions: catalog.questions.length,
-        edition: catalog.edition,
-      };
-    } catch (e) {
-      fs.rmSync(destination, { recursive: true, force: true });
-      throw e;
-    }
-  }
-  async function installAnswers(file, expected) {
-    const dir = path.join(
-      dataDir,
-      "libraries",
-      "answers-" + randomBytes(8).toString("hex"),
-    );
-    fs.mkdirSync(dir, { recursive: true });
-    try {
-      const next = await extractAnswers(file, dir);
-      if (expected && next.revision !== expected.revision)
-        throw new Error("答案包版本与发布信息不符");
-      if (
-        next.requiresLibraryRevision > (catalog.libraryRevision || 0) ||
-        Object.keys(next.answers).some(
-          (id) => !catalog.questions.some((q) => q.id === id),
-        )
-      )
-        throw new Error("答案对应的题目尚未安装，请先更新题库");
-      if (next.revision < official().value.revision)
-        throw new Error("不能用旧答案包覆盖新版公共答案");
-      activateAnswers(dataDir, dir);
-      return { ok: true, edition: next.edition };
-    } catch (e) {
-      fs.rmSync(dir, { recursive: true, force: true });
-      throw e;
-    }
-  }
+  const store = createContentStore({ dataDir, catalog, baseDir, version: packageInfo.version });
+  const { official, installLibrary, installAnswers } = store;
   const updates = createUpdates({
     app,
     dataDir,
@@ -143,29 +51,7 @@ export async function registerLocal(
     activateProgram,
     ...(updateSource ? { source: updateSource } : {}),
   });
-  app.decorate("localActiveWrites", 0);
-  app.addHook("onRequest", async (req) => {
-    if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return;
-    if (updates.pauseWrites)
-      throw Object.assign(new Error("正在安装更新，请稍后操作"), {
-        statusCode: 409,
-      });
-    if (
-      updates.busy &&
-      /\/local\/(import-pack|import-answers|restore|export-pack|export-answers)$/.test(
-        req.url,
-      )
-    )
-      throw Object.assign(new Error("请等待当前更新完成"), { statusCode: 409 });
-    req.localWriteActive = true;
-    app.localActiveWrites++;
-  });
-  app.addHook("onResponse", async (req) => {
-    if (req.localWriteActive) {
-      req.localWriteActive = false;
-      app.localActiveWrites--;
-    }
-  });
+  registerLocalWriteGate(app, updates);
   async function requireLocal(req) {
     if (req.cookies[cookieName] !== launchToken)
       throw Object.assign(new Error("请通过本地启动器打开题库"), {
@@ -182,12 +68,13 @@ export async function registerLocal(
     });
     return reply.redirect("/");
   });
-  app.get("/catalog.json", async () => catalog);
+  app.get("/catalog.json", async (req, reply) => { reply.header("Cache-Control", "no-store"); return catalog; });
   app.get("/questions/:file", async (req, reply) => {
+    reply.header("Cache-Control", "no-store");
     const name = "questions/" + req.params.file;
     if (!catalog.questions.some((q) => q.images.some((i) => i.src === name)))
       return reply.code(404).send();
-    return reply.sendFile(req.params.file, path.join(library, "questions"));
+    return reply.sendFile(req.params.file, path.join(store.library, "questions"));
   });
   app.get("/api/local/official/:qid", async (req) => ({
     photos: (official().value.answers[req.params.qid] || []).map(
@@ -215,6 +102,10 @@ export async function registerLocal(
   app.get("/api/local/updates", { onRequest: requireLocal }, async () =>
     updates.status(),
   );
+  app.get("/api/local/updates/diagnostics", { onRequest: requireLocal }, async (req, reply) => {
+    reply.header("Content-Disposition", 'attachment; filename="842-update-diagnostics.json"');
+    return updates.diagnostic();
+  });
   const updateCall = (fn) => async (req, reply) => {
     try {
       return await fn(req, reply);
@@ -236,7 +127,7 @@ export async function registerLocal(
     "/api/local/updates/install",
     { onRequest: requireLocal },
     updateCall((req) =>
-      updates.start(req.body?.kind, req.body?.target, req.headers["if-match"]),
+      updates.start(req.body?.kind, req.body?.target, req.headers["if-match"], req.body?.requestId),
     ),
   );
   app.get("/api/local/study", { onRequest: requireLocal }, async () => {
@@ -475,12 +366,13 @@ export async function registerLocal(
           statusCode: 400,
         });
       const next = structuredClone(catalog);
+      delete next.updateKind; // A legacy mixed export is not a standalone library update.
       next.edition = edition;
       next.officialAnswers ||= {};
       const entries = new Map();
       for (const name of packPaths(next))
         if (name !== "catalog.json")
-          entries.set(name, { name, file: path.join(library, name) });
+          entries.set(name, { name, file: path.join(store.library, name) });
       for (const id of ids) {
         const row = await db.get(
           "SELECT published FROM answers WHERE qid=?",

@@ -11,6 +11,8 @@ const descriptions = {
   library: "试卷、题图和分类。不更改个人答案或公共答案。",
   answers: "作者发布的公共答案。不覆盖你的答案、草稿或复习记录。",
 };
+// Allow the server's 30-minute download budget plus installation/restart time.
+const UPDATE_CONFIRM_TIMEOUT_MS = 32 * 60 * 1000;
 export function createUpdateCenter({
   api,
   dialog,
@@ -19,6 +21,8 @@ export function createUpdateCenter({
   requireSaved,
   revision,
   verifyConnection = async () => {},
+  reload = () => location.reload(),
+  pollInterval = 1000,
 }) {
   let state,
     error = "",
@@ -50,6 +54,7 @@ export function createUpdateCenter({
       <div class="update-tools"><label><input id="update-auto" type="checkbox" ${state?.settings.autoCheck ? "checked" : ""} ${running ? "disabled" : ""}> 启动时自动检查（仅提示）</label>
       <button id="update-check" ${checking || running ? "disabled" : ""}>${checking ? "正在检查…" : "检查更新"}</button></div>
       <p class="small muted">${state?.checkedAt ? "上次检查：" + esc(new Date(state.checkedAt).toLocaleString()) : "尚未检查新版"} · 关闭自动检查后仅手动联网</p>
+      <p class="small muted">自动检查最多复用 6 小时缓存；上次检查结果不代表当前网络状态。点击“检查更新”会重新联网。</p>
       <div class="update-cards">${Object.entries(labels)
         .map(([kind, name]) => {
           const e = state?.entries[kind];
@@ -64,6 +69,8 @@ export function createUpdateCenter({
       <p id="update-error" role="alert">${esc(error)}</p>
       ${state?.lastResult ? `<p class="small muted">上次程序更新：${esc(state.lastResult.message)}</p>` : ""}
       <p class="small muted">下载仍需连接 GitHub；连接失败不影响离线刷题。程序内升级不会自动发布你的个人答案。</p>
+      <p class="small"><a href="/api/local/updates/diagnostics" download="842-update-diagnostics.json">导出脱敏更新诊断（仅本地文件）</a></p>
+      <details><summary>更新网络与手动恢复</summary><p>默认优先使用环境代理，否则读取 Windows/macOS 静态系统代理。PAC/WPAD、SOCKS 不会被悄悄改为直连。可在当前资料目录的 update-network.json 明确选择模式；请参照源码 docs/update-network.md 和 docs/old-version-recovery.md。不要发送代理密码或在运行中覆盖程序目录。</p></details>
       <a href="https://github.com/burriedalien666/zju842-practice/releases/latest" target="_blank" rel="noopener">备用：手动下载发布包</a></section>`;
   }
   function render(openDialog = false) {
@@ -119,13 +126,13 @@ export function createUpdateCenter({
       render();
     }
   }
-  async function poll(kind, target, started) {
+  async function poll(kind, target, started, requestId) {
     if (polling) return;
     polling = true;
     let disconnectedAt = 0;
     try {
       while (true) {
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, pollInterval));
         try {
           state = await api("/local/updates");
           disconnectedAt = 0;
@@ -137,22 +144,27 @@ export function createUpdateCenter({
           );
         }
         render();
-        if (state.job?.state === "failed") {
+        const ownJob = state.job && (requestId ? state.job.requestId === requestId : state.job.kind === kind && state.job.target === target);
+        if (ownJob && state.job.state === "failed") {
           toast(state.job.message);
           break;
         }
-        if (state.lastResult?.at >= started && !state.lastResult.ok) {
+        if (kind === "program" && state.lastResult?.at >= started && !state.lastResult.ok) {
           toast(state.lastResult.message);
           break;
         }
         if (
-          state.job?.state === "done" ||
+          (ownJob && state.job.state === "done") ||
           (kind === "program" && state.entries.program.current === target)
         ) {
           await requireSaved();
-          location.reload();
+          reload();
           break;
         }
+        if (Date.now() - started > UPDATE_CONFIRM_TIMEOUT_MS)
+          throw new Error("更新进度尚未确认，请重新打开更新中心查看；没有自动重新安装");
+        if (state.job && !ownJob && kind !== "program")
+          throw new Error("当前显示的是其他更新任务，请重新检查版本");
         if (!state.job && kind !== "program")
           throw new Error("更新进程已结束，请重新检查版本");
         if (!state.job && kind === "program" && Date.now() - started > 120000)
@@ -167,7 +179,9 @@ export function createUpdateCenter({
     }
   }
   function confirm(kind) {
-    const entry = state.entries[kind];
+    const entry = { ...state.entries[kind] };
+    const requestId = crypto.randomUUID();
+    let submitted = false;
     dialog(
       "确认" + labels[kind],
       `<div id="update-confirm"><p>${esc(descriptions[kind])}</p><p>${esc(entry.current)} → ${esc(entry.target)}</p>
@@ -178,18 +192,32 @@ export function createUpdateCenter({
     document.querySelector("#cancel-update").onclick = () => render(true);
     document.querySelector("#confirm-update").onclick = async (event) => {
       event.target.disabled = true;
+      let started = Date.now();
       try {
         await requireSaved();
-        const started = Date.now();
+        started = Date.now();
+        submitted = true;
         state = await api("/local/updates/install", {
           method: "POST",
           headers: { "If-Match": revision() },
-          body: JSON.stringify({ kind, target: entry.target }),
+          body: JSON.stringify({ kind, target: entry.target, requestId }),
         });
         error = "";
         render(true);
-        void poll(kind, entry.target, started);
+        void poll(kind, entry.target, state.job?.startedAt || started, requestId);
       } catch (e) {
+        // An accepted install can outlive a lost HTTP response. Reconcile first;
+        // retrying this confirmation reuses the same ID and cannot install twice.
+        if (submitted) {
+          try {
+            const current = await api("/local/updates");
+            if (current.job?.requestId === requestId) {
+              state = current; error = ""; render(true);
+              void poll(kind, entry.target, current.job.startedAt || started, requestId);
+              return;
+            }
+          } catch { /* Keep the original error and all unsaved content. */ }
+        }
         const slot = document.querySelector("#confirm-error");
         if (slot) slot.textContent = explain(e);
         else {
@@ -208,7 +236,7 @@ export function createUpdateCenter({
       error = "";
       render(true);
       if (state.job && !["done", "failed"].includes(state.job.state))
-        void poll(state.job.kind, state.job.target, Date.now());
+        void poll(state.job.kind, state.job.target, state.job.startedAt || Date.now(), state.job.requestId);
     } catch (e) {
       connectionError = e;
       error = explain(e);

@@ -96,9 +96,11 @@ else {
   fs.chmodSync(path.join(target, "启动题库.command"), 0o755);
   fs.chmodSync(path.join(target, "runtime/node"), 0o755);
 }
-fs.copyFileSync(
-  path.join(root, "docs/local-guide.md"),
-  path.join(target, "使用说明.md"),
+fs.writeFileSync(
+  path.join(target, "\u4f7f\u7528\u8bf4\u660e.md"),
+  ["local-guide.md", "update-network.md", "old-version-recovery.md"]
+    .map(name => fs.readFileSync(path.join(root, "docs", name), "utf8"))
+    .join("\n\n---\n\n"),
 );
 const entries = [];
 function walk(dir, relative = "") {

@@ -9,13 +9,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.15.0'
           cache: npm
       - run: npm ci
       - run: npm run build
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:connection-ui
+      - run: npm run test:update-ui-review
+      - run: npm run test:update-content-ui
+      - name: Test source ZIP after clean extraction
+        shell: bash
+        run: |
+          node scripts/package-source.js "$RUNNER_TEMP/zju842-source.zip"
+          mkdir "$RUNNER_TEMP/zju842-source-check"
+          unzip -q "$RUNNER_TEMP/zju842-source.zip" -d "$RUNNER_TEMP/zju842-source-check"
+          cd "$RUNNER_TEMP/zju842-source-check/zju842-source"
+          npm ci
+          npm run build
+          npm test
+          npm run test:update-ui-review
       - run: npm audit --omit=dev --audit-level=high
       - name: Build container
         run: docker build --tag zju842-test .
