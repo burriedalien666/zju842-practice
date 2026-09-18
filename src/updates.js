@@ -1,4 +1,5 @@
 import "./updates.css";
+import { connectionFeedback } from "./local-connection.js";
 
 const labels = {
   program: "程序更新",
@@ -17,20 +18,32 @@ export function createUpdateCenter({
   toast,
   requireSaved,
   revision,
+  verifyConnection = async () => {},
 }) {
   let state,
     error = "",
     checking = false,
+    connectionError = null,
     polling = false;
+  function explain(e) {
+    const feedback = connectionFeedback(e);
+    return feedback ? feedback.title + "。" + feedback.detail : e.message;
+  }
   function hint() {
     const button = document.querySelector('[data-action="local-updates"]');
     const count = Object.values(state?.entries || {}).filter(
       (e) => e.available,
     ).length;
     if (button)
-      button.textContent = count ? `更新中心 · ${count}项可更新` : "更新中心";
+      button.textContent = connectionError
+        ? "更新中心 · 本地连接待恢复"
+        : count
+          ? `更新中心 · ${count}项可更新`
+          : "更新中心";
   }
   function markup() {
+    if (connectionError || !state)
+      return `<section id="update-center"><h3>暂时无法打开更新中心</h3><p role="alert">${esc(error || "请重新检查本地连接")}</p><p>尚未确认当前更新进度。不会自动重试安装、刷新页面或清除未保存记录。</p><button id="update-reconnect">重新检查连接</button><button data-action="export">导出本页记录</button><p class="small muted">请保持题库启动窗口运行。离线刷题不需要互联网，但仍需要本机程序运行。</p></section>`;
     const job = state?.job,
       running = job && !["done", "failed"].includes(job.state);
     return `<section id="update-center"><p class="muted">三个版本分别更新，只有点击确认后才下载和安装。</p>
@@ -53,15 +66,23 @@ export function createUpdateCenter({
       <p class="small muted">下载仍需连接 GitHub；连接失败不影响离线刷题。程序内升级不会自动发布你的个人答案。</p>
       <a href="https://github.com/burriedalien666/zju842-practice/releases/latest" target="_blank" rel="noopener">备用：手动下载发布包</a></section>`;
   }
-  function render(open = false) {
+  function render(openDialog = false) {
     hint();
     if (
-      !open &&
+      !openDialog &&
       (!document.querySelector("#dialog")?.open ||
         !document.querySelector("#update-center"))
     )
       return;
     dialog("更新中心", markup(), true);
+    const reconnect = document.querySelector("#update-reconnect");
+    if (reconnect) {
+      reconnect.onclick = async () => {
+        reconnect.disabled = true;
+        await open();
+      };
+      return;
+    }
     document.querySelector("#update-check").onclick = () => check(false);
     document.querySelector("#update-auto").onchange = async (event) => {
       try {
@@ -71,7 +92,7 @@ export function createUpdateCenter({
         });
         error = "";
       } catch (e) {
-        error = e.message;
+        error = explain(e);
       }
       render();
     };
@@ -92,10 +113,10 @@ export function createUpdateCenter({
       if (automatic && Object.values(state.entries).some((e) => e.available))
         toast("发现新版本，可在“更新中心”选择更新");
     } catch (e) {
-      error = e.message;
+      error = explain(e);
     } finally {
       checking = false;
-      if (!automatic) render();
+      render();
     }
   }
   async function poll(kind, target, started) {
@@ -138,7 +159,7 @@ export function createUpdateCenter({
           throw new Error("程序未确认升级完成，请重新检查版本");
       }
     } catch (e) {
-      error = e.message;
+      error = explain(e);
       render();
       toast(error);
     } finally {
@@ -169,21 +190,43 @@ export function createUpdateCenter({
         render(true);
         void poll(kind, entry.target, started);
       } catch (e) {
-        document.querySelector("#confirm-error").textContent = e.message;
+        const slot = document.querySelector("#confirm-error");
+        if (slot) slot.textContent = explain(e);
+        else {
+          error = explain(e);
+          render(true);
+        }
         event.target.disabled = false;
       }
     };
   }
+  async function open() {
+    try {
+      await verifyConnection();
+      state = await api("/local/updates");
+      connectionError = null;
+      error = "";
+      render(true);
+      if (state.job && !["done", "failed"].includes(state.job.state))
+        void poll(state.job.kind, state.job.target, Date.now());
+    } catch (e) {
+      connectionError = e;
+      error = explain(e);
+      render(true);
+    }
+  }
   return {
-    async open() {
-      try {
-        state = await api("/local/updates");
-        render(true);
-        if (state.job && !["done", "failed"].includes(state.job.state))
-          void poll(state.job.kind, state.job.target, Date.now());
-      } catch (e) {
-        toast(e.message);
-      }
+    open,
+    connectionChanged(next) {
+      const changed =
+        connectionError?.code !== next?.code ||
+        connectionError?.statusCode !== next?.statusCode ||
+        !!connectionError !== !!next;
+      connectionError = next;
+      if (next) error = explain(next);
+      else if (changed) error = "连接已恢复，请重新检查更新以确认最新状态";
+      hint();
+      if (changed) render();
     },
     async automatic() {
       try {

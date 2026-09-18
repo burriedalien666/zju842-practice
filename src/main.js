@@ -3,6 +3,11 @@ import "./navigation.css";
 import "./papers.css";
 import { StudySaver } from "./persistence.js";
 import { saveFeedback } from "./save-feedback.js";
+import {
+  requestApi,
+  createLocalConnection,
+  connectionFeedback,
+} from "./local-connection.js";
 import { createUpdateCenter } from "./updates.js";
 import { paintAnalysis } from "./analysis-view.js";
 import {
@@ -56,6 +61,7 @@ let localMode = false,
   saveQueue = Promise.resolve(),
   saver = null,
   pendingSaves = 0;
+let connection = null;
 let page = "modules",
   chapters = [];
 let focusMode = false;
@@ -84,30 +90,22 @@ let filters = {
 let visible = [],
   readerVersion = 0;
 async function api(url, options = {}) {
-  let res;
-  try {
-    res = await fetch("/api" + url, {
-      ...options,
-      headers: {
-        ...(options.body && !(options.body instanceof FormData)
-          ? { "Content-Type": "application/json" }
-          : {}),
-        ...options.headers,
-      },
-    });
-  } catch (cause) {
-    if (!localMode) throw cause;
-    throw Object.assign(new Error("无法连接本地题库服务"), {
-      code: "LOCAL_CONNECTION",
-      cause,
-    });
-  }
-  const data = await res.json();
-  if (!res.ok)
-    throw Object.assign(new Error(data.error || "操作失败"), {
-      statusCode: res.status,
-    });
-  return data;
+  return requestApi(url, options, {
+    local: localMode,
+    onError: (error) => connection?.failed(error),
+  });
+}
+function renderConnectionStatus() {
+  const slot = $("#connection-status");
+  if (!slot) return;
+  const error = connection?.error;
+  slot.hidden = !error;
+  if (!error) return;
+  const feedback = connectionFeedback(error) || {
+    title: "暂时无法确认本地服务状态",
+    detail: error.message,
+  };
+  slot.innerHTML = `<strong>${esc(feedback.title)}</strong><p>${esc(feedback.detail)}</p><p class="small">当前页面：${esc(location.origin)} · 已显示的更新数量是上次检查结果。</p><div>${button("check-connection", "重新检查连接")}${button("export", "导出本页记录")}</div>`;
 }
 function toast(message) {
   $("#notice").textContent = message;
@@ -152,6 +150,9 @@ const updateCenter = createUpdateCenter({
   toast,
   requireSaved: requireSavedStudy,
   revision: () => saver.revision,
+  verifyConnection: async () => {
+    if (connection && !(await connection.check())) throw connection.error;
+  },
 });
 function button(action, text, cls = "", attrs = "") {
   return `<button type="button" data-action="${action}" class="${cls}" ${attrs}>${text}</button>`;
@@ -252,8 +253,9 @@ function layout() {
   });
   $(".topbar").insertAdjacentHTML(
     "afterend",
-    '<div id="save-status" class="save-status" role="status" hidden></div>',
+    '<div id="connection-status" class="save-status save-warning" role="status" hidden></div><div id="save-status" class="save-status" role="status" hidden></div>',
   );
+  renderConnectionStatus();
   renderSaveStatus();
   renderLists();
   renderList();
@@ -807,6 +809,15 @@ document.addEventListener("click", async (e) => {
         renderEmptyReader();
       }
       rememberNavigation();
+      return;
+    }
+    if (action === "check-connection") {
+      if (await connection.check())
+        toast(
+          saver?.dirty
+            ? "连接已恢复，请点击重试保存；未自动覆盖记录"
+            : "本地连接已恢复，可以重新打开更新中心",
+        );
       return;
     }
     if (action === "retry-save") {
@@ -1885,6 +1896,14 @@ try {
       api("/local/study"),
       api("/local/info"),
     ]);
+    connection = createLocalConnection({
+      dataDir: info.dataDir,
+      readInfo: () => api("/local/info", { signal: AbortSignal.timeout(5000) }),
+      onChange: (error) => {
+        renderConnectionStatus();
+        updateCenter.connectionChanged(error);
+      },
+    });
     study = validateStudy(
       saved.study || emptyStudy(),
       new Set(catalog.questions.map((q) => q.id)),
@@ -1981,7 +2000,16 @@ try {
   syncNavigation();
   rememberNavigation();
   if (storageError) toast(storageError);
-  if (localMode) void updateCenter.automatic();
+  if (localMode) {
+    void updateCenter.automatic();
+    setInterval(() => {
+      if (!document.hidden) void connection.check();
+    }, 15000);
+    window.addEventListener("focus", () => void connection.check());
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) void connection.check();
+    });
+  }
 } catch (error) {
   app.innerHTML = `<main class="empty"><h1>暂时无法打开题库</h1><p>${esc(error.message)}</p><a href="/">重新加载</a></main>`;
 }

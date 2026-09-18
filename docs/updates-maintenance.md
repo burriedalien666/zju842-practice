@@ -17,6 +17,10 @@
 
 ## 构建与发布
 
+网页连接恢复使用 `npm run test:connection-ui` 验证实际浏览器与本地服务关闭、重启的交互。先构建页面；Windows使用系统Chrome的隔离测试实例，Linux/macOS需先执行 `npx playwright install chromium`。不连接用户正在使用的浏览器或资料目录。
+
+公开发布后可执行 `node scripts/test-live-update.js <旧版免安装目录> <预期目标版本>`，脚本复制程序到临时目录、创建测试学习记录，通过实际浏览器操作并下载 GitHub 最新公开包，检查重启和记录保留。不读取或修改原目录的个人资料；这项测试会联网下载完整程序包。为隔离旧版自动检查按钮缺陷，临时副本关闭启动自动检查，实际执行手动检查及安装。
+
 Windows、Mac Intel、Mac Apple芯片分别构建，运行自动化测试、`test:desktop`，并对便携包运行 `node scripts/test-update-desktop.js <程序目录>`。该测试复制到临时目录，模拟发布下载，实际执行升级、保留照片和记录、重启原快捷入口以及失败回退。
 
 `publish-desktop.yml` 使用同一提交的成功 Desktop packages 产物，`npm run prepare:updates` 生成独立题库、答案包和 `zju842-updates.json`，先上传到草稿发布再公开为 latest。程序包不附带真实个人数据。仅更新题库或答案也可使用新的发布标签，但应保留各自未变的版本，客户端只下载需要的类别。

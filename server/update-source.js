@@ -85,17 +85,25 @@ export class GitHubUpdates {
         ].includes(target.hostname)
       )
         throw new Error("更新下载地址不在可信发布服务中");
-      const r = await this.fetch(target.href, {
-        redirect: "manual",
-        signal,
-        headers: {
-          "User-Agent": "zju842-updater",
-          Accept:
-            target.hostname === "api.github.com"
-              ? "application/vnd.github+json"
-              : "application/octet-stream",
-        },
-      });
+      let r;
+      try {
+        r = await this.fetch(target.href, {
+          redirect: "manual",
+          signal,
+          headers: {
+            "User-Agent": "zju842-updater",
+            Accept:
+              target.hostname === "api.github.com"
+                ? "application/vnd.github+json"
+                : "application/octet-stream",
+          },
+        });
+      } catch (cause) {
+        throw new Error(
+          "本地程序正在运行，但无法连接 GitHub 更新服务，请检查网络后重试；已有题目仍可离线使用",
+          { cause },
+        );
+      }
       if ([301, 302, 303, 307, 308].includes(r.status)) {
         const location = r.headers.get("location");
         await r.body?.cancel();

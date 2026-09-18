@@ -10,11 +10,13 @@
 
 不要下载GitHub自动生成的Source code压缩包当作免安装成品。发布包包含运行环境，无需自行安装Node.js或Docker。
 
-v0.5.1 精简历年考点分析的操作，并改善保存断连提示与安全重试；保留知识点/解题任务双路径训练、三类独立更新、整卷与间隔复习，无需从源码运行：
+v0.5.2 增加持续的本地连接提示和更新中心恢复入口，区分本地断连与 GitHub 连接失败；保留考点分析、三类独立更新、整卷与间隔复习，无需从源码运行：
 
-- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.1/zju842-0.5.1-windows-x64.zip)
-- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.1/zju842-0.5.1-macos-arm64.zip)
-- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.1/zju842-0.5.1-macos-x64.zip)
+- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.2/zju842-0.5.2-windows-x64.zip)
+- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.2/zju842-0.5.2-macos-arm64.zip)
+- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.2/zju842-0.5.2-macos-x64.zip)
+
+若旧页面显示 `Failed to fetch`，先重新运行**原程序目录**的启动器，并在同一浏览器打开它生成的新页面；旧页面有未保存内容时先导出，不要直接刷新或关闭。离线使用不需要互联网，但仍需保持本机题库程序运行。详见 [连接恢复](docs/releases/v0.5.2.md)。
 
 v0.3.0及更早版本需要最后手动升级一次：先备份个人资料，再按[升级步骤](docs/local-guide.md#升级程序)迁移。之后支持在程序内确认下载、安装和重启。仅导入题库包不会升级程序功能。
 

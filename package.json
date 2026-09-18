@@ -1,6 +1,6 @@
 {
   "name": "zju842-practice",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "desktopUpdateProtocol": 1,
   "license": "MIT",
   "private": true,
@@ -9,6 +9,7 @@
     "node": ">=24.14.0"
   },
   "scripts": {
+    "test:connection-ui": "node scripts/test-connection-ui.js",
     "videos": "node scripts/manage-videos.js",
     "classify:questions": "node scripts/build-curriculum.js",
     "desktop": "node server/desktop.js",
@@ -38,6 +39,7 @@
     "yazl": "^3.3.1"
   },
   "devDependencies": {
+    "playwright": "^1.62.1",
     "prettier": "^3.9.6",
     "vite": "^7.3.6"
   }
