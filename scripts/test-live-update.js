@@ -135,6 +135,10 @@ try {
   await page.waitForFunction(() => !document.querySelector("#update-center"), {
     timeout: 15000,
   });
+  const completion = page.locator('#notice-dismiss');
+  await completion.waitFor({ timeout: 15000 });
+  assert.ok((await page.locator('#update-complete').innerText()).includes(target));
+  await completion.click();
   await page.locator('[data-action="local-updates"]').click();
   await page.locator("#update-center").waitFor();
   assert.match(

@@ -2,7 +2,6 @@ import { chapterQuestions, chapterForType } from "./chapters.js";
 import { learningSummary, resumeQuestion } from "./learning-view.js";
 import { scopeName } from "./interactions.js";
 import { filterLabel, matchesTraining } from "./curriculum.js";
-import { videosMarkup } from "./learning-content.js";
 const esc = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -129,12 +128,7 @@ export function paintNavigation({
     const back = root.querySelector(".back-link");
     if (catalog.curriculum) {
       const mode = `<div class="chapter-mode" aria-label="练习方式">${action("chapter-mode", "按解题任务", 'data-mode="training" aria-pressed="' + (chapterMode === "training") + '"')}${action("chapter-mode", "按具体知识点", 'data-mode="knowledge" aria-pressed="' + (chapterMode === "knowledge") + '"')}</div>`;
-      root
-        .querySelector(".chapter-stats")
-        .insertAdjacentHTML(
-          "afterend",
-          mode + videosMarkup(catalog, "chapter", currentChapter.id),
-        );
+      root.querySelector(".chapter-stats").insertAdjacentHTML("afterend", mode);
       if (chapterMode === "knowledge") {
         root.querySelectorAll(".chapter-section").forEach((s) => s.remove());
         const topics = currentChapter.knowledge || [];

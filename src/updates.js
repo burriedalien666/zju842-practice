@@ -45,6 +45,39 @@ export function createUpdateCenter({
           ? `更新中心 · ${count}项可更新`
           : "更新中心";
   }
+  function showNotice(notice) {
+    dialog(
+      "更新完成 · " + labels[notice.kind],
+      `<section id="update-complete"><p>已更新至 ${notice.kind === "program" ? "v" : "r"}${esc(notice.target)}</p><div class="update-notes">${esc(notice.notes)}</div><p class="small muted">个人资料保留，稍后可在更新中心回看。</p><button id="notice-dismiss" class="primary">知道了</button><p id="notice-error" role="alert"></p></section>`,
+    );
+    const d = document.querySelector("#dialog");
+    const acknowledge = () =>
+      api("/local/updates/ack", {
+        method: "POST",
+        body: JSON.stringify({ id: notice.id }),
+      });
+    const onClose = () => {
+      void acknowledge().catch(() =>
+        toast("本次说明暂未记为已读，可在更新中心回看"),
+      );
+    };
+    d.addEventListener("close", onClose, { once: true });
+    document.querySelector("#notice-dismiss").onclick = async (event) => {
+      event.target.disabled = true;
+      try {
+        state = await acknowledge();
+        d.removeEventListener("close", onClose);
+        d.close();
+      } catch (e) {
+        document.querySelector("#notice-error").textContent = e.message;
+        event.target.disabled = false;
+      }
+    };
+  }
+  function completedMarkup() {
+    const current = state?.currentRelease;
+    return `${current ? `<details><summary>当前程序 v${esc(current.version)} 更新了什么</summary><div class="update-notes">${esc(current.notes)}</div></details>` : ""}${(state?.notices || []).map((n) => `<details><summary>${esc(labels[n.kind])} ${esc(n.target)} · 最近更新内容</summary><div class="update-notes">${esc(n.notes)}</div></details>`).join("")}`;
+  }
   function markup() {
     if (connectionError || !state)
       return `<section id="update-center"><h3>暂时无法打开更新中心</h3><p role="alert">${esc(error || "请重新检查本地连接")}</p><p>尚未确认当前更新进度。不会自动重试安装、刷新页面或清除未保存记录。</p><button id="update-reconnect">重新检查连接</button><button data-action="export">导出本页记录</button><p class="small muted">请保持题库启动窗口运行。离线刷题不需要互联网，但仍需要本机程序运行。</p></section>`;
@@ -67,6 +100,7 @@ export function createUpdateCenter({
         .join("")}</div>
       ${job ? `<div class="update-job" role="status"><strong>${esc(labels[job.kind])}：${esc(job.message)}</strong>${running && job.total ? `<progress value="${job.received}" max="${job.total}"></progress><span>${(job.received / 1048576).toFixed(1)} / ${(job.total / 1048576).toFixed(1)} MB</span>` : ""}</div>` : ""}
       <p id="update-error" role="alert">${esc(error)}</p>
+      ${completedMarkup()}
       ${state?.lastResult ? `<p class="small muted">上次程序更新：${esc(state.lastResult.message)}</p>` : ""}
       <p class="small muted">下载仍需连接 GitHub；连接失败不影响离线刷题。程序内升级不会自动发布你的个人答案。</p>
       <p class="small"><a href="/api/local/updates/diagnostics" download="842-update-diagnostics.json">导出脱敏更新诊断（仅本地文件）</a></p>
@@ -144,12 +178,20 @@ export function createUpdateCenter({
           );
         }
         render();
-        const ownJob = state.job && (requestId ? state.job.requestId === requestId : state.job.kind === kind && state.job.target === target);
+        const ownJob =
+          state.job &&
+          (requestId
+            ? state.job.requestId === requestId
+            : state.job.kind === kind && state.job.target === target);
         if (ownJob && state.job.state === "failed") {
           toast(state.job.message);
           break;
         }
-        if (kind === "program" && state.lastResult?.at >= started && !state.lastResult.ok) {
+        if (
+          kind === "program" &&
+          state.lastResult?.at >= started &&
+          !state.lastResult.ok
+        ) {
           toast(state.lastResult.message);
           break;
         }
@@ -162,7 +204,9 @@ export function createUpdateCenter({
           break;
         }
         if (Date.now() - started > UPDATE_CONFIRM_TIMEOUT_MS)
-          throw new Error("更新进度尚未确认，请重新打开更新中心查看；没有自动重新安装");
+          throw new Error(
+            "更新进度尚未确认，请重新打开更新中心查看；没有自动重新安装",
+          );
         if (state.job && !ownJob && kind !== "program")
           throw new Error("当前显示的是其他更新任务，请重新检查版本");
         if (!state.job && kind !== "program")
@@ -204,7 +248,12 @@ export function createUpdateCenter({
         });
         error = "";
         render(true);
-        void poll(kind, entry.target, state.job?.startedAt || started, requestId);
+        void poll(
+          kind,
+          entry.target,
+          state.job?.startedAt || started,
+          requestId,
+        );
       } catch (e) {
         // An accepted install can outlive a lost HTTP response. Reconcile first;
         // retrying this confirmation reuses the same ID and cannot install twice.
@@ -212,11 +261,20 @@ export function createUpdateCenter({
           try {
             const current = await api("/local/updates");
             if (current.job?.requestId === requestId) {
-              state = current; error = ""; render(true);
-              void poll(kind, entry.target, current.job.startedAt || started, requestId);
+              state = current;
+              error = "";
+              render(true);
+              void poll(
+                kind,
+                entry.target,
+                current.job.startedAt || started,
+                requestId,
+              );
               return;
             }
-          } catch { /* Keep the original error and all unsaved content. */ }
+          } catch {
+            /* Keep the original error and all unsaved content. */
+          }
         }
         const slot = document.querySelector("#confirm-error");
         if (slot) slot.textContent = explain(e);
@@ -236,7 +294,12 @@ export function createUpdateCenter({
       error = "";
       render(true);
       if (state.job && !["done", "failed"].includes(state.job.state))
-        void poll(state.job.kind, state.job.target, state.job.startedAt || Date.now(), state.job.requestId);
+        void poll(
+          state.job.kind,
+          state.job.target,
+          state.job.startedAt || Date.now(),
+          state.job.requestId,
+        );
     } catch (e) {
       connectionError = e;
       error = explain(e);
@@ -260,6 +323,9 @@ export function createUpdateCenter({
       try {
         state = await api("/local/updates");
         hint();
+        const notice = state.notices?.find((n) => !n.seen);
+        if (notice && !document.querySelector("#dialog")?.open)
+          showNotice(notice);
         if (state.settings.autoCheck) await check(true);
       } catch {
         /* Offline startup must not interrupt study or change saved preferences. */

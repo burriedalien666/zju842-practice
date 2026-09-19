@@ -17,6 +17,8 @@ import {
   RELEASES,
 } from "./update-source.js";
 import { assertStudyRevision } from "./study-version.js";
+import { createUpdateNotices } from "./update-notices.js";
+import { releaseInfo } from "./release-info.js";
 
 export async function stageProgram(file, root, version, platform) {
   const workspace = fs.mkdtempSync(path.join(root, ".app-versions", "stage-"));
@@ -85,6 +87,12 @@ export function createUpdates({
   version = packageInfo.version,
 }) {
   const settingsFile = path.join(dataDir, "update-settings.json");
+  const notices = createUpdateNotices({ dataDir, installRoot, version });
+  const lastResult = () => optional(path.join(dataDir, "last-update-result.json"), null);
+  function recordContent(kind, target, notes) {
+    try { notices.record(kind, target, notes); }
+    catch { if (!warnings.includes("UPDATE_NOTICE_UNSAVED")) warnings.push("UPDATE_NOTICE_UNSAVED"); }
+  }
   const cacheFile = path.join(dataDir, "update-cache.json");
   const warnings = [];
   function optional(file, fallback) {
@@ -168,7 +176,9 @@ export function createUpdates({
       checking: !!checkingPromise,
       warnings: [...warnings],
       releaseUrl: RELEASES + "/latest",
-      lastResult: optional(path.join(dataDir, "last-update-result.json"), null),
+      lastResult: lastResult(),
+      notices: notices.list(lastResult()),
+      currentRelease: { ...releaseInfo, version },
     };
   }
   async function check(automatic = false) {
@@ -290,6 +300,7 @@ export function createUpdates({
       else await installAnswers(file, item);
       job.state = "done";
       job.message = "更新已完成";
+      recordContent(kind, item.revision, item.notes || item.edition);
     } catch (error) {
       job.state = "failed";
       job.code = error.code || "UPDATE_FAILED";
@@ -308,6 +319,8 @@ export function createUpdates({
     check,
     start,
     changeSettings,
+    recordContent,
+    acknowledge(id) { notices.acknowledge(id, lastResult()); return status(); },
     diagnostic: () => source.diagnostic?.() || { format: 1, network: { source: "injected-test-transport" } },
     get pauseWrites() {
       return pauseWrites;

@@ -188,13 +188,42 @@ export function validateCurriculum(catalog) {
       typeof v.title !== "string" ||
       !v.title.trim() ||
       v.title.length > 150 ||
-      !["question", "chapter"].includes(v.target) ||
+      !["question", "chapter", "knowledge"].includes(v.target) ||
       (v.target === "chapter"
         ? !chapters.has(v.targetId)
-        : !catalog.questions.some((q) => q.id === v.targetId))
+        : v.target === "knowledge"
+          ? !topics.has(v.targetId)
+          : !catalog.questions.some((q) => q.id === v.targetId))
     )
       throw new Error("视频关联不正确");
     videoUrl(v.url);
+    for (const field of ["author", "collection"])
+      if (
+        v[field] != null &&
+        (typeof v[field] !== "string" ||
+          !v[field].trim() ||
+          v[field].length > 150)
+      )
+        throw new Error("视频作者或合集名称不合法");
+    if (v.segments != null) {
+      if (!Array.isArray(v.segments) || v.segments.length > 100)
+        throw new Error("视频分段目录不合法");
+      let previous = -1;
+      for (const segment of v.segments) {
+        if (
+          !segment ||
+          typeof segment.title !== "string" ||
+          !segment.title.trim() ||
+          segment.title.length > 100 ||
+          !Number.isInteger(segment.seconds) ||
+          segment.seconds < 0 ||
+          segment.seconds > 86400 ||
+          segment.seconds <= previous
+        )
+          throw new Error("视频分段时间必须递增且标题有效");
+        previous = segment.seconds;
+      }
+    }
     ids.add(v.id);
   }
 }

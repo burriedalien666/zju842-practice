@@ -133,6 +133,7 @@ export async function registerLocal(
   app.get("/api/local/study", { onRequest: requireLocal }, async () => {
     return readLocalStudy(db);
   });
+  app.post("/api/local/updates/ack", { onRequest: requireLocal }, updateCall(req => updates.acknowledge(req.body?.id)));
   app.put(
     "/api/local/study",
     { onRequest: requireLocal, bodyLimit: 4 * 1024 * 1024 },
@@ -258,7 +259,9 @@ export async function registerLocal(
     async (req) => {
       const file = await receive(req, "pack", 2 * 1024 ** 3);
       try {
-        return await installLibrary(file);
+        const result = await installLibrary(file);
+        updates.recordContent("library", catalog.libraryRevision || 0, result.edition);
+        return result;
       } catch (error) {
         throw Object.assign(error, { statusCode: 400 });
       } finally {
@@ -272,7 +275,9 @@ export async function registerLocal(
     updateCall(async (req) => {
       const file = await receive(req, "answer-pack", 1024 ** 3);
       try {
-        return await installAnswers(file);
+        const result = await installAnswers(file);
+        updates.recordContent("answers", official().value.revision, result.edition);
+        return result;
       } finally {
         fs.unlinkSync(file);
       }

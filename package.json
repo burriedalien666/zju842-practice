@@ -1,6 +1,6 @@
 {
   "name": "zju842-practice",
-  "version": "0.5.4",
+  "version": "0.5.6",
   "desktopUpdateProtocol": 1,
   "license": "MIT",
   "private": true,
@@ -10,6 +10,8 @@
   },
   "scripts": {
     "test:connection-ui": "node scripts/test-connection-ui.js",
+    "test:video-ui": "node scripts/test-video-ui.js",
+    "test:post-update-ui": "node scripts/test-post-update-ui.js",
     "test:update-content-ui": "node scripts/test-update-content-ui.js",
     "videos": "node scripts/manage-videos.js",
     "classify:questions": "node scripts/build-curriculum.js",

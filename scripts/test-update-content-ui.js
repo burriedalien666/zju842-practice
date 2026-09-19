@@ -176,6 +176,12 @@ try {
     await page.locator("#confirm-update").click();
     await reloaded;
     await page.locator('[data-action="local-updates"]').waitFor();
+    await page.locator("#notice-dismiss").waitFor();
+    assert.match(
+      await page.locator("#update-complete").innerText(),
+      new RegExp(kind === "library" ? "r3" : "r1"),
+    );
+    await page.locator("#notice-dismiss").click();
     assert.deepEqual(
       await (await context.request.get(origin + "/api/local/study")).json(),
       before,

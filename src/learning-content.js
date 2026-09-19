@@ -7,14 +7,47 @@ export const escapeHtml = (s) =>
         c
       ],
   );
-export function videosMarkup(catalog, target, id) {
-  const rows = (catalog.videoLessons || []).filter(
-    (v) => v.target === target && v.targetId === id,
+
+// Only an explicit per-question association is a lesson for the current question.
+// Chapter/concept metadata is not expanded into recommendations.
+export function questionVideos(catalog, id) {
+  if (!catalog.questions.some((q) => q.id === id)) return [];
+  return (catalog.videoLessons || []).filter(
+    (v) => v.target === "question" && v.targetId === id,
   );
-  return rows.length
-    ? `<section class="lesson-links" aria-label="作者视频讲解"><h3>视频讲解</h3>${rows.map((v) => `<a href="${escapeHtml(videoUrl(v.url))}" target="_blank" rel="noopener noreferrer">▶ ${escapeHtml(v.title)} <small>B站 · 新标签页打开</small></a>`).join("")}</section>`
+}
+
+export function videoEntryMarkup(catalog, id) {
+  return questionVideos(catalog, id).length
+    ? `<div class="question-video-action"><button type="button" data-action="open-videos" data-id="${escapeHtml(id)}" aria-label="查看本题视频">▶ 视频</button></div>`
     : "";
 }
+
+export function videoDialogMarkup(catalog, id) {
+  const esc = escapeHtml;
+  const time = (seconds) =>
+    `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  const rows = questionVideos(catalog, id);
+  return `<section class="question-video-list">${
+    rows
+      .map((v) => {
+        const url = videoUrl(v.url);
+        return `<article class="question-video-row"><div><strong>${esc(v.title)}</strong>${v.author ? `<small>${esc(v.author)}</small>` : ""}</div><a class="video-jump" href="${esc(url)}" target="_blank" rel="noopener noreferrer">跳转播放</a>${
+          v.segments?.length
+            ? `<details class="video-segments"><summary>分段导航</summary>${v.segments
+                .map((s) => {
+                  const u = new URL(url);
+                  u.searchParams.set("t", s.seconds);
+                  return `<a href="${esc(u.href)}" target="_blank" rel="noopener noreferrer">${time(s.seconds)} · ${esc(s.title)}</a>`;
+                })
+                .join("")}</details>`
+            : ""
+        }</article>`;
+      })
+      .join("") || "<p>本题暂无视频。</p>"
+  }<p class="muted small">在B站新标签页播放，当前题目保留。</p></section>`;
+}
+
 export function questionConcepts(catalog, q) {
   const labels = (q.knowledgeIds || [])
     .map((id) => catalog.curriculum?.topics.find((t) => t.id === id))

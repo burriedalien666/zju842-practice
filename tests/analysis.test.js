@@ -5,7 +5,10 @@ import { analyse, cellText } from "../src/exam-analysis.js";
 import { videoUrl, matchesTraining } from "../src/curriculum.js";
 import { validateCatalog } from "../server/catalog.js";
 import { buildChapters, filterQuestions } from "../src/chapters.js";
-import { videosMarkup } from "../src/learning-content.js";
+import {
+  videoEntryMarkup,
+  videoDialogMarkup,
+} from "../src/learning-content.js";
 const c = JSON.parse(
   fs.readFileSync(new URL("../public/catalog.json", import.meta.url)),
 );
@@ -128,7 +131,7 @@ test("external catalog annotations reject invalid concepts, score evidence and v
   );
 });
 test("video links absent until author adds one; labels escaped and opener isolated", () => {
-  assert.equal(videosMarkup(c, "question", c.questions[0].id), "");
+  assert.equal(videoEntryMarkup(c, c.questions[0].id), "");
   const fixture = structuredClone(c);
   fixture.videoLessons = [
     {
@@ -140,8 +143,8 @@ test("video links absent until author adds one; labels escaped and opener isolat
     },
   ];
   validateCatalog(fixture);
-  const html = videosMarkup(fixture, "question", c.questions[0].id);
+  const html = videoDialogMarkup(fixture, c.questions[0].id);
   assert.ok(html.includes("&lt;img"));
   assert.ok(html.includes('rel="noopener noreferrer"'));
-  assert.equal(videosMarkup(fixture, "chapter", "s1"), "");
+  assert.equal(videoEntryMarkup(fixture, "s1"), "");
 });

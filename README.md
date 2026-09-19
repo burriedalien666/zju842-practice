@@ -1,5 +1,7 @@
 # 面对浙大842考生的专业课做题网
 
+v0.5.6提供本题视频、更新完成说明和窗口内完整看图，保持原章节布局。正式视频由作者后续录制接入，不分发测试视频；见[版本说明](docs/releases/v0.5.6.md)、[视频维护](docs/video-guide.md)和[后续改进建议](docs/next-improvements.md)。
+
 v0.5.4修复三类更新的代理连接、有限重试、确认版本竞态与安装失败清理，并保留原题库r2和公共答案r0。新增功能、Bug修复及验证范围见[版本说明](docs/releases/v0.5.4.md)、[更新网络](docs/update-network.md)和[旧版迁移](docs/old-version-recovery.md)。
 
 本地运行的842题库：Windows和macOS下载后解压启动，在自己的浏览器中刷题。已有题目、答案、收藏、题单和复习记录均可离线使用，不要求云端账号，不产生网站托管费用。
@@ -12,11 +14,11 @@ v0.5.4修复三类更新的代理连接、有限重试、确认版本竞态与�
 
 不要下载GitHub自动生成的Source code压缩包当作免安装成品。发布包包含运行环境，无需自行安装Node.js或Docker。
 
-v0.5.4 完整程序包包含更新下载与安装修复；无需从源码运行。本地验收版v0.5.3可通过更新中心升级：
+下载完整程序包，无需从源码运行；原本地验收版也可通过更新中心升级：
 
-- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.4/zju842-0.5.4-windows-x64.zip)
-- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.4/zju842-0.5.4-macos-arm64.zip)
-- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.4/zju842-0.5.4-macos-x64.zip)
+- [Windows x64](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.6/zju842-0.5.6-windows-x64.zip)
+- [Mac Apple 芯片](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.6/zju842-0.5.6-macos-arm64.zip)
+- [Mac Intel](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.6/zju842-0.5.6-macos-x64.zip)
 
 若旧页面显示 `Failed to fetch`，先重新运行**原程序目录**的启动器，并在同一浏览器打开它生成的新页面；旧页面有未保存内容时先导出，不要直接刷新或关闭。离线使用不需要互联网，但仍需保持本机题库程序运行。详见 [连接恢复](docs/releases/v0.5.2.md)。
 
@@ -24,7 +26,7 @@ v0.3.0及更早版本需要最后手动升级一次：先备份个人资料，�
 
 ## 功能
 
-- 按科目、章节、题型逐级选题，结合题源、年份搜索与筛选，支持原题放大、收藏、题单和顺序/随机练习。
+- 按科目、章节、题型逐级选题，结合题源、年份搜索与筛选，支持窗口内完整看图、收藏、题单和顺序/随机练习。
 - 支持2009—2025年整卷练习、作答标记和练习小结；考研倒计时日期由自己设置。
 - 自评“做错／吃力／独立答对”，自动安排到期复习。默认间隔可调整，错题独立成组，重做答对后移出未解决错题。
 - 题库答案与“我的答案”分开；支持多图导入、旋转、排序、替换和定稿。个人答案不自动上传。

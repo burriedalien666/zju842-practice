@@ -14,7 +14,11 @@ import {
   initialAnalysisState,
   normaliseAnalysisState,
 } from "./analysis-state.js";
-import { questionConcepts, videosMarkup } from "./learning-content.js";
+import {
+  questionConcepts,
+  videoEntryMarkup,
+  videoDialogMarkup,
+} from "./learning-content.js";
 import {
   buildChapters,
   chapterForType,
@@ -483,7 +487,7 @@ async function renderReader() {
       chapterForQuestion(chapters, q)?.types.find((t) => t.id === q.typeId) ||
       catalog.types.find((t) => t.id === q.typeId);
   $("#reader").innerHTML =
-    `<div class="reader-heading"><div><span class="eyebrow">${esc(q.sourceTitle)}</span><h2>${q.year}年 · ${esc(q.number)}</h2></div>${button("share", "分享", "text-button")}</div><div class="reader-type">${esc(type.title)}</div><div class="reader-actions">${button("star", r.star ? "★ 已收藏" : "☆ 收藏", r.star ? "active" : "")}${button("review", "待复习", r.state === "review" ? "active" : "")}${button("done", "已掌握", r.state === "done" ? "active" : "")}${button("add-list", "加入题单")}</div><div class="question-images">${q.images.map((im) => `<button class="image-button" data-action="zoom" data-src="/${esc(im.src)}" aria-label="放大题目图片"><img src="/${esc(im.src)}" width="${im.width}" height="${im.height}" alt="${esc(q.year + "年 " + q.number + " 原题")}" loading="lazy"></button>${im.caption ? `<p class="muted small">${esc(im.caption)}</p>` : ""}`).join("")}</div>${q.note ? `<p class="source-note">${esc(q.note)}</p>` : ""}<div class="answer-section"><div class="row"><h3>参考答案</h3>${admin ? button("edit-answer", "编辑照片答案", "text-button") : ""}</div><div id="answer-content" class="muted small">正在读取…</div></div><footer class="reader-footer">${button("previous", "上一题")}${button("next", "下一题", "primary")}<span id="queue-position" class="muted small"></span>${button("correction", "题目纠错", "text-button")}</footer>`;
+    `<div class="reader-heading"><div><span class="eyebrow">${esc(q.sourceTitle)}</span><h2>${q.year}年 · ${esc(q.number)}</h2></div>${button("share", "分享", "text-button")}</div><div class="reader-type">${esc(type.title)}</div><div class="reader-actions">${button("star", r.star ? "★ 已收藏" : "☆ 收藏", r.star ? "active" : "")}${button("review", "待复习", r.state === "review" ? "active" : "")}${button("done", "已掌握", r.state === "done" ? "active" : "")}${button("add-list", "加入题单")}</div><div class="question-images">${q.images.map((im) => `<button class="image-button" data-action="zoom" data-src="/${esc(im.src)}" aria-label="查看完整题图"><img src="/${esc(im.src)}" width="${im.width}" height="${im.height}" alt="${esc(q.year + "年 " + q.number + " 原题")}" loading="lazy"></button>${im.caption ? `<p class="muted small">${esc(im.caption)}</p>` : ""}`).join("")}</div>${q.note ? `<p class="source-note">${esc(q.note)}</p>` : ""}<div class="answer-section"><div class="row"><h3>参考答案</h3>${admin ? button("edit-answer", "编辑照片答案", "text-button") : ""}</div><div id="answer-content" class="muted small">正在读取…</div></div><footer class="reader-footer">${button("previous", "上一题")}${button("next", "下一题", "primary")}<span id="queue-position" class="muted small"></span>${button("correction", "题目纠错", "text-button")}</footer>`;
   $(".reader-footer").insertAdjacentHTML(
     "beforebegin",
     `<section class="review-panel"><h3>本次作答</h3><div class="review-ratings">${button("grade-wrong", "做错了")}${button("grade-hard", "答对但吃力")}${button("grade-good", "独立答对", "primary")}</div><p class="muted small">${r.review ? "下次复习：" + new Date(r.review.due).toLocaleString() + " · 累计错误 " + r.review.lapses + " 次" : "作答后自评，开始安排复习"}</p></section>`,
@@ -502,7 +506,7 @@ async function renderReader() {
   );
   $(".answer-section").insertAdjacentHTML(
     "beforebegin",
-    videosMarkup(catalog, "question", q.id),
+    videoEntryMarkup(catalog, q.id),
   );
   if (q.score)
     $(".reader-heading").insertAdjacentHTML(
@@ -587,7 +591,7 @@ function photoHtml(ids) {
   return ids
     .map(
       (id) =>
-        `<button class="image-button" data-action="zoom" data-src="/api/media/${id}" aria-label="放大答案照片"><img src="/api/media/${id}" alt="手写参考答案" loading="lazy"></button>`,
+        `<button class="image-button" data-action="zoom" data-src="/api/media/${id}" aria-label="查看答案照片"><img src="/api/media/${id}" alt="手写参考答案" loading="lazy"></button>`,
     )
     .join("");
 }
@@ -603,7 +607,7 @@ function toggleAnswer(kind) {
       ? answerData.official
           .map(
             (src) =>
-              `<button class="image-button" data-action="zoom" data-src="${esc(src)}" aria-label="放大题库答案"><img src="${esc(src)}" alt="题库答案"></button>`,
+              `<button class="image-button" data-action="zoom" data-src="${esc(src)}" aria-label="查看题库答案图片"><img src="${esc(src)}" alt="题库答案"></button>`,
           )
           .join("")
       : photoHtml(answerData.photos);
@@ -745,6 +749,10 @@ document.addEventListener("click", async (e) => {
     return;
   }
   try {
+    if (action === "open-videos") {
+      dialog("本题视频", videoDialogMarkup(catalog, b.dataset.id));
+      return;
+    }
     if (
       [
         "modules",
@@ -1344,23 +1352,10 @@ document.addEventListener("click", async (e) => {
     }
     if (action === "zoom") {
       dialog(
-        "查看大图",
-        `<div class="zoom-controls">${button("zoom-out", "缩小")}${button("zoom-in", "放大")}</div><div class="zoom-scroll"><img class="zoom-image" data-scale="100" src="${esc(b.dataset.src)}" alt="放大图片"></div>`,
+        "查看完整图片",
+        `<div class="image-fit"><img src="${esc(b.dataset.src)}" alt="完整图片"></div>`,
         true,
       );
-    }
-    if (action === "zoom-in" || action === "zoom-out") {
-      const im = $(".zoom-scroll img"),
-        scale = Math.max(
-          100,
-          Math.min(
-            400,
-            Number(im.dataset.scale) + (action === "zoom-in" ? 50 : -50),
-          ),
-        );
-      im.dataset.scale = scale;
-      im.style.width = scale + "%";
-      im.style.maxWidth = "none";
     }
     if (action === "close-dialog") $("#dialog").close();
     if (action === "new-list") {
