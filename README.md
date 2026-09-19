@@ -1,6 +1,6 @@
 # 面对浙大842考生的专业课做题网
 
-v0.5.4修复三类更新的代理连接、有限重试、确认版本竞态与安装失败清理，并保留原题库r2和公共答案r0。具体工作、贡献分工及验证范围见[版本说明](docs/releases/v0.5.4.md)、[更新网络](docs/update-network.md)和[旧版迁移](docs/old-version-recovery.md)。
+v0.5.4修复三类更新的代理连接、有限重试、确认版本竞态与安装失败清理，并保留原题库r2和公共答案r0。新增功能、Bug修复及验证范围见[版本说明](docs/releases/v0.5.4.md)、[更新网络](docs/update-network.md)和[旧版迁移](docs/old-version-recovery.md)。
 
 本地运行的842题库：Windows和macOS下载后解压启动，在自己的浏览器中刷题。已有题目、答案、收藏、题单和复习记录均可离线使用，不要求云端账号，不产生网站托管费用。
 
