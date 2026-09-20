@@ -18,6 +18,7 @@ jobs:
       - run: npm run test:connection-ui
       - run: npm run test:update-ui-review
       - run: npm run test:update-content-ui
+      - run: npm run test:author-answers
       - run: npm run test:video-ui
       - run: npm run test:post-update-ui
       - run: npm run test:practice-ui

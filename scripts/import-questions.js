@@ -23,7 +23,7 @@ export function importQuestions(packageDir, publicDir) {
     types.set(type.id, type);
   }
   const merged = validateCatalog({
-    version: 1,
+    ...existing,
     types: [...types.values()],
     questions: [...existing.questions, ...incoming.questions],
   });

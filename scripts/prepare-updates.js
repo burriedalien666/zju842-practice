@@ -72,7 +72,7 @@ const manifest = validateManifest({
     revision: answers.revision,
     edition: answers.edition,
     requiresLibraryRevision: answers.requiresLibraryRevision,
-    requiresProgram: "0.4.0",
+    requiresProgram: answers.requiresProgram || "0.4.0",
     asset: asset(answersName),
   },
 });

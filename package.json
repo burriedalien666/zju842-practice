@@ -9,6 +9,7 @@
     "node": ">=24.14.0"
   },
   "scripts": {
+    "test:author-answers": "node scripts/test-author-answer-flow.js",
     "test:completion-ui": "node scripts/test-completion-ui.js",
     "test:progress-switch-ui": "node scripts/test-progress-switch-ui.js",
     "test:image-regression-ui": "node scripts/test-image-regression-ui.js",
