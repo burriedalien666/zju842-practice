@@ -209,6 +209,10 @@ globalThis.fetch=async (url)=>{
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     const result = await response.json();
+    // These read-only probes can reach the new listener before the supervisor's
+    // committed handshake. Only the bounded restart waiter may retry this state.
+    if (response.status === 503 && body === undefined && ["/local/info", "/local/updates"].includes(route))
+      throw Object.assign(new Error("Fixture service is restarting"), { code: "FIXTURE_RESTARTING" });
     assert.equal(response.status, 200, JSON.stringify(result));
     return result;
   }

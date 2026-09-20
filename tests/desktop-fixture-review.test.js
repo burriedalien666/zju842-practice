@@ -16,3 +16,13 @@ test('E07: terminal job error is reported immediately; timeouts report last job,
   await assert.rejects(waitForFixture(async()=>false,{timeout:5,interval:1,inspect:async()=>({job:{state:'downloading',received:10}}),output:()=> 'TEST_START_URL=http://localhost/__open/private'}),e=>/downloading/.test(e.message)&&!e.message.includes('private'));
   assert.equal(redactFixtureOutput('TEST_START_URL=http://localhost/__open/secret'),'TEST_START_URL=[REDACTED]');
 });
+test('restart waiter tolerates a transient 503 read probe but still fails permanent startup failure',async()=>{
+  let calls=0;
+  await waitForFixture(async()=>{
+    if(++calls===1) throw Object.assign(new Error('Fixture service is restarting'),{code:'FIXTURE_RESTARTING'});
+    return true;
+  },{timeout:1000,interval:1});
+  assert.equal(calls,2);
+  await assert.rejects(waitForFixture(async()=>{throw Object.assign(new Error('Fixture service is restarting'),{code:'FIXTURE_RESTARTING'});},{timeout:10,interval:1}),/timed out/);
+  await assert.rejects(waitForFixture(async()=>{assert.equal(500,200);},{timeout:1000,interval:1}),{code:'ERR_ASSERTION'});
+});
