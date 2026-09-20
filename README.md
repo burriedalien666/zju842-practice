@@ -6,8 +6,6 @@
 
 [下载最新版](https://github.com/burriedalien666/zju842-practice/releases/latest) · [使用指南](docs/local-guide.md) · [更新日志](CHANGELOG.md) · [问题反馈](https://github.com/burriedalien666/zju842-practice/issues)
 
-![单题练习界面](docs/images/practice.png)
-
 ## 开始使用
 
 | 你的电脑        | 下载                                                                                                                     |
@@ -41,7 +39,7 @@
 
 公开题库暂未附公共答案和正式视频讲解，你可以先导入自己的答案照片。作者整理后的公共答案、题目和讲解链接，会通过更新中心陆续提供。
 
-接下来的内容工程是将题面逐步转为文字、公式和可缩放绘图。目前只制定[迁移计划](docs/structured-questions-plan.md)，尚未开始全库转换。
+第一更新计划是先用5—10道代表样题验证文字、公式和可缩放绘图，再决定如何分批转换全库。[计划已确定，尚未执行](docs/roadmap.md)。
 
 ## 资料保存在这里
 

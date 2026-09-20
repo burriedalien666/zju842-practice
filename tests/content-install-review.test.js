@@ -58,7 +58,7 @@ test.after(() => fs.rmSync(root,{recursive:true,force:true}));
 test('real ZIP/store: nonempty r0->r1->r2->empty r3; pictures, SQLite drafts/published/photos and study survive restart', async t => {
   const {dataDir,store} = instance(t); const db = await openDatabase(dataDir);
   t.after(() => db.close()); await ensureLocalStudySchema(db);
-  const study = validateStudy({version:2,records:{[qid]:{star:true,state:'review',review:scheduleReview(null,'wrong',{},1000)}},lists:[{name:'fixture-list',ids:[qid]}],papers:{'2009':{started:1000,finished:null,marks:{[qid]:'wrong'}}},examDate:'2026-12-20',lastQuestion:qid},new Set(original.questions.map(q=>q.id)));
+  const study = validateStudy({version:2,records:{[qid]:{star:true,state:'review',review:scheduleReview(null,'wrong',{},1000)}},lists:[{name:'fixture-list',ids:[qid]}],papers:{'2009':{started:1000,finished:null,elapsedMs:12000,questionIds:[qid,qid2],marks:{[qid]:'wrong'}}},paperHistory:{'2009':[{started:100,finished:500,closedAt:700,elapsedMs:400,questionIds:[qid,qid2],marks:{[qid]:'hard'}}]},examDate:'2026-12-20',lastQuestion:qid},new Set(original.questions.map(q=>q.id)));
   await writeLocalStudy(db,study,'0');
   await db.run('INSERT INTO photos VALUES(?,?,?)','private-photo',qid,Buffer.from('synthetic-private-bytes'));
   await db.run('INSERT INTO answers VALUES(?,?,?,?)',qid,'["private-photo"]','["private-photo"]','fixture');
@@ -73,6 +73,7 @@ test('real ZIP/store: nonempty r0->r1->r2->empty r3; pictures, SQLite drafts/pub
   assert.ok(fs.existsSync(oldDirectory)); assert.deepEqual(await snapshot(),before);
   await store.installAnswers(empty); assert.deepEqual(store.official().value.answers,{});
   assert.equal(restart(dataDir).store.official().value.revision,3); assert.deepEqual(await snapshot(),before);
+  await store.installLibrary(r3library); assert.equal(restart(dataDir).catalog.libraryRevision,3); assert.deepEqual(await snapshot(),before);
 });
 test('real ZIP/store: added question r2->r3; public answers retained; library and answer dependencies enforce cross-order', async t => {
   const {dataDir,catalog,store} = instance(t);

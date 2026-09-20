@@ -8,6 +8,8 @@ import assert from "node:assert/strict";
 import sharp from "sharp";
 import { writeZip } from "../server/packs.js";
 import { platformKey } from "../server/update-source.js";
+import { newer } from "../server/update-files.js";
+import { scheduleReview } from "../src/review.js";
 import { desktopFixtureEntries, waitForFixture, redactFixtureOutput } from "./desktop-fixture.js";
 
 if (!process.argv[2])
@@ -228,9 +230,19 @@ globalThis.fetch=async (url)=>{
   const initial = await api("/local/study");
   const saved = {
     version: 2,
-    records: { [qid]: { star: true, state: "review" } },
-    lists: [],
+    records: { [qid]: { star: true, state: "review", review: scheduleReview(null, 'wrong', {}, 1000) } },
+    settings: { intervals: [1, 3, 7] },
+    lists: [{ name: 'saved-fixture-list', ids: [qid] }],
+    lastQuestion: qid,
+    examDate: '2026-12-20',
+    papers: { [String(catalog.questions[0].year)]: { started: 1000, finished: null, marks: { [qid]: 'wrong' } } },
   };
+  // Old clients cannot store the history field; only test it where it exists.
+  if (!newer('0.5.7', pkg.version)) {
+    const year = String(catalog.questions[0].year);
+    Object.assign(saved.papers[year], { elapsedMs: 12000, questionIds: [qid] });
+    saved.paperHistory = { [year]: [{ started: 100, finished: 500, closedAt: 700, elapsedMs: 400, questionIds: [qid], marks: { [qid]: 'hard' } }] };
+  }
   const savedResponse = await fetch(base + "/api/local/study", {
     method: "PUT",
     headers: {
@@ -256,6 +268,7 @@ globalThis.fetch=async (url)=>{
   assert.equal(photoResponse.status, 200);
   const photo = (await photoResponse.json()).draft[0];
   const before = await api("/local/study");
+  assert.deepEqual(before.study, saved, 'all seeded study fields must be stored before testing upgrade');
   await api("/local/updates/check", {});
   await api(
     "/local/updates/install",
