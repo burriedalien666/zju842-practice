@@ -1,4 +1,5 @@
 import { videoUrl } from "./curriculum.js";
+import { uiIcon } from "./ui-icons.js";
 export const escapeHtml = (s) =>
   String(s ?? "").replace(
     /[&<>"']/g,
@@ -18,9 +19,8 @@ export function questionVideos(catalog, id) {
 }
 
 export function videoEntryMarkup(catalog, id) {
-  return questionVideos(catalog, id).length
-    ? `<div class="question-video-action"><button type="button" data-action="open-videos" data-id="${escapeHtml(id)}" aria-label="查看本题视频">▶ 视频</button></div>`
-    : "";
+  if (!catalog.questions.some((q) => q.id === id)) return "";
+  return `<div class="question-video-action"><button type="button" data-action="open-videos" data-id="${escapeHtml(id)}" aria-label="查看本题视频">${uiIcon("play")}<span>视频</span></button></div>`;
 }
 
 export function videoDialogMarkup(catalog, id) {
@@ -44,8 +44,11 @@ export function videoDialogMarkup(catalog, id) {
             : ""
         }</article>`;
       })
-      .join("") || "<p>本题暂无视频。</p>"
-  }<p class="muted small">在B站新标签页播放，当前题目保留。</p></section>`;
+      .join("") ||
+    '<div class="video-empty">' +
+      uiIcon("play") +
+      "<h3>本题讲解视频待发布</h3><p>作者发布并关联视频后，即可从这里跳转到B站。</p></div>"
+  }${rows.length ? '<p class="muted small">在B站新标签页播放，当前题目保留。</p>' : ""}</section>`;
 }
 
 export function questionConcepts(catalog, q) {

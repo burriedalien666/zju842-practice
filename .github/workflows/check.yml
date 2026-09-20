@@ -20,6 +20,10 @@ jobs:
       - run: npm run test:update-content-ui
       - run: npm run test:video-ui
       - run: npm run test:post-update-ui
+      - run: npm run test:practice-ui
+      - run: npm run test:image-regression-ui
+      - run: npm run test:progress-switch-ui
+      - run: npm run test:completion-ui
       - name: Test source ZIP after clean extraction
         shell: bash
         run: |
@@ -32,6 +36,7 @@ jobs:
           npm test
           npm run test:update-ui-review
           npm run test:video-ui
+          npm run test:completion-ui
       - run: npm audit --omit=dev --audit-level=high
       - name: Build container
         run: docker build --tag zju842-test .

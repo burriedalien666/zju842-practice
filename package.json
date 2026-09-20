@@ -1,6 +1,6 @@
 {
   "name": "zju842-practice",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "desktopUpdateProtocol": 1,
   "license": "MIT",
   "private": true,
@@ -9,6 +9,10 @@
     "node": ">=24.14.0"
   },
   "scripts": {
+    "test:completion-ui": "node scripts/test-completion-ui.js",
+    "test:progress-switch-ui": "node scripts/test-progress-switch-ui.js",
+    "test:image-regression-ui": "node scripts/test-image-regression-ui.js",
+    "test:practice-ui": "node scripts/test-practice-ui.js",
     "test:connection-ui": "node scripts/test-connection-ui.js",
     "test:video-ui": "node scripts/test-video-ui.js",
     "test:post-update-ui": "node scripts/test-post-update-ui.js",

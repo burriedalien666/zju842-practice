@@ -58,7 +58,7 @@ try {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(origin + "/__open/first");
-  await page.locator('[data-action="local-updates"]').click();
+  await page.locator('[data-action="local-updates"]:visible').click();
   await page.locator("#update-check").click();
   await page.waitForFunction(() =>
     document.querySelector("#update-error")?.textContent.includes("GitHub"),
@@ -85,7 +85,7 @@ try {
   await page.waitForFunction(() =>
     document.querySelector("#save-status")?.textContent.includes("尚未保存"),
   );
-  await page.locator('[data-action="local-updates"]').click();
+  await page.locator('[data-action="local-updates"]:visible').click();
   await page.locator("#update-reconnect").waitFor();
   assert.match(
     await page.locator("#update-center").innerText(),

@@ -1,5 +1,7 @@
+import { recordProgress } from "./learning-progress.js";
+import { questionRating, progressMarkup } from "./practice-view.js";
 import { chapterQuestions, chapterForType } from "./chapters.js";
-import { learningSummary, resumeQuestion } from "./learning-view.js";
+import { resumeQuestion } from "./learning-view.js";
 import { scopeName } from "./interactions.js";
 import { filterLabel, matchesTraining } from "./curriculum.js";
 const esc = (value) =>
@@ -23,6 +25,7 @@ export function paintNavigation({
   current,
   lastQuestion,
   chapterMode = "training",
+  progressVisible = true,
 }) {
   const root = document.querySelector("#chapter-browser"),
     crumb = document.querySelector("#breadcrumb");
@@ -31,7 +34,7 @@ export function paintNavigation({
     currentChapter?.types.find((t) => t.id === filters.type) ||
     filterLabel(catalog, filters.type);
   const subject = filters.subject === "signals" ? "信号与系统" : "数字电路";
-  const inReader = page === "reader";
+  const inReader = page === "reader" || page === "catalog";
   const scope = scopeName(filters);
   const scopeBar = document.querySelector("#learning-scope");
   scopeBar.hidden = !scope;
@@ -45,7 +48,16 @@ export function paintNavigation({
   const directoryOpen =
     shortcuts.querySelector("details")?.open ??
     window.matchMedia("(min-width: 851px)").matches;
-  shortcuts.innerHTML = `<details ${directoryOpen ? "open" : ""}><summary>本学科目录</summary><div>${subjectChapters.map((c) => action("chapter", `<span class="shortcut-number">${esc(c.number.replace("专题 ", "补"))}</span><span>${esc(c.title)}</span>`, `data-id="${c.id}" ${c.id === filters.chapter ? 'aria-current="page"' : ""}`, c.id === filters.chapter ? "selected" : "")).join("")}</div></details>`;
+  const marks = Object.fromEntries(
+    Object.entries(records).map(([id, r]) => [id, questionRating(r)]),
+  );
+  function chapterProgress(chapter) {
+    return progressMarkup(
+      matching.filter((q) => chapter.questionIds.has(q.id)),
+      marks,
+    );
+  }
+  shortcuts.innerHTML = `<div class="directory-tools"><button type="button" data-action="progress-toggle" class="progress-switch" role="switch" aria-checked="${progressVisible}" aria-label="显示学习进度"><span class="progress-label">进度</span><span class="progress-track" aria-hidden="true"><span class="progress-thumb"></span></span></button></div><details ${directoryOpen ? "open" : ""}><summary>本学科目录</summary><div>${subjectChapters.map((c) => action("chapter", `<span class="shortcut-number">${esc(c.number.replace("专题 ", "补"))}</span><span class="shortcut-copy"><span>${esc(c.title)}</span>${chapterProgress(c)}</span>`, `data-id="${c.id}" ${c.id === filters.chapter ? 'aria-current="page"' : ""}`, c.id === filters.chapter ? "selected" : "")).join("")}</div></details>`;
   const crumbs = [action("modules", subject)];
   if (scope)
     crumbs.push(
@@ -80,7 +92,7 @@ export function paintNavigation({
   if (inReader) return;
   document.querySelector("#heading").textContent =
     currentChapter?.title || subject;
-  const done = (qs) => qs.filter((q) => records[q.id]?.state === "done").length;
+  const done = (qs) => recordProgress(qs, records).good;
   const trainingCount = (qs) =>
     new Set(qs.flatMap((q) => q.trainingIds || [q.typeId])).size;
   if (!currentChapter) {
@@ -88,26 +100,23 @@ export function paintNavigation({
       (c) => c.subject === filters.subject,
     );
     const total = matching.length,
-      completed = done(matching);
-    root.innerHTML = `<div class="course-summary"><div><span class="section-kicker">章节学习</span><h2>从一个章节开始</h2><p>${courseChapters.length} 个章节与专题 · ${total} 道题 · 已掌握 ${completed} 道</p></div>${action("browse-all", '浏览全部题目 <span aria-hidden="true">↗</span>', "", "browse-all")}</div><div class="chapter-grid">${courseChapters
+      overview = recordProgress(matching, records);
+    root.innerHTML = `<div class="course-summary"><div><span class="section-kicker">章节学习</span><h2>从一个章节开始</h2><p>${courseChapters.length} 个章节与专题 · ${total} 道题 · 已做 ${overview.completed} 道 · 掌握 ${overview.good} 道</p></div>${action("browse-all", '浏览全部题目 <span aria-hidden="true">↗</span>', "", "browse-all")}</div><div class="chapter-grid">${courseChapters
       .map((c) => {
         const qs = chapterQuestions(c, matching),
           all = chapterQuestions(c, catalog.questions),
-          completed = done(qs),
-          percent = qs.length ? Math.round((completed / qs.length) * 100) : 0;
-        return `<button type="button" class="chapter-card ${c.supplement ? "supplement" : ""}" data-action="chapter" data-id="${c.id}"><span class="chapter-card-top"><span class="chapter-symbol" aria-hidden="true">${esc(c.symbol)}</span><span class="chapter-number">${c.supplement ? "真题专题" : `第 ${c.number} 章`}</span></span><h3>${esc(c.title)}</h3><p class="chapter-summary">${esc(c.summary)}</p><div class="chapter-meta"><span>${trainingCount(qs)} 个题型</span><span>${qs.length} 道题${qs.length !== all.length ? ` / 共${all.length}道` : ""}</span></div><div class="chapter-progress" role="progressbar" aria-label="${esc(c.title)}掌握进度" aria-valuemin="0" aria-valuemax="${qs.length || 1}" aria-valuenow="${completed}"><span style="width:${percent}%"></span></div><div class="chapter-card-footer"><span>已掌握 ${completed} / ${qs.length}</span><span class="chapter-enter">进入章节 <span aria-hidden="true">→</span></span></div></button>`;
+          stats = recordProgress(qs, records),
+          completed = stats.completed,
+          percent = stats.percent;
+        return `<button type="button" class="chapter-card ${c.supplement ? "supplement" : ""}" data-action="chapter" data-id="${c.id}"><span class="chapter-card-top"><span class="chapter-symbol" aria-hidden="true">${esc(c.symbol)}</span><span class="chapter-number">${c.supplement ? "真题专题" : `第 ${c.number} 章`}</span></span><h3>${esc(c.title)}</h3><p class="chapter-summary">${esc(c.summary)}</p><div class="chapter-meta"><span>${trainingCount(qs)} 个题型</span><span>${qs.length} 道题${qs.length !== all.length ? ` / 共${all.length}道` : ""}</span></div><div class="chapter-progress" role="progressbar" aria-label="${esc(c.title)}完成进度" aria-valuemin="0" aria-valuemax="${qs.length || 1}" aria-valuenow="${completed}"><span style="width:${percent}%"></span></div><div class="chapter-card-footer"><span>已做 ${completed} / ${qs.length} · 掌握 ${stats.good}</span><span class="chapter-enter">进入章节 <span aria-hidden="true">→</span></span></div></button>`;
       })
       .join(
         "",
       )}</div><div class="classification-footer">${action("classification-source", "分类依据", "", "text-button")}</div>`;
-    const summary = learningSummary(
-      catalog.questions.filter((q) => q.subject === filters.subject),
-      records,
-    );
     const resume = resumeQuestion(catalog, lastQuestion, filters.subject);
     root.insertAdjacentHTML(
       "afterbegin",
-      `<section class="learning-overview" aria-label="学习概览"><div class="resume-block"><span class="section-kicker">${resume ? "上次练习" : "本地学习"}</span><h2>${resume ? esc(resume.year + " · " + resume.number) : "选择章节，开始练习"}</h2><p>${resume ? esc(resume.title) : "题目、个人答案与复习进度都保存在本机"}</p>${resume ? action("resume", "继续上次 →", "", "primary") : ""}</div><div class="learning-metrics">${action("status", `<strong>${summary.due}</strong><span>到期复习</span>`, 'data-value="due"')}${action("status", `<strong>${summary.wrong}</strong><span>待重做错题</span>`, 'data-value="wrong"')}${action("status", `<strong>${summary.done}<small> / ${summary.total}</small></strong><span>已标记掌握</span>`, 'data-value="done"')}</div></section>`,
+      `<section class="learning-overview" aria-label="学习概览"><div class="resume-block"><span class="section-kicker">${resume ? "上次练习" : "本地学习"}</span><h2>${resume ? esc(resume.year + " · " + resume.number) : "选择章节，开始练习"}</h2><p>${resume ? esc(resume.title) : "题目、个人答案与复习进度都保存在本机"}</p>${resume ? action("resume", "继续上次 →", "", "primary") : ""}</div></section>`,
     );
   } else {
     const qs = chapterQuestions(currentChapter, matching);
@@ -120,7 +129,7 @@ export function paintNavigation({
           }))
           .filter((t) => t.qs.length);
         if (!types.length) return "";
-        return `<section class="chapter-section"><div class="section-heading"><h2><span>${String(i + 1).padStart(2, "0")}</span>${esc(s.title)}</h2><span>${types.length} 个题型</span></div><div class="type-card-grid">${types.map(({ type, qs }) => `<button type="button" class="type-card" data-action="type" data-id="${esc(type.id)}"><div class="type-card-copy"><h3>${esc(type.title)}</h3><p>${qs.length} 道题 · ${Math.min(...qs.map((q) => q.year))}—${Math.max(...qs.map((q) => q.year))}年 <span>已掌握 ${done(qs)}</span></p></div><span class="type-card-arrow" aria-hidden="true">→</span></button>`).join("")}</div></section>`;
+        return `<section class="chapter-section"><div class="section-heading"><h2><span>${String(i + 1).padStart(2, "0")}</span>${esc(s.title)}</h2><span>${types.length} 个题型</span></div><div class="type-card-grid">${types.map(({ type, qs }) => `<button type="button" class="type-card" data-action="type" data-id="${esc(type.id)}"><div class="type-card-copy"><h3>${esc(type.title)}</h3><p>${qs.length} 道题 · ${Math.min(...qs.map((q) => q.year))}—${Math.max(...qs.map((q) => q.year))}年 <span>已做 ${recordProgress(qs, records).completed} · 掌握 ${done(qs)}</span></p></div><span class="type-card-arrow" aria-hidden="true">→</span></button>`).join("")}</div></section>`;
       })
       .join(
         "",

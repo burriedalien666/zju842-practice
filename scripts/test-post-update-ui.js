@@ -83,7 +83,7 @@ try {
   ]) {
     await page.setViewportSize(viewport);
     const sizes = await page.locator(".image-fit img").evaluate((im) => {
-      const r = im.getBoundingClientRect();
+      const r = (im.closest(".image-crop-frame") || im).getBoundingClientRect();
       const d = document.querySelector("#dialog");
       return {
         left: r.left,

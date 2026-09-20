@@ -162,6 +162,7 @@ try {
   const before = await (
     await context.request.get(origin + "/api/local/study")
   ).json();
+  await page.locator('[data-action="reader-back"]').click();
   await page.locator('[data-action="local-updates"]').click();
   await page.locator("#update-check").click();
   await page.locator('[data-update-kind="library"]:enabled').waitFor();

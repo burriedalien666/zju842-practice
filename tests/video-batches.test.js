@@ -98,9 +98,26 @@ test("only explicit question links are shown; related chapter and knowledge list
   assert.match(markup, /&lt;作者&gt;/);
   assert.match(markup, /p=1&amp;t=60/);
   assert.match(markup, /rel="noopener noreferrer"/);
-  assert.match(videoEntryMarkup(c, q.id), /▶ 视频/);
-  assert.equal(videoEntryMarkup(base, q.id), "");
-  assert.equal(videoEntryMarkup(c, base.questions[0].id), "");
+  for (const [catalog, id] of [
+    [c, q.id],
+    [base, q.id],
+    [c, base.questions[0].id],
+  ]) {
+    const entry = videoEntryMarkup(catalog, id);
+    assert.match(entry, /data-action="open-videos"/);
+    assert.match(entry, /<svg\b/);
+    assert.match(entry, /<span>视频<\/span>/);
+  }
+  for (const [catalog, id] of [
+    [base, q.id],
+    [c, base.questions[0].id],
+  ]) {
+    const empty = videoDialogMarkup(catalog, id);
+    assert.match(empty, /本题讲解视频待发布/);
+    assert.doesNotMatch(empty, /<a\b|href=|整章课程|知识点课程/);
+  }
+  assert.equal(videoEntryMarkup(c, "absent"), "");
+  assert.deepEqual(questionVideos(c, "absent"), []);
   assert.throws(
     () => mergeVideoBatch(base, { format: 1, items: [c.videoLessons[1]] }),
     /只导入/,

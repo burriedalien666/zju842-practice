@@ -194,18 +194,33 @@ try {
   await page.locator(".question-images").waitFor();
   assert.equal(
     await page.locator('[data-action="open-videos"]').count(),
-    0,
-    "unlinked question has no empty video button",
+    1,
+    "unlinked question retains the video entry",
   );
+  assert.equal(
+    await page.locator('[data-action="open-videos"] svg').count(),
+    1,
+  );
+  await page.getByRole("button", { name: "查看本题视频", exact: true }).click();
+  assert.match(
+    await page.locator("#dialog-body").innerText(),
+    /本题讲解视频待发布/,
+  );
+  assert.equal(await page.locator("#dialog-body a").count(), 0);
+  assert.equal(await page.locator(".question-video-row").count(), 0);
+  await page.locator('[data-action="close-dialog"]').click();
   await page.goto(origin + "/?paper=2010");
-  await page.locator(`.paper-question[data-qid="${q.id}"]`).waitFor();
+  await page.locator('[data-action="question-picker"]').click();
   await page
-    .locator(`.paper-question[data-qid="${q.id}"] [data-action="open-videos"]`)
+    .locator(`[data-action="select-question"][data-id="${q.id}"]`)
+    .click();
+  await page
+    .locator(`#reader[data-qid="${q.id}"] [data-action="open-videos"]`)
     .click();
   assert.equal(await page.locator(".question-video-row").count(), 1);
   assert.match(await page.locator("#dialog-body").innerText(), /测试题目讲解/);
   console.log(
-    "VIDEO UI PASS: real library-pack import preserves study; original chapter layout; only current-question video; no related courses; timestamp popup, isolated opener and reading position retained; empty questions have no button (external page fixture)",
+    "VIDEO UI PASS: real library-pack import preserves study; original chapter layout; only current-question video; no related courses; timestamp popup, isolated opener and reading position retained; unlinked questions retain a pending-publication entry without fabricated links (external page fixture)",
   );
 } finally {
   await browser?.close();

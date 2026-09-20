@@ -130,8 +130,14 @@ test("external catalog annotations reject invalid concepts, score evidence and v
     "https://www.bilibili.com/video/BV1234567890?p=2&t=60",
   );
 });
-test("video links absent until author adds one; labels escaped and opener isolated", () => {
-  assert.equal(videoEntryMarkup(c, c.questions[0].id), "");
+test("valid questions retain a video entry before publication; linked labels escaped and opener isolated", () => {
+  const entry = videoEntryMarkup(c, c.questions[0].id);
+  assert.match(entry, /data-action="open-videos"/);
+  assert.match(entry, /<svg\b/);
+  assert.match(entry, /<span>视频<\/span>/);
+  const empty = videoDialogMarkup(c, c.questions[0].id);
+  assert.match(empty, /本题讲解视频待发布/);
+  assert.doesNotMatch(empty, /<a\b|href=/);
   const fixture = structuredClone(c);
   fixture.videoLessons = [
     {
@@ -145,6 +151,10 @@ test("video links absent until author adds one; labels escaped and opener isolat
   validateCatalog(fixture);
   const html = videoDialogMarkup(fixture, c.questions[0].id);
   assert.ok(html.includes("&lt;img"));
+  assert.ok(html.includes('target="_blank"'));
   assert.ok(html.includes('rel="noopener noreferrer"'));
+  assert.ok(html.includes("?t=23"));
+  assert.doesNotMatch(html, /本题讲解视频待发布/);
   assert.equal(videoEntryMarkup(fixture, "s1"), "");
+  assert.equal(videoEntryMarkup(fixture, "absent"), "");
 });

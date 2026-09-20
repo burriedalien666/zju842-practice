@@ -81,7 +81,11 @@ try {
   const before = await (
     await context.request.get(origin + "/api/local/study")
   ).json();
-  await page.locator('[data-action="local-updates"]').click();
+  if (
+    !(await page.locator('[data-action="local-updates"]').first().isVisible())
+  )
+    await page.locator('[data-action="reader-back"]').click();
+  await page.locator('[data-action="local-updates"]:visible').click();
   await page.locator("#update-check").click();
   await page
     .locator('[data-update-kind="program"]:enabled')
@@ -135,11 +139,17 @@ try {
   await page.waitForFunction(() => !document.querySelector("#update-center"), {
     timeout: 15000,
   });
-  const completion = page.locator('#notice-dismiss');
+  const completion = page.locator("#notice-dismiss");
   await completion.waitFor({ timeout: 15000 });
-  assert.ok((await page.locator('#update-complete').innerText()).includes(target));
+  assert.ok(
+    (await page.locator("#update-complete").innerText()).includes(target),
+  );
   await completion.click();
-  await page.locator('[data-action="local-updates"]').click();
+  if (
+    !(await page.locator('[data-action="local-updates"]').first().isVisible())
+  )
+    await page.locator('[data-action="reader-back"]').click();
+  await page.locator('[data-action="local-updates"]:visible').click();
   await page.locator("#update-center").waitFor();
   assert.match(
     await page.locator("#update-center").innerText(),

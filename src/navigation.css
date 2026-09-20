@@ -533,7 +533,7 @@
 .chapter-shortcuts summary::-webkit-details-marker {
   display: none;
 }
-.chapter-shortcuts button {
+.chapter-shortcuts [data-action="chapter"] {
   display: flex;
   width: 100%;
   align-items: flex-start;
@@ -549,8 +549,8 @@
   line-height: 1.6;
   color: #687f70;
 }
-.chapter-shortcuts button:hover,
-.chapter-shortcuts button.selected {
+.chapter-shortcuts [data-action="chapter"]:hover,
+.chapter-shortcuts [data-action="chapter"].selected {
   color: #2e6c46;
   background: #edf4ed;
 }
@@ -815,7 +815,7 @@
   .sidebar-bottom {
     order: 4;
   }
-  .chapter-shortcuts button {
+  .chapter-shortcuts [data-action="chapter"] {
     font-size: 11px;
   }
   .learning-overview {

@@ -1,5 +1,9 @@
 import { reviewSettings, validateReview } from "./review.js";
-import { validateExamDate, validatePaperRuns } from "./papers.js";
+import {
+  validateExamDate,
+  validatePaperRuns,
+  validatePaperHistory,
+} from "./papers.js";
 export const STORAGE_KEY = "zju842-study-v3";
 export function emptyStudy() {
   return { version: 1, records: {}, lists: [] };
@@ -20,6 +24,8 @@ export function validateStudy(input, ids) {
     clean.examDate = validateExamDate(input.examDate);
   if (input.papers !== undefined)
     clean.papers = validatePaperRuns(input.papers);
+  if (input.paperHistory !== undefined)
+    clean.paperHistory = validatePaperHistory(input.paperHistory);
   if (input.lastQuestion !== undefined) {
     if (
       typeof input.lastQuestion !== "string" ||
