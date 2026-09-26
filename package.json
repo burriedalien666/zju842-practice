@@ -1,6 +1,6 @@
 {
   "name": "zju842-practice",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "desktopUpdateProtocol": 1,
   "license": "MIT",
   "private": true,
@@ -49,6 +49,7 @@
     "@fastify/static": "^10.1.3",
     "@libsql/client": "^0.18.0",
     "fastify": "^5.12.4",
+    "katex": "0.18.7",
     "sharp": "^0.35.4",
     "yauzl": "^3.4.0",
     "yazl": "^3.3.1"

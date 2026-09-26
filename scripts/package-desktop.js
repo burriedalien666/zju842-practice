@@ -25,7 +25,14 @@ const copy = (from, to = from) =>
   fs.cpSync(path.join(root, from), path.join(target, to), { recursive: true });
 for (const name of ["server", "LICENSE", "CONTENT-NOTICE.md", "package.json"])
   copy(name);
-for (const name of ["study.js", "review.js", "papers.js", "curriculum.js"]) copy("src/" + name);
+for (const name of [
+  "study.js",
+  "review.js",
+  "papers.js",
+  "curriculum.js",
+  "structured-schema.js",
+])
+  copy("src/" + name);
 copy("dist/index.html");
 copy("dist/assets");
 const catalog = JSON.parse(
@@ -99,7 +106,7 @@ else {
 fs.writeFileSync(
   path.join(target, "\u4f7f\u7528\u8bf4\u660e.md"),
   ["local-guide.md", "update-network.md", "old-version-recovery.md"]
-    .map(name => fs.readFileSync(path.join(root, "docs", name), "utf8"))
+    .map((name) => fs.readFileSync(path.join(root, "docs", name), "utf8"))
     .join("\n\n---\n\n"),
 );
 const entries = [];

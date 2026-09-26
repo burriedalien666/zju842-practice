@@ -1,6 +1,12 @@
 import { completionProgress, recordProgress } from "./learning-progress.js";
 import { uiIcon } from "./ui-icons.js";
 import { prepareQuestionImages, cropImageView } from "./question-image-view.js";
+import { questionBodyMarkup } from "./structured-question.js";
+import { validateStructured } from "./structured-schema.js";
+import { prepareStructured } from "./structured-layout.js";
+import "katex/dist/katex.min.css";
+import "./structured-question.css";
+import "./structured-figures.css";
 import "./style.css";
 import "./navigation.css";
 import "./papers.css";
@@ -15,6 +21,7 @@ import {
   durationText,
 } from "./practice-view.js";
 import { PracticeClock } from "./practice-clock.js";
+import { continuationTopics } from "./practice-continuation.js";
 import { StudySaver } from "./persistence.js";
 import { saveFeedback } from "./save-feedback.js";
 import {
@@ -212,8 +219,44 @@ function renderPracticeTools() {
   $(".workspace").querySelector(".page-arrow")?.remove();
   $(".workspace").insertAdjacentHTML(
     "beforeend",
-    `${button("previous", uiIcon("left"), "page-arrow arrow-previous", `aria-label="上一题" ${index <= 0 ? "disabled" : ""}`)}${button("next", uiIcon("right"), "page-arrow arrow-next", `aria-label="下一题" ${index < 0 || index === questions.length - 1 ? "disabled" : ""}`)}`,
+    `${button("previous", uiIcon("left"), "page-arrow arrow-previous", `aria-label="上一题" ${index <= 0 ? "disabled" : ""}`)}${button("next", uiIcon("right"), "page-arrow arrow-next", `aria-label="${index === questions.length - 1 ? (page === "paper" ? "查看本轮总结" : "选择下一专题") : "下一题"}" title="${index === questions.length - 1 ? (page === "paper" ? "查看本轮总结" : "继续练习其他专题") : "下一题"}" ${index < 0 ? "disabled" : ""}`)}`,
   );
+}
+function showContinuation() {
+  if (page === "paper") {
+    flushClock();
+    const run = study.papers[paperYear];
+    dialog(
+      "本轮总结",
+      roundSummaryMarkup(activePaper(), run) +
+        button(
+          "paper-confirm-finish",
+          run.finished ? "关闭总结" : "结束本轮",
+          "primary",
+        ),
+    );
+    return;
+  }
+  const choices = continuationTopics(catalog, chapters, filters, study);
+  const first = choices[0];
+  const topicButton = (choice, cls = "") =>
+    button(
+      "continue-topic",
+      `<span><strong>${esc(choice.title)}</strong><small>${esc(choice.chapterTitle)} · ${choice.count}题</small></span>${uiIcon("right")}`,
+      cls,
+      `data-id="${esc(choice.id)}" data-chapter="${esc(choice.chapter)}"`,
+    );
+  dialog(
+    "继续练习",
+    `<p class="muted small">已到当前范围最后一题。选择专题后直接开始，收藏和自评记录保留。</p>${
+      first
+        ? `<div class="continue-recommended"><span class="muted small">下一专题</span>${topicButton(first, "primary")}</div><details class="continue-other"><summary>选择其他专题</summary><div class="continue-topic-list">${choices
+            .slice(1)
+            .map((c) => topicButton(c))
+            .join("")}</div></details>`
+          : "<p>当前筛选下没有其他专题，可返回目录调整筛选。</p>" + button("chapter-picker", "选择其他章节")
+      }`,
+    );
 }
 function closePicker(restoreFocus = false) {
   const panel = $("#question-picker");
@@ -301,12 +344,13 @@ function showHistoryRound(year, index) {
     `<div class="history-toolbar">${button("practice-history", "← 全部记录")}<span>${new Date(run.started).toLocaleString()}${run.finished ? " — " + new Date(run.finished).toLocaleString() : ""}</span></div>${roundSummaryMarkup(paper, run)}<p class="muted small">以下为本轮自评；展开可回看原题，不改动记录。</p><div class="history-questions">${ids
       .map((id, i) => {
         const q = catalog.questions.find((q) => q.id === id);
-        return `<details><summary><span>${i + 1} · ${esc(q?.number || id)}</span><span class="history-rating mark-${esc(run.marks[id] || "none")}">${ratingNames[run.marks[id]] || "未自评"}</span></summary>${q ? `<div class="question-images">${q.images.map((im) => `<img src="/${esc(im.src)}" alt="${esc(q.number)} 原题" loading="lazy">`).join("")}</div>` : "<p>当前题库中没有这道题，历史标记已保留。</p>"}</details>`;
+        return `<details><summary><span>${i + 1} · ${esc(q?.number || id)}</span><span class="history-rating mark-${esc(run.marks[id] || "none")}">${ratingNames[run.marks[id]] || "未自评"}</span></summary>${q ? questionBodyMarkup(catalog, q) : "<p>当前题库中没有这道题，历史标记已保留。</p>"}</details>`;
       })
       .join("")}</div>`,
     true,
   );
   prepareQuestionImages($("#dialog-body"));
+  prepareStructured($("#dialog-body"));
 }
 async function api(url, options = {}) {
   return requestApi(url, options, {
@@ -764,6 +808,7 @@ async function renderReader(preserve = false) {
     inList: page === "reader" && !!filters.list,
   });
   prepareQuestionImages($("#reader"));
+  prepareStructured($("#reader"));
   try {
     const [personal, official] = await Promise.all([
       api("/answers/" + enc(q.id)),
@@ -1590,6 +1635,30 @@ document.addEventListener("click", async (e) => {
         index = qs.findIndex((q) => q.id === current);
       const next = qs[index + (action === "next" ? 1 : -1)];
       if (next) moveToQuestion(next.id);
+      else if (action === "next" && index === qs.length - 1) showContinuation();
+      return;
+    }
+    if (action === "continue-topic") {
+      const choice = continuationTopics(catalog, chapters, filters, study).find(
+        (c) => c.id === b.dataset.id && c.chapter === b.dataset.chapter,
+      );
+      if (!choice) return;
+      flushClock();
+      $("#dialog").close();
+      fromAnalysis = false;
+      delete filters.questionIds;
+      filters.chapter = choice.chapter;
+      filters.type = choice.id;
+      page = "reader";
+      current = null;
+      queue = [];
+      returnPosition = 0;
+      syncNavigation();
+      renderList();
+      queue = choice.questionIds;
+      openQuestion(choice.questionIds[0]);
+      window.scrollTo(0, 0);
+      rememberNavigation();
       return;
     }
     if (["star", "review", "done"].includes(action)) {
@@ -2204,6 +2273,12 @@ try {
   const res = await fetch("/catalog.json");
   if (!res.ok) throw new Error("题库加载失败");
   catalog = await res.json();
+  try {
+    validateStructured(catalog);
+  } catch {
+    delete catalog.structured;
+    console.warn("结构化题面格式不支持，继续使用原图。");
+  }
   analysisState = initialAnalysisState(catalog);
   chapters = buildChapters(catalog);
   let storageError;
