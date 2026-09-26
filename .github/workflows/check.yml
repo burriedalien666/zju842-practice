@@ -25,6 +25,8 @@ jobs:
       - run: npm run test:image-regression-ui
       - run: npm run test:progress-switch-ui
       - run: npm run test:completion-ui
+      - run: node scripts/test-reader-polish-ui.js
+      - run: node scripts/test-structured-ui.js
       - name: Test source ZIP after clean extraction
         shell: bash
         run: |

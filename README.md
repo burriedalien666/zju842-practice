@@ -10,9 +10,9 @@
 
 | 你的电脑        | 下载                                                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Windows x64     | [Windows 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.7/zju842-0.5.7-windows-x64.zip)   |
-| Mac，Apple 芯片 | [Mac arm64 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.7/zju842-0.5.7-macos-arm64.zip) |
-| Mac，Intel 芯片 | [Mac Intel 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.7/zju842-0.5.7-macos-x64.zip)   |
+| Windows x64     | [Windows 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.9/zju842-0.5.9-windows-x64.zip)   |
+| Mac，Apple 芯片 | [Mac arm64 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.9/zju842-0.5.9-macos-arm64.zip) |
+| Mac，Intel 芯片 | [Mac Intel 版](https://github.com/burriedalien666/zju842-practice/releases/download/v0.5.9/zju842-0.5.9-macos-x64.zip)   |
 
 1. 下载对应版本，完整解压到一个文件夹。
 2. Windows 双击 `启动题库.cmd`；Mac 双击 `启动题库.command`。
@@ -35,11 +35,11 @@
 
 ## 题库与后续内容
 
-当前包含 **469 条题目、287 张原题图**，涵盖信号与系统、数字电路。题面目前仍使用原卷图像，过大的边缘留白会自动收起，原图可随时查看。
+当前包含 **250组／469条结构化题目、287张原题图**，涵盖信号与系统、数字电路。题干可以直接阅读，公式离线排版，电路与图表采用可缩放SVG；原图仍可随时展开对照。
 
 公开题库暂未附公共答案和正式视频讲解，你可以先导入自己的答案照片。作者整理后的公共答案、题目和讲解链接，会通过更新中心陆续提供。
 
-第一更新计划是先用5—10道代表样题验证文字、公式和可缩放绘图，再决定如何分批转换全库。[计划已确定，尚未执行](docs/roadmap.md)。
+结构化题面已完成接入。专题做至最后一题，可以直接选择下一专题；来源资料中的疑点由维护记录单独保留，不在做题页增加说明面板。[后续维护计划](docs/roadmap.md)。
 
 ## 资料保存在这里
 

@@ -39,6 +39,23 @@ if (
   process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
+  if (process.argv.includes("--catalog")) {
+    const file = fileURLToPath(
+      new URL("../public/catalog.json", import.meta.url),
+    );
+    const catalog = structuredLibrary(
+      JSON.parse(fs.readFileSync(file, "utf8")),
+    );
+    fs.writeFileSync(file, JSON.stringify(catalog, null, 2) + "\n");
+    console.log(
+      "Bundled catalog: r" +
+        catalog.libraryRevision +
+        ", " +
+        catalog.structured.groups.length +
+        " structured groups",
+    );
+    process.exit(0);
+  }
   const file = path.resolve(
     process.argv[2] || ".test-artifacts/structured/zju842-library-r4.842pack",
   );

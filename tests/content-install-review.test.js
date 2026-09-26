@@ -1,3 +1,4 @@
+import { legacyCatalog } from "./fixtures/legacy-catalog.js";
 import { contentCleanupDetails } from "../server/content-staging.js";
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,7 +15,7 @@ import { validateStudy } from '../src/study.js';
 import { scheduleReview } from '../src/review.js';
 import { createUpdates } from '../server/updates.js';
 const baseDir = fileURLToPath(new URL('../public', import.meta.url));
-const original = JSON.parse(fs.readFileSync(path.join(baseDir, 'catalog.json')));
+const original = legacyCatalog();
 const [qid, qid2] = original.questions.map(q => q.id);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), '842-content-review-'));
 const image = await sharp({create:{width:7,height:5,channels:3,background:'white'}}).webp().toBuffer();

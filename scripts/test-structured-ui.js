@@ -1,3 +1,4 @@
+import { legacyCatalog } from "../tests/fixtures/legacy-catalog.js";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -19,7 +20,7 @@ fs.writeFileSync(
   JSON.stringify({ autoCheck: false }),
 );
 const baseDir = path.resolve("public"),
-  catalog = loadCatalog(path.join(baseDir, "catalog.json"), baseDir);
+  catalog = legacyCatalog();
 const reserve = net.createServer();
 await new Promise((r) => reserve.listen(0, "127.0.0.1", r));
 const port = reserve.address().port;
@@ -43,7 +44,10 @@ try {
     local: { baseDir, launchToken: token },
   });
   await app.listen({ host: "127.0.0.1", port });
-  browser = await chromium.launch({ channel: "chrome", headless: true });
+  browser = await chromium.launch({
+    ...(process.platform === "win32" ? { channel: "chrome" } : {}),
+    headless: true,
+  });
   const context = await browser.newContext({
       viewport: { width: 1440, height: 1000 },
     }),
@@ -114,7 +118,7 @@ try {
   );
   assert.equal(install.status(), 200, await install.text());
   assert.deepEqual(await read(), stored);
-  result.scenarios.push("real HTTP r2->r3 ZIP import retains existing study");
+  result.scenarios.push("real HTTP r2->r4 ZIP import retains existing study");
   await open(qid);
   assert.equal(await page.locator("#reader .structured-question").count(), 1);
   await page.locator("#notice-dismiss").click();
@@ -137,13 +141,11 @@ try {
   })
     .png()
     .toBuffer();
-  await page
-    .locator("#gallery")
-    .setInputFiles({
-      name: "disposable-answer.png",
-      mimeType: "image/png",
-      buffer: picture,
-    });
+  await page.locator("#gallery").setInputFiles({
+    name: "disposable-answer.png",
+    mimeType: "image/png",
+    buffer: picture,
+  });
   await page.waitForFunction(
     () =>
       document.querySelectorAll(".photo-card").length === 1 &&
@@ -242,10 +244,18 @@ try {
   );
   await open("2025|七|(1)");
   assert.equal(await page.locator(".structured-question").count(), 1);
-  assert.equal(await page.locator('.question-source-details').getAttribute('open'),null);
-  assert.equal(await page.locator('#reader > .source-note,.structured-question > .source-note').count(),0);
-  await open('2015|九|(2)');assert.equal(await page.locator('.structured-question').count(),1);
-  result.scenarios.push("all accepted groups use structured content, with source notes folded by default");
+  assert.equal(await page.locator(".question-source-details").count(), 0);
+  assert.equal(
+    await page
+      .locator("#reader > .source-note,.structured-question > .source-note")
+      .count(),
+    0,
+  );
+  await open("2015|九|(2)");
+  assert.equal(await page.locator(".structured-question").count(), 1);
+  result.scenarios.push(
+    "all accepted groups use structured content without source-note UI",
+  );
   // Full content render uses the production markup and built page CSS, without touching live study records.
   for (const g of catalog.structured.groups
     .filter((g) => g.blocks.some((b) => b.narrowTex))

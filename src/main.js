@@ -1,4 +1,4 @@
-import { completionProgress, recordProgress } from "./learning-progress.js";
+import { completionProgress } from "./learning-progress.js";
 import { uiIcon } from "./ui-icons.js";
 import { prepareQuestionImages, cropImageView } from "./question-image-view.js";
 import { questionBodyMarkup } from "./structured-question.js";
@@ -254,9 +254,10 @@ function showContinuation() {
             .slice(1)
             .map((c) => topicButton(c))
             .join("")}</div></details>`
-          : "<p>当前筛选下没有其他专题，可返回目录调整筛选。</p>" + button("chapter-picker", "选择其他章节")
-      }`,
-    );
+        : "<p>当前筛选下没有其他专题，可返回目录调整筛选。</p>" +
+          button("chapter-picker", "选择其他章节")
+    }`,
+  );
 }
 function closePicker(restoreFocus = false) {
   const panel = $("#question-picker");
@@ -710,12 +711,7 @@ function renderList() {
   }
   if (filters.status === "wrong") $("#heading").textContent = "错题重做";
   $("#count").textContent = `${visible.length} 道题`;
-  const stats = recordProgress(
-    catalog.questions.filter((q) => q.subject === filters.subject),
-    study.records,
-  );
-  $("#progress").textContent =
-    `已做 ${stats.completed} / ${stats.total} · 掌握 ${stats.good}`;
+  $("#progress").textContent = "";
   $(".question-list").innerHTML =
     visible
       .map(

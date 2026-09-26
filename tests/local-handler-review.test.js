@@ -1,3 +1,4 @@
+import { legacyCatalog } from "./fixtures/legacy-catalog.js";
 // Actual local route handlers, ZIP and SQLite; a route/hook harness replaces
 // Fastify and multipart parsing. Does not claim HTTP/session integration coverage.
 import test from 'node:test';
@@ -12,7 +13,7 @@ import { registerLocal } from '../server/local.js';
 import { extractAnswers, readOfficialAnswers } from '../server/answer-packs.js';
 import { writeZip } from '../server/packs.js';
 import { currentLibrary } from '../server/content-store.js';
-const baseDir=path.resolve('public'),original=JSON.parse(fs.readFileSync(path.join(baseDir,'catalog.json')));
+const baseDir=path.resolve('public'),original=legacyCatalog();
 async function fixture(t) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'842-handler-'));const db=await openDatabase(dir),routes={},hooks={};
   t.after(async()=>{await db.close();fs.rmSync(dir,{recursive:true,force:true})});

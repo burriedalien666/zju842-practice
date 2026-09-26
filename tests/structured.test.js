@@ -1,3 +1,4 @@
+import { legacyCatalog } from "./fixtures/legacy-catalog.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -26,7 +27,7 @@ import { validateStudy } from "../src/study.js";
 import { packPaths, writeZip } from "../server/packs.js";
 
 const baseDir = path.resolve("public"),
-  base = JSON.parse(fs.readFileSync(path.join(baseDir, "catalog.json"))),
+  base = legacyCatalog(),
   candidate = structuredLibrary(base);
 test("all 250 accepted groups cover every original ID; source notes do not block rendering", () => {
   assert.equal(candidate.structured.groups.length, 250);
@@ -49,6 +50,7 @@ test("every migrated group renders; shared children retain current ID and origin
       assert.match(html, /data-structured-group=/);
       assert.ok(html.includes(q.images[0].src));
       assert.match(html, /查看原图/);
+      assert.doesNotMatch(html, /question-source-details|<summary>原题说明/);
     }
   }
   assert.doesNotMatch(
@@ -62,6 +64,12 @@ test("every migrated group renders; shared children retain current ID and origin
     ),
     /structured-question/,
   );
+});
+test("distributed catalog contains the complete structured library without a second installation", () => {
+  const distributed=validateCatalog(JSON.parse(fs.readFileSync(path.join(baseDir,'catalog.json'),'utf8')));
+  assert.equal(distributed.libraryRevision,4);
+  assert.equal(distributed.structured.groups.length,250);
+  assert.equal(distributed.structured.groups.flatMap(g=>g.questionIds).length,469);
 });
 test("schema rejects unknown IDs, shared-image mismatches, bad math, missing figures, and insufficient program requirement", () => {
   for (const edit of [

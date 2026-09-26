@@ -154,19 +154,6 @@
 .structured-original[open] > summary {
   margin-bottom: 16px;
 }
-.question-source-details {
-  margin: 12px 0;
-  color: var(--muted);
-  font-size: 12px;
-}
-.question-source-details summary {
-  cursor: pointer;
-  width: fit-content;
-}
-.question-source-details p {
-  margin: 8px 0 0;
-  line-height: 1.8;
-}
 @media (max-width: 760px) {
   .structured-question .structured-body {
     font-size: 16px;

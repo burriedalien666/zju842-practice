@@ -137,19 +137,6 @@
   justify-content: space-between;
   margin-bottom: 17px;
 }
-.chapter-symbol {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  background: #edf4e9;
-  color: #5c8867;
-  font:
-    24px Georgia,
-    serif;
-}
 .chapter-number {
   font-size: 11px;
   color: #91a293;
@@ -213,10 +200,6 @@
 }
 .chapter-card.supplement {
   background: #fcfcf9;
-}
-.chapter-card.supplement .chapter-symbol {
-  background: #f1f0e5;
-  color: #918b5b;
 }
 .classification-footer {
   display: flex;
@@ -440,11 +423,6 @@
   .chapter-summary {
     font-size: 11px;
     min-height: 38px;
-  }
-  .chapter-symbol {
-    width: 33px;
-    height: 33px;
-    font-size: 21px;
   }
   .chapter-meta {
     gap: 8px;

@@ -58,9 +58,14 @@ jobs:
                   assert not any('/.env' in n or '/userdata/' in n or '/data/admin-access' in n or n.endswith('.pdf') for n in names)
                   package=json.loads(archive.read(file.stem+'/package.json'))
                   assert package['version']==version,file.name
+                  catalog=json.loads(archive.read(file.stem+'/public/catalog.json'))
+                  assert catalog['libraryRevision']==4
+                  assert len(catalog['questions'])==469
+                  assert len(catalog['structured']['groups'])==250
                   print(file.name,round(file.stat().st_size/1048576,2),'MiB')
           PY
       - name: Publish release
         run: |
+          node scripts/package-source.js "release-assets/zju842-$(node -p 'require("./package.json").version')-source.zip"
           gh release create "$RELEASE_TAG" release-assets/*.zip release-assets/*.842pack release-assets/*.842answers release-assets/zju842-updates.json --draft --target "$REVISION" --title "$(head -n 1 "docs/releases/$RELEASE_TAG.md" | sed 's/^# //')" --notes-file "docs/releases/$RELEASE_TAG.md"
           gh release edit "$RELEASE_TAG" --draft=false --latest

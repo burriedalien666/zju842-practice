@@ -1,3 +1,4 @@
+import { legacyCatalog } from "./fixtures/legacy-catalog.js";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -5,7 +6,7 @@ import { validateLibraryTransition, validateAnswerTransition } from '../server/c
 import { validateAnswers } from '../server/answer-schema.js';
 import { validateCatalog } from '../server/catalog.js';
 import { registerLocalWriteGate } from '../server/local-write-gate.js';
-const current = JSON.parse(fs.readFileSync(new URL('../public/catalog.json', import.meta.url)));
+const current = legacyCatalog();
 const version = '0.5.3';
 const nextLibrary = () => ({ ...structuredClone(current), libraryRevision: 3, updateKind: 'library' });
 const nextAnswer = (revision, answers = {}) => ({ format: 1, kind: 'answers', libraryId: 'zju842', revision, requiresLibraryRevision: 2, requiresProgram: '0.5.0', edition: 'test', answers });

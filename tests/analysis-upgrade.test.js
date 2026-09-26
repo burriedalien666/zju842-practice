@@ -1,3 +1,4 @@
+import { legacyCatalog } from "./fixtures/legacy-catalog.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -9,7 +10,7 @@ import { buildChapters } from "../src/chapters.js";
 import { validateStudy } from "../src/study.js";
 
 test("r1 to actual r2 library upgrade preserves all study records and installs annotated catalog", async (t) => {
-  const catalog = JSON.parse(fs.readFileSync("public/catalog.json"));
+  const catalog = legacyCatalog();
   const old = structuredClone(catalog);
   delete old.curriculum;
   delete old.videoLessons;

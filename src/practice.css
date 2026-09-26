@@ -223,6 +223,9 @@ main {
   box-shadow: none;
   grid-template-columns: minmax(0, 1fr);
 }
+#progress:empty {
+  display: none;
+}
 .learning-overview .resume-block h2 {
   color: var(--ink);
 }
@@ -1140,7 +1143,8 @@ main {
   display: block;
 }
 #chapter-shortcuts > details > summary {
-  padding: 8px 90px 8px 0;
+  padding: 8px 0;
+  width: calc(100% - 90px);
   min-height: 40px;
   margin: 0;
   min-width: 0;

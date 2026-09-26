@@ -240,6 +240,7 @@ test("repeat import repairs a missing program dependency without duplicating an 
   const input = batch(1, 1);
   input.items[0].segments = [{ title: "开始", seconds: 0 }];
   const previous = mergeVideoBatch(base, input).catalog;
+  delete previous.structured; // This scenario models a legacy pre-structured library.
   previous.requiresProgram = "0.4.0";
   const file = path.join(dir, "catalog.json"),
     source = path.join(dir, "batch.json");
@@ -256,6 +257,12 @@ test("repeat import repairs a missing program dependency without duplicating an 
   const next = JSON.parse(fs.readFileSync(file));
   assert.equal(next.requiresProgram, "0.5.5");
   assert.equal(next.videoLessons.length, 1);
+});
+
+test("video batches preserve the structured library's newer program requirement", () => {
+  const next=mergeVideoBatch(base,batch(1,1)).catalog;
+  assert.equal(next.requiresProgram,base.requiresProgram);
+  assert.deepEqual(next.structured,base.structured);
 });
 
 test("public collection parser rejects mismatched video and incomplete or reordered parts", () => {

@@ -112,13 +112,9 @@ export function questionBodyMarkup(catalog, q) {
   const group = catalog.structured?.groups.find((g) =>
     g.questionIds.includes(q.id),
   );
-  const sourceDetails = (note) =>
-    note
-      ? `<details class="question-source-details"><summary>原题说明</summary><p>${esc(note)}</p></details>`
-      : "";
-  if (!group) return originalQuestionMarkup(q) + sourceDetails(q.note);
+  if (!group) return originalQuestionMarkup(q);
   try {
-    return `<section class="structured-question" data-structured-group="${esc(group.id)}"><div class="structured-body">${structuredBody(group, catalog.structured.figures)}</div><details class="structured-original"><summary>查看原图</summary>${originalQuestionMarkup(q)}${group.questionIds.length > 1 ? '<p class="shared-note">共用题面完整保留；收藏、自评、答案和视频对应页面顶部的当前题号。</p>' : ""}</details>${group.sourcePending ? sourceDetails(group.sourceNote || q.note) : ""}</section>`;
+    return `<section class="structured-question" data-structured-group="${esc(group.id)}"><div class="structured-body">${structuredBody(group, catalog.structured.figures)}</div><details class="structured-original"><summary>查看原图</summary>${originalQuestionMarkup(q)}${group.questionIds.length > 1 ? '<p class="shared-note">共用题面完整保留；收藏、自评、答案和视频对应页面顶部的当前题号。</p>' : ""}</details></section>`;
   } catch {
     return (
       '<p class="source-note">结构化题面暂时无法显示，已切回原图。</p>' +

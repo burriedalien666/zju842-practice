@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { legacyCatalog } from "../tests/fixtures/legacy-catalog.js";
 import path from "node:path";
 import os from "node:os";
 import net from "node:net";
@@ -9,7 +10,7 @@ import { loadCatalog } from "../server/catalog.js";
 import pkg from "../package.json" with { type: "json" };
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "842-post-update-"));
 const base = path.resolve("public"),
-  catalog = loadCatalog(path.join(base, "catalog.json"), base);
+  catalog = legacyCatalog();
 fs.writeFileSync(
   path.join(dir, "update-settings.json"),
   JSON.stringify({ autoCheck: false }),
@@ -48,7 +49,7 @@ try {
   await page.locator("#update-complete").waitFor();
   assert.match(
     await page.locator("#update-complete").innerText(),
-    /视频|完整显示/,
+    /结构化|查看原图/,
   );
   await page.locator("#notice-dismiss").click();
   await page.reload();

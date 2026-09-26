@@ -33,7 +33,10 @@ try {
     local: { baseDir, launchToken: "polish-fixture" },
   });
   await app.listen({ host: "127.0.0.1", port });
-  browser = await chromium.launch({ channel: "chrome", headless: true });
+  browser = await chromium.launch({
+    ...(process.platform === "win32" ? { channel: "chrome" } : {}),
+    headless: true,
+  });
   const context = await browser.newContext({
       viewport: { width: 1440, height: 950 },
     }),
@@ -115,17 +118,17 @@ try {
       .count(),
     0,
   );
-  const note = page.locator(".question-source-details");
-  assert.equal(await note.getAttribute("open"), null);
-  await note.locator("summary").click();
-  assert.ok((await note.innerText()).length > 20);
-  await note.locator("summary").click();
+  assert.equal(await page.locator(".question-source-details").count(), 0);
+  assert.equal(
+    await page.locator(".structured-original summary").textContent(),
+    "查看原图",
+  );
   await page.screenshot({
     path: path.join(out, "accepted-2015-nine.png"),
     fullPage: true,
   });
   report.checks.push(
-    "previous screenshot-only question now structured; notes are folded and retain source information",
+    "all accepted questions structured; only original-image disclosure remains",
   );
   await page.goto(origin + "/?q=" + encodeURIComponent("2023|一|3"));
   await page.locator("#reader .question-actions").waitFor();

@@ -180,7 +180,7 @@ try {
     await page.locator("#notice-dismiss").waitFor();
     assert.match(
       await page.locator("#update-complete").innerText(),
-      new RegExp(kind === "library" ? "r3" : "r1"),
+      new RegExp(kind === "library" ? "r" + next.libraryRevision : "r1"),
     );
     await page.locator("#notice-dismiss").click();
     assert.deepEqual(

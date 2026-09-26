@@ -55,7 +55,7 @@ const next = mergeVideoBatch(catalog, {
 // Legacy chapter/concept links remain loadable but must not become recommendations.
 next.videoLessons.push(...lessons.filter((v) => v.target !== "question"));
 next.libraryRevision = (catalog.libraryRevision || 0) + 1;
-next.requiresProgram = "0.5.5";
+next.requiresProgram = catalog.requiresProgram || "0.5.5";
 next.updateKind = "library";
 const pack = path.join(dataDir, "test-videos.842pack");
 await writeZip(pack, [
@@ -144,7 +144,7 @@ try {
   await page.reload();
   await page.locator('[data-action="local-updates"]').waitFor();
   await page.locator("#notice-dismiss").waitFor();
-  assert.match(await page.locator("#update-complete").innerText(), /r3/);
+  assert.match(await page.locator("#update-complete").innerText(), new RegExp("r"+next.libraryRevision));
   await page.locator("#notice-dismiss").click();
   await page.locator('[data-action="chapter"][data-id="s2"]').first().click();
   assert.equal(
@@ -153,7 +153,7 @@ try {
     "chapter layout has no video courses",
   );
   await page.goto(origin + "/?q=" + encodeURIComponent(q.id));
-  await page.locator(".question-images").waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   assert.equal(await page.locator('[data-action="open-videos"]').count(), 1);
   await page.getByRole("button", { name: "查看本题视频", exact: true }).click();
   await page.locator(".question-video-list").waitFor();
@@ -178,7 +178,7 @@ try {
   assert.equal(await page.locator("#dialog").evaluate((d) => d.open), false);
   assert.deepEqual(errors, []);
   await page.goto(origin + "/?q=" + encodeURIComponent("2009|一|1"));
-  await page.locator(".question-images").waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   await page.getByRole("button", { name: "查看本题视频", exact: true }).click();
   assert.equal(await page.locator(".question-video-row").count(), 1);
   assert.match(
@@ -191,7 +191,7 @@ try {
   );
   await page.locator('[data-action="close-dialog"]').click();
   await page.goto(origin + "/?q=" + encodeURIComponent("2009|一|2"));
-  await page.locator(".question-images").waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   assert.equal(
     await page.locator('[data-action="open-videos"]').count(),
     1,

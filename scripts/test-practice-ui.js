@@ -80,7 +80,7 @@ try {
   assert.equal(await page.locator("#app.catalog-mode").count(), 1);
   await page.screenshot({ path: path.join(out, "catalog.png") });
   await page.locator(".question-card").first().click();
-  await page.locator(".question-images img").first().waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   assert.equal(await page.locator("#app.reader-mode").count(), 1);
   assert.equal(await page.locator(".sidebar").isVisible(), false);
   assert.equal(
@@ -223,7 +223,7 @@ try {
   await page.locator('.paper-more [data-action="practice-history"]').click();
   await page.locator('[data-action="history-round"][data-index="0"]').click();
   assert.equal(
-    await page.locator(".history-questions details").count(),
+    await page.locator(".history-questions > details").count(),
     paper.questions.length,
   );
   assert.match(await page.locator("#dialog-body").innerText(), /不熟/);
@@ -242,7 +242,7 @@ try {
   await page.screenshot({ path: path.join(out, "single-night.png") });
   await saved();
   await page.reload();
-  await page.locator("#reader .question-images img").first().waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
   assert.equal((await readStudy()).study.paperHistory[paper.id].length, 1);
   for (const viewport of [
@@ -330,7 +330,7 @@ try {
   await saved();
   const otherPaper = examPapers(catalog)[1];
   await page.goto(origin + "/?paper=" + otherPaper.id);
-  await page.locator("#reader .question-images").waitFor();
+  await page.locator("#reader .question-actions").waitFor();
   await page.locator('[data-action="timer-toggle"]').click();
   await saved();
   disk = await readStudy();

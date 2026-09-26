@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { legacyCatalog } from "../tests/fixtures/legacy-catalog.js";
 import os from "node:os";
 import path from "node:path";
 import net from "node:net";
@@ -9,7 +10,7 @@ import { loadCatalog } from "../server/catalog.js";
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "842-image-regression-"));
 const base = path.resolve("public"),
-  catalog = loadCatalog(path.join(base, "catalog.json"), base);
+  catalog = legacyCatalog();
 const reserve = net.createServer();
 await new Promise((r) => reserve.listen(0, "127.0.0.1", r));
 const port = reserve.address().port;

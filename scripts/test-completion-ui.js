@@ -85,10 +85,9 @@ try {
     await card.locator('[role="progressbar"]').getAttribute("aria-valuenow"),
     "3",
   );
-  assert.match(
-    await page.locator("#progress").innerText(),
-    /已做 3 \/ 260 · 掌握 1/,
-  );
+  assert.equal(await page.locator("#progress").textContent(), "");
+  assert.equal(await page.locator("#progress").isVisible(), false);
+  assert.equal(await page.locator(".chapter-symbol").count(), 0);
   fs.mkdirSync(".test-artifacts/completion", { recursive: true });
   await page.screenshot({ path: ".test-artifacts/completion/three-of-23.png" });
   await page.goto(origin + "/?q=" + encodeURIComponent(questions[1].id));
