@@ -221,6 +221,7 @@ main {
 }
 .learning-overview {
   box-shadow: none;
+  grid-template-columns: minmax(0, 1fr);
 }
 .learning-overview .resume-block h2 {
   color: var(--ink);
@@ -233,11 +234,13 @@ main {
 }
 .resume-block {
   width: 100%;
+  border: 0;
 }
 .chapter-shortcuts [data-action="chapter"] {
   color: var(--muted);
 }
-.chapter-shortcuts [data-action="chapter"].selected {
+.chapter-shortcuts [data-action="chapter"].selected,
+.chapter-shortcuts [data-action="chapter"]:hover {
   background: var(--accent-soft);
   color: var(--ink);
 }
@@ -1130,18 +1133,15 @@ main {
   color: var(--ink);
 }
 #chapter-shortcuts {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 8px;
+  display: block;
+  position: relative;
 }
 #chapter-shortcuts > details {
-  display: contents;
+  display: block;
 }
 #chapter-shortcuts > details > summary {
-  grid-column: 1;
-  grid-row: 1;
-  padding: 8px 0;
+  padding: 8px 90px 8px 0;
+  min-height: 40px;
   margin: 0;
   min-width: 0;
   white-space: nowrap;
@@ -1152,13 +1152,13 @@ main {
   content: none;
 }
 #chapter-shortcuts > details > div {
-  grid-column: 1 / -1;
-  grid-row: 2;
+  width: 100%;
+  min-width: 0;
 }
 #chapter-shortcuts > .directory-tools {
-  position: static;
-  grid-column: 2;
-  grid-row: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
   margin: 0;
 }
 #chapter-shortcuts .progress-switch,
@@ -1322,4 +1322,44 @@ main {
   .paper-more summary {
     padding: 8px;
   }
+}
+.continue-recommended {
+  display: grid;
+  gap: 8px;
+  margin: 22px 0;
+}
+.continue-recommended button,
+.continue-topic-list button {
+  justify-content: space-between;
+  text-align: left;
+  gap: 18px;
+  padding: 15px 18px;
+}
+.continue-recommended strong,
+.continue-topic-list strong {
+  display: block;
+  font-weight: 550;
+}
+.continue-recommended small,
+.continue-topic-list small {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+.continue-other summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 10px 0;
+}
+.continue-topic-list {
+  display: grid;
+  gap: 8px;
+  max-height: 42vh;
+  overflow: auto;
+}
+.continue-topic-list button {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
 }

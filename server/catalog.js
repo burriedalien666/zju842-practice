@@ -1,11 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { validateCurriculum } from "../src/curriculum.js";
+import { validateStructured } from "../src/structured-schema.js";
 
 export function validateCatalog(catalog) {
   if (
-    !catalog || typeof catalog !== "object" || Array.isArray(catalog) ||
-    ["__proto__", "constructor", "prototype"].some(k => Object.hasOwn(catalog, k)) ||
+    !catalog ||
+    typeof catalog !== "object" ||
+    Array.isArray(catalog) ||
+    ["__proto__", "constructor", "prototype"].some((k) =>
+      Object.hasOwn(catalog, k),
+    ) ||
     catalog.version !== 1 ||
     !Array.isArray(catalog.questions) ||
     !Array.isArray(catalog.types)
@@ -30,7 +35,13 @@ export function validateCatalog(catalog) {
   }
   const ids = new Set();
   for (const q of catalog.questions) {
-    if (typeof q.id !== "string" || !q.id || q.id.length > 160 || ids.has(q.id) || ["__proto__", "constructor", "prototype"].includes(q.id))
+    if (
+      typeof q.id !== "string" ||
+      !q.id ||
+      q.id.length > 160 ||
+      ids.has(q.id) ||
+      ["__proto__", "constructor", "prototype"].includes(q.id)
+    )
       throw new Error("题目编号为空、过长或重复");
     const type = types.get(q.typeId);
     if (
@@ -67,6 +78,7 @@ export function validateCatalog(catalog) {
     ids.add(q.id);
   }
   validateCurriculum(catalog);
+  validateStructured(catalog);
   return catalog;
 }
 

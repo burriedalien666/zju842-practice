@@ -1,0 +1,184 @@
+.structured-question {
+  --paper: var(--surface);
+  color: var(--ink);
+  min-width: 0;
+}
+.structured-question .structured-body {
+  font-size: 18px;
+  line-height: 1.95;
+  overflow-wrap: break-word;
+}
+.structured-question .structured-body p {
+  margin: 0 0 20px;
+}
+.structured-question .katex {
+  font-size: 1.07em;
+}
+.structured-question .katex-display {
+  margin: 22px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.8em 2px;
+}
+.structured-question .formula-block {
+  min-width: 0;
+}
+.structured-question .formula-block .katex-display > .katex > .katex-html {
+  display: inline-block;
+}
+.structured-question .tasks {
+  margin: 0;
+  padding-left: 1.65em;
+}
+.structured-question .tasks li {
+  margin: 10px 0;
+  padding-left: 4px;
+}
+.structured-question .tasks .katex-display {
+  margin: 12px 0 20px;
+}
+.structured-question .tasks.source-labels {
+  list-style: none;
+  padding-left: 2em;
+}
+.structured-question .tasks.source-labels > li {
+  position: relative;
+}
+.structured-question .tasks.source-labels > li::before {
+  content: attr(data-label);
+  position: absolute;
+  left: -2em;
+  width: 1.8em;
+  text-align: right;
+}
+.structured-question figure {
+  margin: 26px auto;
+  max-width: 760px;
+}
+.structured-question .diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+  overflow: visible;
+}
+.structured-question .drawing {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.structured-question .drawing text {
+  fill: currentColor;
+  stroke: none;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+.structured-question .drawing .junction,
+.structured-question .arrow-fill {
+  fill: currentColor;
+  stroke: none;
+}
+.structured-question .state-node {
+  fill: var(--paper);
+}
+.structured-question .drawing .symbol {
+  font-size: 25px;
+}
+.structured-question .drawing .small {
+  font-size: 17px;
+}
+.structured-question figcaption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.structured-question .table-wrap {
+  overflow: auto;
+  margin: 22px 0;
+}
+.structured-question .function-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 16px;
+  line-height: 1.65;
+  text-align: center;
+  white-space: nowrap;
+}
+.structured-question .function-table caption {
+  font-size: 15px;
+  color: var(--muted);
+  padding: 0 0 12px;
+}
+.structured-question .function-table th {
+  font-weight: 550;
+  background: var(--soft);
+}
+.structured-question .function-table th,
+.structured-question .function-table td {
+  border: 1px solid var(--line);
+  padding: 9px 11px;
+}
+.structured-question .code-table {
+  width: min(100%, 360px);
+  margin: 0 auto;
+}
+.structured-question .code-bits {
+  font-family: Consolas, "Courier New", monospace;
+  letter-spacing: 0.16em;
+}
+.structured-question .overline {
+  display: inline-block;
+  border-top: 1px solid currentColor;
+  line-height: 1;
+}
+.structured-question .shared-note {
+  margin: 20px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.structured-original {
+  margin: 18px 0 0;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.structured-original > summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  width: fit-content;
+}
+.structured-original[open] > summary {
+  margin-bottom: 16px;
+}
+.question-source-details {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.question-source-details summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.question-source-details p {
+  margin: 8px 0 0;
+  line-height: 1.8;
+}
+@media (max-width: 760px) {
+  .structured-question .structured-body {
+    font-size: 16px;
+  }
+  .structured-question .function-table {
+    font-size: 13px;
+  }
+  .structured-question .function-table td,
+  .structured-question .function-table th {
+    padding: 7px;
+  }
+  .structured-question .drawing text {
+    font-size: 21px;
+  }
+}
